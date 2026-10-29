@@ -14,12 +14,13 @@
           extend: {
             colors: {
               brand: {
-                50: "#f5f3ff",
-                100: "#ede9fe",
-                500: "#8b5cf6",
-                600: "#7c3aed",
-                700: "#6d28d9",
-                900: "#4c1d95",
+                50: "#f0f3ff",
+                100: "#e0e7ff",
+                200: "#c7d2fe",
+                500: "#6366f1",
+                600: "#4f46e5",
+                700: "#4338ca",
+                900: "#312e81",
               },
             },
           },
@@ -27,47 +28,70 @@
       };
     </script>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
       body {
-        font-family: "Inter", sans-serif;
+        font-family: "Plus Jakarta Sans", sans-serif;
       }
       .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
         height: 6px;
       }
       .custom-scrollbar::-webkit-scrollbar-track {
-        background: rgba(148, 163, 184, 0.1);
+        background: rgba(203, 213, 225, 0.2);
       }
       .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(148, 163, 184, 0.3);
+        background: rgba(148, 163, 184, 0.4);
         border-radius: 4px;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: rgba(148, 163, 184, 0.5);
+        background: rgba(100, 116, 139, 0.6);
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+      }
+
+      .tile-sat {
+        border-top: 4px solid #6366f1;
+      }
+      .tile-sun {
+        border-top: 4px solid #0284c7;
+      }
+      .tile-tue {
+        border-top: 4px solid #10b981;
+      }
+      .tile-wed {
+        border-top: 4px solid #8b5cf6;
+      }
+      .tile-makeup {
+        border-top: 4px solid #f59e0b;
       }
     </style>
   </head>
   <body
-    class="h-full flex flex-col font-sans bg-slate-50 text-slate-800 antialiased selection:bg-brand-500 selection:text-white"
+    class="h-full flex flex-col font-sans bg-gradient-to-br from-slate-100 via-indigo-50/40 to-slate-100 text-slate-800 antialiased selection:bg-brand-500 selection:text-white min-h-screen"
   >
     <!-- Header Navigation -->
     <header
-      class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm"
+      class="bg-white/80 backdrop-blur-md border-b border-indigo-100 sticky top-0 z-30 shadow-sm"
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
           <!-- Logo & Title -->
           <div class="flex items-center gap-3">
             <div
-              class="p-2 bg-brand-600 text-white rounded-xl shadow-md shadow-brand-500/20"
+              class="p-2.5 bg-gradient-to-tr from-brand-700 to-indigo-500 text-white rounded-2xl shadow-md shadow-brand-500/30"
             >
               <i data-lucide="graduation-cap" class="w-6 h-6"></i>
             </div>
             <div>
-              <h1 class="font-bold text-lg leading-tight text-slate-900">
+              <h1
+                class="font-extrabold text-lg leading-tight bg-gradient-to-r from-slate-900 via-brand-900 to-indigo-900 bg-clip-text text-transparent"
+              >
                 UIU Calendar 263
               </h1>
-              <p class="text-xs text-slate-500">
+              <p class="text-[11px] font-semibold text-brand-600">
                 Academic Term Classes & Evaluations
               </p>
             </div>
@@ -75,20 +99,20 @@
 
           <!-- Navigation Tabs -->
           <nav
-            class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/60 overflow-x-auto"
+            class="flex items-center gap-1.5 bg-slate-200/60 p-1.5 rounded-2xl border border-slate-300/50 overflow-x-auto"
           >
             <button
               id="nav-calendar"
               onclick="switchPage('calendar')"
-              class="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-white text-brand-700 shadow-sm whitespace-nowrap"
+              class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 bg-white text-brand-700 shadow-sm whitespace-nowrap"
             >
-              <i data-lucide="calendar" class="w-4 h-4"></i>
+              <i data-lucide="calendar" class="w-4 h-4 text-brand-600"></i>
               <span>Calendar Grid</span>
             </button>
             <button
               id="nav-dashboard"
               onclick="switchPage('dashboard')"
-              class="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-900 whitespace-nowrap"
+              class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap"
             >
               <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
               <span>Class Trackers</span>
@@ -96,20 +120,20 @@
             <button
               id="nav-assessments"
               onclick="switchPage('assessments')"
-              class="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-900 whitespace-nowrap relative"
+              class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap relative"
             >
               <i data-lucide="pen-tool" class="w-4 h-4"></i>
               <span>Upcoming Assessments</span>
               <span
                 id="nav-eval-badge"
-                class="ml-1 px-1.5 py-0.2 text-[10px] font-bold rounded-full bg-rose-500 text-white hidden"
+                class="ml-1 px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-500 text-white shadow-sm shadow-rose-500/40 hidden"
                 >0</span
               >
             </button>
             <button
               id="nav-events"
               onclick="switchPage('events')"
-              class="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-900 whitespace-nowrap"
+              class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap"
             >
               <i data-lucide="bell" class="w-4 h-4"></i>
               <span>Important Events</span>
@@ -120,7 +144,7 @@
           <div class="flex items-center gap-2">
             <button
               onclick="openResetModal()"
-              class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl transition-colors"
+              class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100/70 border border-rose-200 rounded-xl transition-all shadow-sm"
             >
               <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">Reset</span>
@@ -136,75 +160,86 @@
       <section id="page-calendar" class="space-y-6">
         <!-- Filter Bar & Quick Stats -->
         <div
-          class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+          class="bg-white/90 p-4 rounded-2xl border border-indigo-100/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
         >
           <div class="flex flex-wrap items-center gap-2">
             <span
-              class="text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1"
-              >Filter Track:</span
+              class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1"
             >
+              <i data-lucide="filter" class="w-3.5 h-3.5"></i> Filter:
+            </span>
             <button
               onclick="setFilter('ALL')"
               id="filter-ALL"
-              class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm"
+              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-gradient-to-r from-brand-600 to-indigo-600 text-white border-brand-600 shadow-md shadow-brand-500/20"
             >
               All Classes
             </button>
             <button
               onclick="setFilter('SAT')"
               id="filter-SAT"
-              class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
             >
               SAT Track
             </button>
             <button
               onclick="setFilter('SUN')"
               id="filter-SUN"
-              class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-sky-700 border-sky-200 hover:bg-sky-50"
             >
               SUN Track
             </button>
             <button
               onclick="setFilter('TUE')"
               id="filter-TUE"
-              class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-emerald-700 border-emerald-200 hover:bg-emerald-50"
             >
               TUE Track
             </button>
             <button
               onclick="setFilter('WED')"
               id="filter-WED"
-              class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-purple-700 border-purple-200 hover:bg-purple-50"
             >
               WED Track
             </button>
             <button
               onclick="setFilter('MAKEUP')"
               id="filter-MAKEUP"
-              class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-500 shadow-md shadow-amber-500/20"
             >
-              <i data-lucide="video" class="w-3 h-3 inline mr-1"></i>Online
+              <i data-lucide="video" class="w-3.5 h-3.5 inline mr-1"></i>Online
               Makeup
             </button>
           </div>
 
           <div
-            class="flex items-center gap-4 text-xs font-medium text-slate-600 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100"
+            class="flex items-center gap-4 text-xs font-bold text-slate-600 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100"
           >
-            <div class="flex items-center gap-1.5">
-              <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+            <div
+              class="flex items-center gap-2 bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-xl border border-emerald-200"
+            >
+              <div
+                class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"
+              ></div>
               <span
                 >Completed:
-                <strong id="quick-completed-count" class="text-slate-900"
+                <strong
+                  id="quick-completed-count"
+                  class="text-emerald-950 font-black"
                   >0</strong
                 ></span
               >
             </div>
-            <div class="flex items-center gap-1.5">
-              <div class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
+            <div
+              class="flex items-center gap-2 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-200"
+            >
+              <div class="w-2.5 h-2.5 rounded-full bg-slate-400"></div>
               <span
                 >Remaining:
-                <strong id="quick-remaining-count" class="text-slate-900"
+                <strong
+                  id="quick-remaining-count"
+                  class="text-slate-900 font-black"
                   >48</strong
                 ></span
               >
@@ -214,23 +249,22 @@
 
         <!-- Notice Banner -->
         <div
-          class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-900 flex items-center justify-between gap-3"
+          class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border border-amber-300/80 rounded-2xl p-4 text-xs text-amber-950 flex items-center justify-between gap-3 shadow-sm"
         >
-          <div class="flex items-center gap-2">
-            <i
-              data-lucide="alert-circle"
-              class="w-4 h-4 text-amber-600 shrink-0"
-            ></i>
-            <span
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-amber-500 text-white rounded-xl shadow-sm">
+              <i data-lucide="video" class="w-4 h-4 shrink-0"></i>
+            </div>
+            <span class="leading-relaxed"
               ><strong>Thursday Makeup & Assessment Note:</strong> Thursdays
               highlighted with
               <span
-                class="bg-amber-200 text-amber-900 font-bold px-1.5 py-0.5 rounded"
+                class="bg-amber-200 text-amber-950 font-extrabold px-2 py-0.5 rounded-md border border-amber-300"
                 >Online Makeup</span
               >
-              compensate for specific tracks. Click <strong>+ Eval</strong> on
-              any date tile to add class tests, presentations, or lab
-              updates!</span
+              compensate for specific track classes. Click
+              <strong>+ Eval</strong> on any tile to schedule tests,
+              presentations, or lab tasks!</span
             >
           </div>
         </div>
@@ -247,25 +281,28 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
           <!-- Overall Progress Card -->
           <div
-            class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-6"
+            class="bg-gradient-to-br from-indigo-900 via-brand-900 to-slate-900 text-white p-6 rounded-3xl shadow-lg shadow-brand-900/20 flex items-center gap-6 border border-brand-700/50 relative overflow-hidden"
           >
+            <div
+              class="absolute -right-6 -bottom-6 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl"
+            ></div>
             <div class="relative w-24 h-24 flex-shrink-0">
               <svg
                 class="w-full h-full transform -rotate-90"
                 viewBox="0 0 36 36"
               >
                 <path
-                  class="text-slate-100"
-                  stroke-width="3.5"
+                  class="text-white/10"
+                  stroke-width="3.8"
                   stroke="currentColor"
                   fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 />
                 <path
                   id="overall-ring"
-                  class="text-brand-600 transition-all duration-700 ease-out"
+                  class="text-indigo-400 transition-all duration-700 ease-out"
                   stroke-dasharray="0, 100"
-                  stroke-width="3.5"
+                  stroke-width="3.8"
                   stroke-linecap="round"
                   stroke="currentColor"
                   fill="none"
@@ -277,25 +314,29 @@
               >
                 <span
                   id="overall-percentage"
-                  class="text-xl font-bold text-slate-900"
+                  class="text-2xl font-black text-white"
                   >0%</span
                 >
-                <span class="text-[10px] text-slate-400 font-medium">DONE</span>
+                <span
+                  class="text-[9px] text-indigo-200 font-extrabold tracking-wider"
+                  >DONE</span
+                >
               </div>
             </div>
             <div>
               <h3
-                class="text-sm font-semibold text-slate-500 uppercase tracking-wider"
+                class="text-xs font-bold text-indigo-200 uppercase tracking-wider"
               >
                 Overall Completion
               </h3>
-              <p class="text-2xl font-black text-slate-900 mt-1">
+              <p class="text-3xl font-black text-white mt-1">
                 <span id="dash-completed-total">0</span>
-                <span class="text-sm font-semibold text-slate-400"
-                  >/ 48 Classes</span
-                >
+                <span class="text-sm font-bold text-indigo-300">/ 48</span>
               </p>
-              <p class="text-xs text-slate-500 mt-1" id="dash-remaining-desc">
+              <p
+                class="text-xs text-indigo-200/80 mt-1 font-medium"
+                id="dash-remaining-desc"
+              >
                 48 classes remaining to complete term.
               </p>
             </div>
@@ -303,47 +344,51 @@
 
           <!-- Regular vs Makeup Card -->
           <div
-            class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between"
+            class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col justify-between"
           >
             <div>
               <h3
-                class="text-sm font-semibold text-slate-500 uppercase tracking-wider"
+                class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"
               >
-                Class Type Breakdown
+                <i data-lucide="layers" class="w-4 h-4 text-brand-600"></i>
+                Class Breakdown
               </h3>
-              <div class="mt-4 space-y-3">
+              <div class="mt-4 space-y-3.5">
                 <div>
-                  <div class="flex justify-between text-xs font-semibold mb-1">
-                    <span class="text-slate-700">Regular Classes</span>
-                    <span id="reg-count-label" class="text-slate-500"
+                  <div class="flex justify-between text-xs font-bold mb-1.5">
+                    <span class="text-slate-700">Regular On-Campus</span>
+                    <span id="reg-count-label" class="text-brand-700"
                       >0/43</span
                     >
                   </div>
                   <div
-                    class="w-full bg-slate-100 h-2 rounded-full overflow-hidden"
+                    class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-200/50"
                   >
                     <div
                       id="reg-progress-bar"
-                      class="bg-slate-700 h-full w-0 transition-all duration-500"
+                      class="bg-gradient-to-r from-brand-500 to-indigo-600 h-full rounded-full w-0 transition-all duration-500"
                     ></div>
                   </div>
                 </div>
                 <div>
-                  <div class="flex justify-between text-xs font-semibold mb-1">
-                    <span class="text-amber-700 flex items-center gap-1"
-                      ><i data-lucide="video" class="w-3 h-3"></i> Thu Online
-                      Makeup</span
+                  <div class="flex justify-between text-xs font-bold mb-1.5">
+                    <span class="text-amber-800 flex items-center gap-1"
+                      ><i
+                        data-lucide="video"
+                        class="w-3.5 h-3.5 text-amber-600"
+                      ></i>
+                      Thu Online Makeup</span
                     >
-                    <span id="makeup-count-label" class="text-amber-600"
+                    <span id="makeup-count-label" class="text-amber-700"
                       >0/5</span
                     >
                   </div>
                   <div
-                    class="w-full bg-amber-100 h-2 rounded-full overflow-hidden"
+                    class="w-full bg-amber-50 h-2.5 rounded-full overflow-hidden p-0.5 border border-amber-200/50"
                   >
                     <div
                       id="makeup-progress-bar"
-                      class="bg-amber-500 h-full w-0 transition-all duration-500"
+                      class="bg-gradient-to-r from-amber-500 to-orange-500 h-full rounded-full w-0 transition-all duration-500"
                     ></div>
                   </div>
                 </div>
@@ -353,52 +398,59 @@
 
           <!-- User Assessments Summary Card -->
           <div
-            class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between"
+            class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col justify-between"
           >
             <div class="flex justify-between items-center">
               <h3
-                class="text-sm font-semibold text-slate-500 uppercase tracking-wider"
+                class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"
               >
-                Assessments Summary
+                <i data-lucide="pen-tool" class="w-4 h-4 text-rose-500"></i>
+                Planned Assessments
               </h3>
               <span
-                class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-md"
-                >Custom Planned</span
+                class="text-[10px] font-extrabold text-brand-700 bg-brand-50 px-2.5 py-1 rounded-lg border border-brand-200"
+                >Custom Log</span
               >
             </div>
-            <div class="grid grid-cols-3 gap-2 mt-4 text-center">
-              <div class="bg-rose-50 p-2.5 rounded-xl border border-rose-100">
+            <div class="grid grid-cols-3 gap-2.5 mt-4 text-center">
+              <div
+                class="bg-rose-50/80 p-3 rounded-2xl border border-rose-200/80"
+              >
                 <span
                   id="sum-tests-count"
-                  class="text-lg font-extrabold text-rose-700"
+                  class="text-xl font-black text-rose-700"
                   >0</span
                 >
-                <p class="text-[10px] font-bold text-rose-600 uppercase mt-0.5">
+                <p
+                  class="text-[10px] font-extrabold text-rose-800 uppercase mt-0.5"
+                >
                   Tests
                 </p>
               </div>
               <div
-                class="bg-indigo-50 p-2.5 rounded-xl border border-indigo-100"
+                class="bg-indigo-50/80 p-3 rounded-2xl border border-indigo-200/80"
               >
                 <span
                   id="sum-pres-count"
-                  class="text-lg font-extrabold text-indigo-700"
+                  class="text-xl font-black text-indigo-700"
                   >0</span
                 >
                 <p
-                  class="text-[10px] font-bold text-indigo-600 uppercase mt-0.5"
+                  class="text-[10px] font-extrabold text-indigo-800 uppercase mt-0.5"
                 >
                   Pres.
                 </p>
               </div>
-              <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-100">
+              <div
+                class="bg-amber-50/80 p-3 rounded-2xl border border-amber-200/80"
+              >
                 <span
                   id="sum-upd-count"
-                  class="text-lg font-extrabold text-amber-700"
+                  class="text-xl font-black text-amber-700"
                   >0</span
                 >
                 <p
-                  class="text-[10px] font-bold text-amber-600 uppercase mt-0.5"
+                  class="text-[10px] font-extrabold text-amber-800 uppercase mt-0.5"
                 >
                   Updates
                 </p>
@@ -409,7 +461,7 @@
 
         <!-- Track Progress Grid (4 Trackers) -->
         <h2
-          class="text-base font-bold text-slate-900 flex items-center gap-2 pt-2"
+          class="text-base font-extrabold text-slate-900 flex items-center gap-2 pt-2"
         >
           <i data-lucide="check-square" class="w-5 h-5 text-brand-600"></i>
           Track Progress (12 Classes Each Track)
@@ -426,14 +478,20 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
           <!-- Detailed Schedule List per Track -->
           <div
-            class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4"
+            class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4"
           >
             <h3
-              class="text-sm font-bold text-slate-900 flex items-center justify-between"
+              class="text-sm font-extrabold text-slate-900 flex items-center justify-between"
             >
-              <span>Class Schedule Timeline</span>
-              <span class="text-xs font-normal text-slate-500"
-                >Sorted by Date</span
+              <span class="flex items-center gap-2"
+                ><i
+                  data-lucide="list-ordered"
+                  class="w-4 h-4 text-brand-600"
+                ></i>
+                Class Schedule Timeline</span
+              >
+              <span class="text-xs font-semibold text-slate-400"
+                >Chronological</span
               >
             </h3>
             <div
@@ -446,15 +504,15 @@
 
           <!-- Online Makeup Summary Card -->
           <div
-            class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4"
+            class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4"
           >
             <h3
-              class="text-sm font-bold text-slate-900 flex items-center gap-2"
+              class="text-sm font-extrabold text-slate-900 flex items-center gap-2"
             >
               <i data-lucide="video" class="w-4 h-4 text-amber-600"></i>
               <span>Thursday Online Makeup Schedule (5 Classes)</span>
             </h3>
-            <p class="text-xs text-slate-500">
+            <p class="text-xs text-slate-500 font-medium">
               These makeup classes take place on Thursdays and fulfill class
               count requirements for specific tracks.
             </p>
@@ -469,16 +527,16 @@
       <section id="page-assessments" class="space-y-6 hidden">
         <!-- Header & Filter Bar -->
         <div
-          class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+          class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
         >
           <div>
             <h2
-              class="text-base font-bold text-slate-900 flex items-center gap-2"
+              class="text-base font-extrabold text-slate-900 flex items-center gap-2"
             >
               <i data-lucide="pen-tool" class="w-5 h-5 text-brand-600"></i>
               Upcoming Assessments & Examinations
             </h2>
-            <p class="text-xs text-slate-500 mt-0.5">
+            <p class="text-xs font-medium text-slate-500 mt-0.5">
               Custom planned evaluations sorted chronologically by date with
               live urgency countdowns.
             </p>
@@ -489,37 +547,37 @@
             <button
               onclick="filterEvaluations('ALL')"
               id="eval-filter-ALL"
-              class="eval-f-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-slate-800 text-white border-slate-800 shadow-sm"
+              class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-slate-900 text-white border-slate-900 shadow-sm"
             >
               All Types
             </button>
             <button
               onclick="filterEvaluations('Class Test')"
               id="eval-filter-Test"
-              class="eval-f-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+              class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-rose-700 border-rose-200 hover:bg-rose-50"
             >
               <span
-                class="inline-block w-2 h-2 rounded-full bg-rose-500 mr-1"
+                class="inline-block w-2 h-2 rounded-full bg-rose-500 mr-1.5"
               ></span
               >Class Tests
             </button>
             <button
               onclick="filterEvaluations('Presentation')"
               id="eval-filter-Pres"
-              class="eval-f-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+              class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
             >
               <span
-                class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1"
+                class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5"
               ></span
               >Presentations
             </button>
             <button
               onclick="filterEvaluations('Update')"
               id="eval-filter-Upd"
-              class="eval-f-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+              class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-amber-700 border-amber-200 hover:bg-amber-50"
             >
               <span
-                class="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1"
+                class="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1.5"
               ></span
               >Updates
             </button>
@@ -528,27 +586,27 @@
 
         <!-- Urgency Legend Banner -->
         <div
-          class="bg-slate-100 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 flex flex-wrap items-center justify-between gap-3"
+          class="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-3.5 text-xs text-indigo-950 flex flex-wrap items-center justify-between gap-3 shadow-sm"
         >
-          <span class="font-semibold text-slate-700 flex items-center gap-1.5">
-            <i data-lucide="clock" class="w-4 h-4 text-slate-500"></i> Urgency
+          <span class="font-extrabold flex items-center gap-1.5">
+            <i data-lucide="clock" class="w-4 h-4 text-brand-600"></i> Urgency
             Countdown Rules:
           </span>
           <div class="flex flex-wrap items-center gap-3">
             <span
-              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 font-bold border border-rose-200"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-rose-100 text-rose-900 font-bold border border-rose-200 shadow-2xs"
             >
               <span class="w-2 h-2 rounded-full bg-rose-600"></span> &lt; 7 Days
-              (Very Important)
+              (Urgent)
             </span>
             <span
-              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-bold border border-amber-200"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-bold border border-amber-200 shadow-2xs"
             >
               <span class="w-2 h-2 rounded-full bg-amber-600"></span> 7 – 14
               Days (Prepare)
             </span>
             <span
-              class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold border border-emerald-200"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-900 font-bold border border-emerald-200 shadow-2xs"
             >
               <span class="w-2 h-2 rounded-full bg-emerald-600"></span> &gt; 14
               Days (Plan)
@@ -558,21 +616,21 @@
 
         <!-- Collapsible Mid-Term Exam Block -->
         <div
-          class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+          class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden"
         >
           <button
             onclick="toggleSection('midterm-section')"
-            class="w-full px-5 py-4 bg-slate-900 text-white flex items-center justify-between font-bold text-sm"
+            class="w-full px-6 py-4 bg-gradient-to-r from-slate-900 via-brand-950 to-slate-900 text-white flex items-center justify-between font-extrabold text-sm hover:opacity-95 transition-opacity"
           >
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2.5">
               <i data-lucide="file-text" class="w-4 h-4 text-amber-400"></i>
               <span
                 >Mid-Term Examination Window Schedule (Dec 5 – Dec 12,
                 2026)</span
               >
               <span
-                class="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 font-semibold"
-                >7 Days (Skipping Fri Dec 11)</span
+                class="text-[10px] bg-amber-400/20 text-amber-300 px-2.5 py-0.5 rounded-full border border-amber-400/30 font-bold"
+                >7 Days</span
               >
             </div>
             <i
@@ -583,7 +641,7 @@
           </button>
           <div
             id="midterm-section"
-            class="p-4 space-y-2 bg-slate-50 border-t border-slate-200"
+            class="p-5 space-y-2.5 bg-slate-50/80 border-t border-slate-200"
           >
             <div id="midterm-exam-list" class="space-y-2">
               <!-- Auto-generated mid exam days -->
@@ -593,20 +651,20 @@
 
         <!-- Collapsible Final Exam Block -->
         <div
-          class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+          class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden"
         >
           <button
             onclick="toggleSection('final-section')"
-            class="w-full px-5 py-4 bg-slate-900 text-white flex items-center justify-between font-bold text-sm"
+            class="w-full px-6 py-4 bg-gradient-to-r from-slate-900 via-brand-950 to-slate-900 text-white flex items-center justify-between font-extrabold text-sm hover:opacity-95 transition-opacity"
           >
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2.5">
               <i data-lucide="award" class="w-4 h-4 text-rose-400"></i>
               <span
                 >Final Examination Window Schedule (Jan 25 – Feb 1, 2027)</span
               >
               <span
-                class="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded border border-rose-500/30 font-semibold"
-                >7 Days (Skipping Fri Jan 29)</span
+                class="text-[10px] bg-rose-400/20 text-rose-300 px-2.5 py-0.5 rounded-full border border-rose-400/30 font-bold"
+                >7 Days</span
               >
             </div>
             <i
@@ -617,7 +675,7 @@
           </button>
           <div
             id="final-section"
-            class="p-4 space-y-2 bg-slate-50 border-t border-slate-200"
+            class="p-5 space-y-2.5 bg-slate-50/80 border-t border-slate-200"
           >
             <div id="final-exam-list" class="space-y-2">
               <!-- Auto-generated final exam days -->
@@ -628,10 +686,16 @@
         <!-- User Planned Evaluations Section -->
         <div class="space-y-3">
           <h3
-            class="text-sm font-bold text-slate-800 flex items-center justify-between pt-2"
+            class="text-sm font-extrabold text-slate-900 flex items-center justify-between pt-2"
           >
-            <span>User Added Assessments & Lab Tasks</span>
-            <span class="text-xs font-normal text-slate-500"
+            <span class="flex items-center gap-2"
+              ><i
+                data-lucide="clipboard-list"
+                class="w-4 h-4 text-brand-600"
+              ></i>
+              User Added Assessments & Lab Tasks</span
+            >
+            <span class="text-xs font-semibold text-slate-400"
               >Sorted Chronologically</span
             >
           </h3>
@@ -645,38 +709,46 @@
       <section id="page-events" class="space-y-6 hidden">
         <!-- Events Header & Filters -->
         <div
-          class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+          class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
         >
           <div>
             <h2
-              class="text-base font-bold text-slate-900 flex items-center gap-2"
+              class="text-base font-extrabold text-slate-900 flex items-center gap-2"
             >
               <i data-lucide="calendar-days" class="w-5 h-5 text-brand-600"></i>
               Academic Calendar Important Events
             </h2>
-            <p class="text-xs text-slate-500 mt-0.5">
+            <p class="text-xs font-medium text-slate-500 mt-0.5">
               Key deadlines, exam schedules, fee installment dates, and holidays
               (Oct 27, 2026 – Feb 4, 2027)
             </p>
           </div>
 
           <div
-            class="flex items-center gap-4 text-xs font-medium text-slate-600 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100"
+            class="flex items-center gap-3 text-xs font-bold text-slate-600 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100"
           >
-            <div class="flex items-center gap-1.5">
+            <div
+              class="flex items-center gap-2 bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-xl border border-emerald-200"
+            >
               <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
               <span
                 >Completed:
-                <strong id="events-completed-count" class="text-slate-900"
+                <strong
+                  id="events-completed-count"
+                  class="text-emerald-950 font-black"
                   >0</strong
                 ></span
               >
             </div>
-            <div class="flex items-center gap-1.5">
+            <div
+              class="flex items-center gap-2 bg-amber-50 text-amber-800 px-3 py-1.5 rounded-xl border border-amber-200"
+            >
               <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
               <span
                 >Remaining:
-                <strong id="events-remaining-count" class="text-slate-900"
+                <strong
+                  id="events-remaining-count"
+                  class="text-amber-950 font-black"
                   >0</strong
                 ></span
               >
@@ -687,41 +759,42 @@
         <!-- Category Filter Buttons -->
         <div class="flex flex-wrap items-center gap-2">
           <span
-            class="text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1"
-            >Category:</span
+            class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1"
           >
+            <i data-lucide="tag" class="w-3.5 h-3.5"></i> Category:
+          </span>
           <button
             onclick="setEventFilter('ALL')"
             id="event-filter-ALL"
-            class="event-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm"
+            class="event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm"
           >
             All Events
           </button>
           <button
             onclick="setEventFilter('EXAM')"
             id="event-filter-EXAM"
-            class="event-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+            class="event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-rose-700 border-rose-200 hover:bg-rose-50"
           >
             Exams
           </button>
           <button
             onclick="setEventFilter('PAYMENT')"
             id="event-filter-PAYMENT"
-            class="event-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+            class="event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-emerald-700 border-emerald-200 hover:bg-emerald-50"
           >
             Installments
           </button>
           <button
             onclick="setEventFilter('HOLIDAY')"
             id="event-filter-HOLIDAY"
-            class="event-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+            class="event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-amber-700 border-amber-200 hover:bg-amber-50"
           >
             Holidays
           </button>
           <button
             onclick="setEventFilter('ACADEMIC')"
             id="event-filter-ACADEMIC"
-            class="event-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+            class="event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
           >
             Academic Deadlines
           </button>
@@ -737,23 +810,25 @@
     <!-- MODAL 1: ADD ASSESSMENT / EVALUATION MODAL -->
     <div
       id="eval-modal"
-      class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4"
+      class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center p-4"
     >
       <div
-        class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 transform transition-all"
+        class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all"
       >
         <div
-          class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4"
+          class="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4"
         >
           <h3
-            class="text-base font-bold text-slate-900 flex items-center gap-2"
+            class="text-base font-extrabold text-slate-900 flex items-center gap-2"
           >
-            <i data-lucide="plus-circle" class="w-5 h-5 text-brand-600"></i>
+            <div class="p-1.5 bg-brand-100 text-brand-700 rounded-lg">
+              <i data-lucide="plus-circle" class="w-5 h-5"></i>
+            </div>
             <span>Add Assessment / Update</span>
           </h3>
           <button
             onclick="closeEvalModal()"
-            class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100"
+            class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-100 transition-colors"
           >
             <i data-lucide="x" class="w-5 h-5"></i>
           </button>
@@ -771,7 +846,7 @@
               type="text"
               id="eval-date-display"
               readonly
-              class="w-full text-xs font-bold bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-slate-600 outline-none"
+              class="w-full text-xs font-bold bg-slate-100/80 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-700 outline-none"
             />
           </div>
 
@@ -785,7 +860,7 @@
                 id="eval-code"
                 required
                 placeholder="e.g. CSE 1101"
-                class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none"
+                class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
               />
             </div>
             <div>
@@ -795,7 +870,7 @@
               <select
                 id="eval-type"
                 required
-                class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none"
+                class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
               >
                 <option value="Class Test">Class Test</option>
                 <option value="Presentation">Presentation</option>
@@ -812,7 +887,7 @@
               type="text"
               id="eval-course-title"
               placeholder="e.g. Structured Programming"
-              class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none"
+              class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
             />
           </div>
 
@@ -825,7 +900,7 @@
               id="eval-desc"
               required
               placeholder="e.g. Quiz 1 on Pointers & Arrays"
-              class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none"
+              class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
             />
           </div>
 
@@ -833,13 +908,13 @@
             <button
               type="button"
               onclick="closeEvalModal()"
-              class="flex-1 px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+              class="flex-1 px-4 py-2.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              class="flex-1 px-4 py-2 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl transition-colors shadow-sm"
+              class="flex-1 px-4 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-brand-500/20"
             >
               Save Entry
             </button>
@@ -851,35 +926,106 @@
     <!-- MODAL 2: RESET CONFIRMATION MODAL -->
     <div
       id="reset-modal"
-      class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4"
+      class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center p-4"
+    >
+      <!-- ... existing reset modal content ... -->
+    </div>
+
+    <!-- MODAL 3: MEETING LINK MODAL (FOR ONLINE MAKEUP TILES) -->
+    <div
+      id="meeting-modal"
+      class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center p-4"
     >
       <div
-        class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 transform transition-all text-center"
+        class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all"
       >
         <div
-          class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4"
+          class="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4"
         >
-          <i data-lucide="alert-triangle" class="w-6 h-6"></i>
-        </div>
-        <h3 class="text-lg font-bold text-slate-900">Reset All Progress?</h3>
-        <p class="text-xs text-slate-500 mt-2">
-          This will uncheck completed classes/events and clear your custom
-          assessment entries stored on this device.
-        </p>
-        <div class="mt-6 flex gap-3">
-          <button
-            onclick="closeResetModal()"
-            class="flex-1 px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+          <h3
+            class="text-base font-extrabold text-slate-900 flex items-center gap-2"
           >
-            Cancel
-          </button>
+            <div class="p-1.5 bg-amber-100 text-amber-700 rounded-lg">
+              <i data-lucide="video" class="w-5 h-5"></i>
+            </div>
+            <span>Makeup Meeting Link</span>
+          </h3>
           <button
-            onclick="confirmReset()"
-            class="flex-1 px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors shadow-sm"
+            onclick="closeMeetingModal()"
+            class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-100 transition-colors"
           >
-            Yes, Reset All
+            <i data-lucide="x" class="w-5 h-5"></i>
           </button>
         </div>
+
+        <form
+          id="meeting-form"
+          onsubmit="saveMeetingLink(event)"
+          class="space-y-4"
+        >
+          <input type="hidden" id="meeting-tile-id" />
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Class Date</label
+            >
+            <input
+              type="text"
+              id="meeting-tile-display"
+              readonly
+              class="w-full text-xs font-bold bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-700 outline-none"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Meeting URL *</label
+            >
+            <input
+              type="url"
+              id="meeting-url"
+              required
+              placeholder="https://meet.google.com/abc-defg-hij or Zoom Link"
+              class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1"
+              >Alias Text / Display Label</label
+            >
+            <input
+              type="text"
+              id="meeting-alias"
+              placeholder="e.g. Join Google Meet / Join Zoom"
+              class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
+            />
+          </div>
+
+          <div class="pt-2 flex gap-3">
+            <button
+              type="button"
+              onclick="removeMeetingLink()"
+              id="btn-remove-link"
+              class="px-4 py-2.5 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl transition-colors hidden"
+            >
+              Remove Link
+            </button>
+            <button
+              type="button"
+              onclick="closeMeetingModal()"
+              class="flex-1 px-4 py-2.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="flex-1 px-4 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 rounded-xl transition-all shadow-md shadow-amber-500/20"
+            >
+              Save Link
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -1381,7 +1527,7 @@
         },
       ];
 
-      // Academic Calendar Important Events (Oct 27, 2026 to Feb 4, 2027)
+      // Academic Calendar Important Events
       const ACADEMIC_EVENTS = [
         {
           id: "evt-1",
@@ -1521,7 +1667,6 @@
         },
       ];
 
-      // 7 Non-Friday Mid-Term Exam Days (Dec 5 - Dec 12, skipping Fri Dec 11)
       const MIDTERM_DAYS = [
         {
           id: "mid-1",
@@ -1567,7 +1712,6 @@
         },
       ];
 
-      // 7 Non-Friday Final Exam Days (Jan 25 - Feb 1, skipping Fri Jan 29)
       const FINAL_DAYS = [
         {
           id: "fin-1",
@@ -1617,8 +1761,8 @@
       let completedClasses = new Set();
       let completedEvents = new Set();
       let completedExams = new Set();
-      let userEvaluations = []; // Custom user assessments
-      let makeupMeetingLinks = {}; // Storage for online meeting links: { 'nov-05': { url: '...', alias: '...' } }
+      let userEvaluations = [];
+      let makeupMeetingLinks = {};
       let currentFilter = "ALL";
       let currentEventFilter = "ALL";
       let currentEvalFilter = "ALL";
@@ -1630,7 +1774,6 @@
       const EXAMS_STORAGE_KEY = "calendar_263_completed_exams_v1";
       const LINKS_STORAGE_KEY = "calendar_263_makeup_links_v1";
 
-      // Load persisted state
       function loadState() {
         try {
           const savedClasses = localStorage.getItem(STORAGE_KEY);
@@ -1653,7 +1796,6 @@
         }
       }
 
-      // Save state to LocalStorage
       function saveState() {
         try {
           localStorage.setItem(
@@ -1681,43 +1823,23 @@
         }
       }
 
-      // Initialize App
-      window.addEventListener("DOMContentLoaded", () => {
-        loadState();
-        renderCalendar();
-        renderDashboard();
-        renderEvaluations();
-        renderEvents();
-        updateNavigation();
-        lucide.createIcons();
-      });
-
       // Navigation Controller
       function switchPage(page) {
         currentPage = page;
-        const pageCal = document.getElementById("page-calendar");
-        const pageDash = document.getElementById("page-dashboard");
-        const pageEvt = document.getElementById("page-events");
-        const pageEval = document.getElementById("page-assessments");
+        const pages = ["calendar", "dashboard", "events", "assessments"];
+        pages.forEach((p) => {
+          const el = document.getElementById(`page-${p}`);
+          if (el) el.classList.add("hidden");
+        });
 
-        pageCal.classList.add("hidden");
-        pageDash.classList.add("hidden");
-        pageEvt.classList.add("hidden");
-        pageEval.classList.add("hidden");
+        const activeEl = document.getElementById(`page-${page}`);
+        if (activeEl) activeEl.classList.remove("hidden");
 
-        if (page === "calendar") {
-          pageCal.classList.remove("hidden");
-          renderCalendar();
-        } else if (page === "dashboard") {
-          pageDash.classList.remove("hidden");
-          renderDashboard();
-        } else if (page === "assessments") {
-          pageEval.classList.remove("hidden");
-          renderEvaluations();
-        } else if (page === "events") {
-          pageEvt.classList.remove("hidden");
-          renderEvents();
-        }
+        if (page === "calendar") renderCalendar();
+        else if (page === "dashboard") renderDashboard();
+        else if (page === "assessments") renderEvaluations();
+        else if (page === "events") renderEvents();
+
         updateNavigation();
       }
 
@@ -1732,17 +1854,20 @@
         const activeStyle =
           "flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-white text-brand-700 shadow-sm whitespace-nowrap relative";
 
-        navCal.className =
-          currentPage === "calendar" ? activeStyle : inactiveStyle;
-        navDash.className =
-          currentPage === "dashboard" ? activeStyle : inactiveStyle;
-        navEval.className =
-          currentPage === "assessments" ? activeStyle : inactiveStyle;
-        navEvt.className =
-          currentPage === "events" ? activeStyle : inactiveStyle;
+        if (navCal)
+          navCal.className =
+            currentPage === "calendar" ? activeStyle : inactiveStyle;
+        if (navDash)
+          navDash.className =
+            currentPage === "dashboard" ? activeStyle : inactiveStyle;
+        if (navEval)
+          navEval.className =
+            currentPage === "assessments" ? activeStyle : inactiveStyle;
+        if (navEvt)
+          navEvt.className =
+            currentPage === "events" ? activeStyle : inactiveStyle;
       }
 
-      // Toggle Class Completion
       function toggleClass(id, event) {
         if (event) event.stopPropagation();
         if (completedClasses.has(id)) {
@@ -1755,7 +1880,6 @@
         renderDashboard();
       }
 
-      // Filter Logic
       function setFilter(filter) {
         currentFilter = filter;
         document.querySelectorAll(".filter-btn").forEach((btn) => {
@@ -1775,7 +1899,6 @@
         renderCalendar();
       }
 
-      // Render Calendar Grid
       function renderCalendar() {
         const container = document.getElementById("calendar-container");
         if (!container) return;
@@ -1792,7 +1915,6 @@
 
         months.forEach((m) => {
           const monthClasses = ALL_CLASSES.filter((c) => c.month === m);
-
           const filteredClasses = monthClasses.filter((c) => {
             if (currentFilter === "ALL") return true;
             if (currentFilter === "MAKEUP") return c.isMakeup;
@@ -1805,7 +1927,6 @@
           monthSection.className =
             "bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4";
 
-          // Month Header
           const completedInMonth = monthClasses.filter((c) =>
             completedClasses.has(c.id),
           ).length;
@@ -1832,7 +1953,7 @@
             const dayEvals = userEvaluations.filter(
               (e) => e.dateId === item.id,
             );
-            const meetingData = makeupMeetingLinks[item.id];
+            const linkData = makeupMeetingLinks[item.id];
 
             const card = document.createElement("div");
 
@@ -1855,38 +1976,6 @@
             if (item.track === "WED")
               trackBadgeClass = "bg-purple-100 text-purple-800";
 
-            // Generate HTML for meeting link IF it's an online makeup class
-            let meetingLinkHtml = "";
-            if (item.isMakeup) {
-              if (meetingData && meetingData.url) {
-                const aliasText = meetingData.alias || "Join Meeting";
-                meetingLinkHtml = `
-                                <div class="mt-2" onclick="event.stopPropagation()">
-                                    <div class="flex items-center gap-1">
-                                        <a href="${meetingData.url}" target="_blank" rel="noopener noreferrer" class="flex-1 inline-flex items-center justify-center gap-1 text-[10px] font-bold text-amber-900 bg-amber-200 hover:bg-amber-300 px-2 py-1 rounded-md border border-amber-300 transition-colors truncate" title="${meetingData.url}">
-                                            <i data-lucide="video" class="w-3 h-3 text-amber-800 shrink-0"></i>
-                                            <span class="truncate">${aliasText}</span>
-                                            <i data-lucide="external-link" class="w-2.5 h-2.5 opacity-70 shrink-0"></i>
-                                        </a>
-                                        <button onclick="openMeetingModal('${item.id}', '${item.month} ${item.dayNum} Makeup (${item.track} Track)', event)" class="p-1 text-amber-700 hover:bg-amber-200 rounded-md transition-colors" title="Edit Link">
-                                            <i data-lucide="edit-2" class="w-3 h-3"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
-              } else {
-                meetingLinkHtml = `
-                                <div class="mt-2" onclick="event.stopPropagation()">
-                                    <button onclick="openMeetingModal('${item.id}', '${item.month} ${item.dayNum} Makeup (${item.track} Track)', event)" class="w-full inline-flex items-center justify-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-md border border-amber-200 border-dashed transition-colors">
-                                        <i data-lucide="link" class="w-3 h-3"></i>
-                                        <span>+ Add Link</span>
-                                    </button>
-                                </div>
-                            `;
-              }
-            }
-
-            // Generate HTML for user added evaluations on this tile
             let evalsHtml = "";
             if (dayEvals.length > 0) {
               evalsHtml = `<div class="mt-2 space-y-1" onclick="event.stopPropagation()">`;
@@ -1912,6 +2001,30 @@
               evalsHtml += `</div>`;
             }
 
+            let meetingLinkHtml = "";
+            if (item.isMakeup) {
+              if (linkData && linkData.url) {
+                const aliasText = linkData.alias || "Join Meeting";
+                meetingLinkHtml = `
+                                <div class="mt-2" onclick="event.stopPropagation()">
+                                    <a href="${linkData.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 w-full justify-center text-[10px] font-bold text-amber-800 bg-amber-200 hover:bg-amber-300 px-2 py-0.5 rounded border border-amber-300 transition-colors truncate" title="${linkData.url}">
+                                        <i data-lucide="video" class="w-3 h-3 text-amber-700 shrink-0"></i>
+                                        <span class="truncate">${aliasText}</span>
+                                        <i data-lucide="external-link" class="w-2.5 h-2.5 text-amber-700 shrink-0"></i>
+                                    </a>
+                                </div>
+                            `;
+              } else {
+                meetingLinkHtml = `
+                                <div class="mt-2" onclick="event.stopPropagation()">
+                                    <button onclick="openMeetingModal('${item.id}', '${item.month} ${item.dayNum}', event)" class="inline-flex items-center gap-1 w-full justify-center text-[10px] font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 px-2 py-0.5 rounded border border-amber-300 transition-colors">
+                                        <i data-lucide="link" class="w-3 h-3"></i> + Add Link
+                                    </button>
+                                </div>
+                            `;
+              }
+            }
+
             card.innerHTML = `
                         <div>
                             <div class="flex items-center justify-between mb-2">
@@ -1923,9 +2036,12 @@
                                 <span class="text-xs ${isDone ? "text-emerald-700" : "text-slate-500"} font-medium block">Track: <strong class="${isDone ? "text-emerald-900" : "text-slate-800"}">${item.track}</strong> (#${item.classNo})</span>
                                 ${
                                   item.isMakeup
-                                    ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">
-                                        <i data-lucide="video" class="w-3 h-3"></i> Online Makeup
-                                       </span>`
+                                    ? `<div class="flex items-center justify-between">
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">
+                                            <i data-lucide="video" class="w-3 h-3"></i> Online Makeup
+                                        </span>
+                                        ${linkData && linkData.url ? `<button onclick="openMeetingModal('${item.id}', '${item.month} ${item.dayNum}', event)" class="text-[10px] font-bold text-amber-700 hover:text-amber-900" title="Edit Link"><i data-lucide="edit-3" class="w-3 h-3"></i></button>` : ""}
+                                       </div>`
                                     : `<span class="text-[10px] ${isDone ? "text-emerald-600" : "text-slate-400"}">Regular Class</span>`
                                 }
                             </div>
@@ -1948,36 +2064,32 @@
           });
         });
 
-        // Update Quick Stats
         const completedCount = completedClasses.size;
-        document.getElementById("quick-completed-count").innerText =
-          completedCount;
-        document.getElementById("quick-remaining-count").innerText =
-          48 - completedCount;
+        const qComp = document.getElementById("quick-completed-count");
+        const qRem = document.getElementById("quick-remaining-count");
+        if (qComp) qComp.innerText = completedCount;
+        if (qRem) qRem.innerText = 48 - completedCount;
 
         lucide.createIcons();
       }
 
-      // Render Dashboard View
       function renderDashboard() {
         const total = 48;
         const done = completedClasses.size;
         const remaining = total - done;
         const percentage = Math.round((done / total) * 100);
 
-        // Ring animation
         const ring = document.getElementById("overall-ring");
-        if (ring) {
-          ring.setAttribute("stroke-dasharray", `${percentage}, 100`);
-        }
+        if (ring) ring.setAttribute("stroke-dasharray", `${percentage}, 100`);
 
-        document.getElementById("overall-percentage").innerText =
-          `${percentage}%`;
-        document.getElementById("dash-completed-total").innerText = done;
-        document.getElementById("dash-remaining-desc").innerText =
-          `${remaining} classes remaining for full credit.`;
+        const oPct = document.getElementById("overall-percentage");
+        const dComp = document.getElementById("dash-completed-total");
+        const dRem = document.getElementById("dash-remaining-desc");
+        if (oPct) oPct.innerText = `${percentage}%`;
+        if (dComp) dComp.innerText = done;
+        if (dRem)
+          dRem.innerText = `${remaining} classes remaining for full credit.`;
 
-        // Regular vs Makeup Breakdown (43 Regular, 5 Makeup)
         const regularClasses = ALL_CLASSES.filter((c) => !c.isMakeup);
         const makeupClasses = ALL_CLASSES.filter((c) => c.isMakeup);
 
@@ -1988,16 +2100,16 @@
           completedClasses.has(c.id),
         ).length;
 
-        document.getElementById("reg-count-label").innerText = `${regDone}/43`;
-        document.getElementById("reg-progress-bar").style.width =
-          `${(regDone / 43) * 100}%`;
+        const rLbl = document.getElementById("reg-count-label");
+        const rBar = document.getElementById("reg-progress-bar");
+        const mLbl = document.getElementById("makeup-count-label");
+        const mBar = document.getElementById("makeup-progress-bar");
 
-        document.getElementById("makeup-count-label").innerText =
-          `${makeupDone}/5`;
-        document.getElementById("makeup-progress-bar").style.width =
-          `${(makeupDone / 5) * 100}%`;
+        if (rLbl) rLbl.innerText = `${regDone}/43`;
+        if (rBar) rBar.style.width = `${(regDone / 43) * 100}%`;
+        if (mLbl) mLbl.innerText = `${makeupDone}/5`;
+        if (mBar) mBar.style.width = `${(makeupDone / 5) * 100}%`;
 
-        // Custom Evaluations Summary Counts
         let testCnt = 0,
           presCnt = 0,
           updCnt = 0;
@@ -2006,16 +2118,19 @@
           if (ev.type === "Presentation") presCnt++;
           if (ev.type === "Update") updCnt++;
         });
-        document.getElementById("sum-tests-count").innerText = testCnt;
-        document.getElementById("sum-pres-count").innerText = presCnt;
-        document.getElementById("sum-upd-count").innerText = updCnt;
 
-        // Track Progress Cards Generation
+        const sTest = document.getElementById("sum-tests-count");
+        const sPres = document.getElementById("sum-pres-count");
+        const sUpd = document.getElementById("sum-upd-count");
+
+        if (sTest) sTest.innerText = testCnt;
+        if (sPres) sPres.innerText = presCnt;
+        if (sUpd) sUpd.innerText = updCnt;
+
         const tracks = ["SAT", "SUN", "TUE", "WED"];
         const trackGrid = document.getElementById("track-cards-grid");
         if (trackGrid) {
           trackGrid.innerHTML = "";
-
           tracks.forEach((t) => {
             const trackClasses = ALL_CLASSES.filter((c) => c.track === t);
             const trackDone = trackClasses.filter((c) =>
@@ -2046,7 +2161,6 @@
                             </div>
                         </div>
 
-                        <!-- Mini status slots (12 classes) -->
                         <div class="grid grid-cols-6 gap-1.5 pt-2 border-t border-slate-100">
                             ${trackClasses
                               .map((c) => {
@@ -2065,7 +2179,6 @@
           });
         }
 
-        // Timeline List Generation
         const timeline = document.getElementById("schedule-timeline");
         if (timeline) {
           timeline.innerHTML = "";
@@ -2090,7 +2203,6 @@
           });
         }
 
-        // Online Makeup Summary List (5 Makeup Classes)
         const makeupList = document.getElementById("makeup-schedule-list");
         if (makeupList) {
           makeupList.innerHTML = "";
@@ -2122,62 +2234,26 @@
         lucide.createIcons();
       }
 
-      // MEETING LINK MODAL CONTROLLERS
-      function openMeetingModal(dateId, classDisplay, event) {
-        if (event) event.stopPropagation();
-        document.getElementById("meeting-date-id").value = dateId;
-        document.getElementById("meeting-class-display").value = classDisplay;
-
-        const existing = makeupMeetingLinks[dateId];
-        if (existing) {
-          document.getElementById("meeting-url").value = existing.url || "";
-          document.getElementById("meeting-alias").value = existing.alias || "";
-        } else {
-          document.getElementById("meeting-url").value = "";
-          document.getElementById("meeting-alias").value = "";
-        }
-
-        document.getElementById("meeting-modal").classList.remove("hidden");
-      }
-
-      function closeMeetingModal() {
-        document.getElementById("meeting-modal").classList.add("hidden");
-        document.getElementById("meeting-form").reset();
-      }
-
-      function saveMeetingLink(e) {
-        e.preventDefault();
-        const dateId = document.getElementById("meeting-date-id").value;
-        const url = document.getElementById("meeting-url").value.trim();
-        const alias = document.getElementById("meeting-alias").value.trim();
-
-        if (url) {
-          makeupMeetingLinks[dateId] = { url, alias: alias || "Join Meeting" };
-        } else {
-          delete makeupMeetingLinks[dateId];
-        }
-
-        saveState();
-        closeMeetingModal();
-        renderCalendar();
-      }
-
-      // EVALUATION / ASSESSMENT LOGIC
       function openEvalModal(dateId, dateDisplay, event) {
         if (event) event.stopPropagation();
         const classObj = ALL_CLASSES.find((c) => c.id === dateId);
 
-        document.getElementById("eval-date-id").value = dateId;
-        document.getElementById("eval-date-str").value = classObj
-          ? classObj.dateStr
-          : "2026-10-27";
-        document.getElementById("eval-date-display").value = dateDisplay;
-        document.getElementById("eval-modal").classList.remove("hidden");
+        const dId = document.getElementById("eval-date-id");
+        const dStr = document.getElementById("eval-date-str");
+        const dDisp = document.getElementById("eval-date-display");
+        const modal = document.getElementById("eval-modal");
+
+        if (dId) dId.value = dateId;
+        if (dStr) dStr.value = classObj ? classObj.dateStr : "2026-10-27";
+        if (dDisp) dDisp.value = dateDisplay;
+        if (modal) modal.classList.remove("hidden");
       }
 
       function closeEvalModal() {
-        document.getElementById("eval-modal").classList.add("hidden");
-        document.getElementById("eval-form").reset();
+        const modal = document.getElementById("eval-modal");
+        const form = document.getElementById("eval-form");
+        if (modal) modal.classList.add("hidden");
+        if (form) form.reset();
       }
 
       function saveEvaluation(e) {
@@ -2209,6 +2285,63 @@
         renderCalendar();
         renderEvaluations();
         renderDashboard();
+      }
+
+      function openMeetingModal(tileId, dateDisplay, event) {
+        if (event) event.stopPropagation();
+        const mId = document.getElementById("meeting-tile-id");
+        const mDisp = document.getElementById("meeting-tile-display");
+        const mUrl = document.getElementById("meeting-url");
+        const mAlias = document.getElementById("meeting-alias");
+        const btnRemove = document.getElementById("btn-remove-link");
+        const modal = document.getElementById("meeting-modal");
+
+        if (mId) mId.value = tileId;
+        if (mDisp) mDisp.value = dateDisplay;
+
+        const existing = makeupMeetingLinks[tileId];
+        if (existing) {
+          if (mUrl) mUrl.value = existing.url || "";
+          if (mAlias) mAlias.value = existing.alias || "";
+          if (btnRemove) btnRemove.classList.remove("hidden");
+        } else {
+          if (mUrl) mUrl.value = "";
+          if (mAlias) mAlias.value = "";
+          if (btnRemove) btnRemove.classList.add("hidden");
+        }
+
+        if (modal) modal.classList.remove("hidden");
+      }
+
+      function closeMeetingModal() {
+        const modal = document.getElementById("meeting-modal");
+        const form = document.getElementById("meeting-form");
+        if (modal) modal.classList.add("hidden");
+        if (form) form.reset();
+      }
+
+      function saveMeetingLink(e) {
+        e.preventDefault();
+        const tileId = document.getElementById("meeting-tile-id").value;
+        const url = document.getElementById("meeting-url").value.trim();
+        const alias = document.getElementById("meeting-alias").value.trim();
+
+        if (url) {
+          makeupMeetingLinks[tileId] = { url, alias };
+          saveState();
+          renderCalendar();
+        }
+        closeMeetingModal();
+      }
+
+      function removeMeetingLink() {
+        const tileId = document.getElementById("meeting-tile-id").value;
+        if (makeupMeetingLinks[tileId]) {
+          delete makeupMeetingLinks[tileId];
+          saveState();
+          renderCalendar();
+        }
+        closeMeetingModal();
       }
 
       function toggleEvalDone(id) {
@@ -2269,15 +2402,13 @@
         }
       }
 
-      // Render Upcoming Assessments Tab
       function renderEvaluations() {
         const container = document.getElementById("evaluations-list");
         const midContainer = document.getElementById("midterm-exam-list");
         const finalContainer = document.getElementById("final-exam-list");
 
-        const today = new Date("2026-10-27"); // Baseline timeline reference date
+        const today = new Date("2026-10-27");
 
-        // 1. Render Collapsible Midterm Schedule
         if (midContainer) {
           midContainer.innerHTML = "";
           MIDTERM_DAYS.forEach((d) => {
@@ -2295,7 +2426,7 @@
                   : "bg-emerald-100 text-emerald-800 border-emerald-300";
             let urgencyBadge =
               diffDays < 7
-                ? `${diffDays <= 0 ? "Passed" : diffDays + " Days"} (Urgent)`
+                ? `${diffDays <= 0 ? "Passed" : diffDays + " Days"} (Very Important)`
                 : diffDays <= 14
                   ? `${diffDays} Days (Prepare)`
                   : `${diffDays} Days (Plan)`;
@@ -2315,7 +2446,6 @@
           });
         }
 
-        // 2. Render Collapsible Final Schedule
         if (finalContainer) {
           finalContainer.innerHTML = "";
           FINAL_DAYS.forEach((d) => {
@@ -2333,7 +2463,7 @@
                   : "bg-emerald-100 text-emerald-800 border-emerald-300";
             let urgencyBadge =
               diffDays < 7
-                ? `${diffDays <= 0 ? "Passed" : diffDays + " Days"} (Urgent)`
+                ? `${diffDays <= 0 ? "Passed" : diffDays + " Days"} (Very Important)`
                 : diffDays <= 14
                   ? `${diffDays} Days (Prepare)`
                   : `${diffDays} Days (Plan)`;
@@ -2353,7 +2483,6 @@
           });
         }
 
-        // 3. Render Custom User Added Evaluations (STRICTLY CHRONOLOGICALLY SORTED)
         if (!container) return;
         container.innerHTML = "";
 
@@ -2364,7 +2493,6 @@
           );
         }
 
-        // Update badge on nav bar for pending items
         const pendingCount = userEvaluations.filter((e) => !e.done).length;
         const navBadge = document.getElementById("nav-eval-badge");
         if (navBadge) {
@@ -2392,7 +2520,6 @@
           return;
         }
 
-        // Sort strictly chronologically by dateStr
         filtered
           .sort((a, b) => new Date(a.dateStr) - new Date(b.dateStr))
           .forEach((ev) => {
@@ -2474,7 +2601,6 @@
         lucide.createIcons();
       }
 
-      // Toggle Event Completion
       function toggleEvent(id) {
         if (completedEvents.has(id)) {
           completedEvents.delete(id);
@@ -2499,7 +2625,6 @@
         renderEvents();
       }
 
-      // Render Events View
       function renderEvents() {
         const container = document.getElementById("events-container");
         if (!container) return;
@@ -2568,18 +2693,18 @@
           container.appendChild(item);
         });
 
-        // Update Header Counts
         const totalEvents = ACADEMIC_EVENTS.length;
         const completedCount = completedEvents.size;
-        document.getElementById("events-completed-count").innerText =
-          completedCount;
-        document.getElementById("events-remaining-count").innerText =
-          totalEvents - completedCount;
+
+        const eComp = document.getElementById("events-completed-count");
+        const eRem = document.getElementById("events-remaining-count");
+
+        if (eComp) eComp.innerText = completedCount;
+        if (eRem) eRem.innerText = totalEvents - completedCount;
 
         lucide.createIcons();
       }
 
-      // Reset Modal Controls
       function openResetModal() {
         const modal = document.getElementById("reset-modal");
         if (modal) modal.classList.remove("hidden");
@@ -2595,6 +2720,7 @@
         completedEvents.clear();
         completedExams.clear();
         userEvaluations = [];
+        makeupMeetingLinks = {};
         saveState();
         renderCalendar();
         renderDashboard();
@@ -2602,6 +2728,17 @@
         renderEvents();
         closeResetModal();
       }
+
+      // Initialize App on DOM Ready
+      window.addEventListener("DOMContentLoaded", () => {
+        loadState();
+        renderCalendar();
+        renderDashboard();
+        renderEvaluations();
+        renderEvents();
+        updateNavigation();
+        lucide.createIcons();
+      });
     </script>
   </body>
 </html>
