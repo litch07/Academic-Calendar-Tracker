@@ -76,22 +76,26 @@
     <header
       class="bg-white/80 backdrop-blur-md border-b border-indigo-100 sticky top-0 z-30 shadow-sm"
     >
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div
+          class="flex justify-between py-2.5 sm:py-3 items-center min-w-0 gap-2"
+        >
           <!-- Logo & Title -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2.5 min-w-0 shrink-0">
             <div
-              class="p-2.5 bg-gradient-to-tr from-brand-700 to-indigo-500 text-white rounded-2xl shadow-md shadow-brand-500/30"
+              class="p-2 sm:p-2.5 bg-gradient-to-tr from-brand-700 to-indigo-500 text-white rounded-2xl shadow-md shadow-brand-500/30 shrink-0"
             >
-              <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+              <i data-lucide="graduation-cap" class="w-5 h-5 sm:w-6 sm:h-6"></i>
             </div>
-            <div>
+            <div class="min-w-0">
               <h1
-                class="font-extrabold text-lg leading-tight bg-gradient-to-r from-slate-900 via-brand-900 to-indigo-900 bg-clip-text text-transparent"
+                class="font-extrabold text-sm sm:text-lg leading-tight bg-gradient-to-r from-slate-900 via-brand-900 to-indigo-900 bg-clip-text text-transparent truncate"
               >
                 UIU Calendar 263
               </h1>
-              <p class="text-[11px] font-semibold text-brand-600">
+              <p
+                class="text-[10px] sm:text-[11px] font-semibold text-brand-600 truncate"
+              >
                 Academic Term Classes & Evaluations
               </p>
             </div>
@@ -99,52 +103,58 @@
 
           <!-- Navigation Tabs -->
           <nav
-            class="flex items-center gap-1.5 bg-slate-200/60 p-1.5 rounded-2xl border border-slate-300/50 overflow-x-auto"
+            class="flex items-center gap-1 sm:gap-1.5 bg-slate-200/60 p-1 sm:p-1.5 rounded-2xl border border-slate-300/50 overflow-x-auto max-w-full custom-scrollbar"
           >
             <button
               id="nav-calendar"
               onclick="switchPage('calendar')"
-              class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 bg-white text-brand-700 shadow-sm whitespace-nowrap"
+              class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 bg-white text-brand-700 shadow-sm whitespace-nowrap"
             >
-              <i data-lucide="calendar" class="w-4 h-4 text-brand-600"></i>
+              <i
+                data-lucide="calendar"
+                class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-600"
+              ></i>
               <span>Calendar Grid</span>
             </button>
             <button
               id="nav-dashboard"
               onclick="switchPage('dashboard')"
-              class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap"
+              class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap"
             >
-              <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+              <i
+                data-lucide="layout-dashboard"
+                class="w-3.5 h-3.5 sm:w-4 sm:h-4"
+              ></i>
               <span>Class Trackers</span>
             </button>
             <button
               id="nav-assessments"
               onclick="switchPage('assessments')"
-              class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap relative"
+              class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap relative"
             >
-              <i data-lucide="pen-tool" class="w-4 h-4"></i>
+              <i data-lucide="pen-tool" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
               <span>Upcoming Assessments</span>
               <span
                 id="nav-eval-badge"
-                class="ml-1 px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-500 text-white shadow-sm shadow-rose-500/40 hidden"
+                class="ml-0.5 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-extrabold rounded-full bg-rose-500 text-white shadow-sm shadow-rose-500/40 hidden"
                 >0</span
               >
             </button>
             <button
               id="nav-events"
               onclick="switchPage('events')"
-              class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap"
+              class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap"
             >
-              <i data-lucide="bell" class="w-4 h-4"></i>
+              <i data-lucide="bell" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
               <span>Important Events</span>
             </button>
           </nav>
 
           <!-- Actions -->
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 shrink-0">
             <button
               onclick="openResetModal()"
-              class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100/70 border border-rose-200 rounded-xl transition-all shadow-sm"
+              class="flex items-center gap-1 px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-bold text-rose-600 hover:bg-rose-100/70 border border-rose-200 rounded-xl transition-all shadow-sm"
             >
               <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
               <span class="hidden sm:inline">Reset</span>
@@ -412,45 +422,59 @@
                 >Custom Log</span
               >
             </div>
-            <div class="grid grid-cols-3 gap-2.5 mt-4 text-center">
+            <div class="grid grid-cols-4 gap-1.5 sm:gap-2.5 mt-4 text-center">
               <div
-                class="bg-rose-50/80 p-3 rounded-2xl border border-rose-200/80"
+                class="bg-rose-50/80 p-2 sm:p-3 rounded-2xl border border-rose-200/80"
               >
                 <span
                   id="sum-tests-count"
-                  class="text-xl font-black text-rose-700"
+                  class="text-lg sm:text-xl font-black text-rose-700"
                   >0</span
                 >
                 <p
-                  class="text-[10px] font-extrabold text-rose-800 uppercase mt-0.5"
+                  class="text-[8px] sm:text-[10px] font-extrabold text-rose-800 uppercase mt-0.5 truncate"
                 >
                   Tests
                 </p>
               </div>
               <div
-                class="bg-indigo-50/80 p-3 rounded-2xl border border-indigo-200/80"
+                class="bg-indigo-50/80 p-2 sm:p-3 rounded-2xl border border-indigo-200/80"
               >
                 <span
                   id="sum-pres-count"
-                  class="text-xl font-black text-indigo-700"
+                  class="text-lg sm:text-xl font-black text-indigo-700"
                   >0</span
                 >
                 <p
-                  class="text-[10px] font-extrabold text-indigo-800 uppercase mt-0.5"
+                  class="text-[8px] sm:text-[10px] font-extrabold text-indigo-800 uppercase mt-0.5 truncate"
                 >
                   Pres.
                 </p>
               </div>
               <div
-                class="bg-amber-50/80 p-3 rounded-2xl border border-amber-200/80"
+                class="bg-cyan-50/80 p-2 sm:p-3 rounded-2xl border border-cyan-200/80"
               >
                 <span
-                  id="sum-upd-count"
-                  class="text-xl font-black text-amber-700"
+                  id="sum-assign-count"
+                  class="text-lg sm:text-xl font-black text-cyan-700"
                   >0</span
                 >
                 <p
-                  class="text-[10px] font-extrabold text-amber-800 uppercase mt-0.5"
+                  class="text-[8px] sm:text-[10px] font-extrabold text-cyan-800 uppercase mt-0.5 truncate"
+                >
+                  Assign.
+                </p>
+              </div>
+              <div
+                class="bg-amber-50/80 p-2 sm:p-3 rounded-2xl border border-amber-200/80"
+              >
+                <span
+                  id="sum-upd-count"
+                  class="text-lg sm:text-xl font-black text-amber-700"
+                  >0</span
+                >
+                <p
+                  class="text-[8px] sm:text-[10px] font-extrabold text-amber-800 uppercase mt-0.5 truncate"
                 >
                   Updates
                 </p>
@@ -574,6 +598,16 @@
                 class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5"
               ></span
               >Presentations
+            </button>
+            <button
+              onclick="filterEvaluations('Assignment Deadline')"
+              id="eval-filter-Assign"
+              class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-cyan-700 border-cyan-200 hover:bg-cyan-50"
+            >
+              <span
+                class="inline-block w-2 h-2 rounded-full bg-cyan-500 mr-1.5"
+              ></span
+              >Assignment Deadlines
             </button>
             <button
               onclick="filterEvaluations('Update')"
@@ -822,19 +856,19 @@
     <!-- MODAL 1: ADD ASSESSMENT / EVALUATION MODAL -->
     <div
       id="eval-modal"
-      class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center p-4"
+      class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-md hidden flex items-end sm:items-center justify-center p-0 sm:p-4"
     >
       <div
-        class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all"
+        class="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-100 transform transition-all max-h-[90vh] overflow-y-auto"
       >
         <div
-          class="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4"
+          class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3.5"
         >
           <h3
-            class="text-base font-extrabold text-slate-900 flex items-center gap-2"
+            class="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2"
           >
             <div class="p-1.5 bg-brand-100 text-brand-700 rounded-lg">
-              <i data-lucide="plus-circle" class="w-5 h-5"></i>
+              <i data-lucide="plus-circle" class="w-4 h-4 sm:w-5 sm:h-5"></i>
             </div>
             <span>Add Assessment / Update</span>
           </h3>
@@ -941,25 +975,54 @@
       id="reset-modal"
       class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center p-4"
     >
-      <!-- ... existing reset modal content ... -->
+      <div
+        class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 transform transition-all"
+      >
+        <div
+          class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3"
+        >
+          <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-base font-extrabold text-center text-slate-900">
+          Reset All Progress?
+        </h3>
+        <p class="text-xs text-center text-slate-500 mt-1.5 font-medium">
+          This will uncheck completed classes, remove custom assessment entries,
+          and clear meeting links. Action cannot be undone.
+        </p>
+        <div class="mt-5 flex gap-3">
+          <button
+            onclick="closeResetModal()"
+            class="flex-1 min-h-[40px] px-4 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onclick="confirmReset()"
+            class="flex-1 min-h-[40px] px-4 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors shadow-sm"
+          >
+            Reset All
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- MODAL 3: MEETING LINK MODAL (FOR ONLINE MAKEUP TILES) -->
     <div
       id="meeting-modal"
-      class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center p-4"
+      class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-md hidden flex items-end sm:items-center justify-center p-0 sm:p-4"
     >
       <div
-        class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all"
+        class="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-100 transform transition-all max-h-[90vh] overflow-y-auto"
       >
         <div
-          class="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4"
+          class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3.5"
         >
           <h3
-            class="text-base font-extrabold text-slate-900 flex items-center gap-2"
+            class="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2"
           >
             <div class="p-1.5 bg-amber-100 text-amber-700 rounded-lg">
-              <i data-lucide="video" class="w-5 h-5"></i>
+              <i data-lucide="video" class="w-4 h-4 sm:w-5 sm:h-5"></i>
             </div>
             <span>Makeup Meeting Link</span>
           </h3>
@@ -1119,7 +1182,7 @@
           classNo: 2,
           isMakeup: true,
           makeupFor: "SAT",
-        }, // Makeup #1
+        },
         {
           id: "nov-08",
           dateStr: "2026-11-08",
@@ -1160,7 +1223,7 @@
           classNo: 3,
           isMakeup: true,
           makeupFor: "SAT",
-        }, // Makeup #2
+        },
         {
           id: "nov-14",
           dateStr: "2026-11-14",
@@ -1251,7 +1314,7 @@
           classNo: 5,
           isMakeup: true,
           makeupFor: "SUN",
-        }, // Makeup #3
+        },
         {
           id: "nov-28",
           dateStr: "2026-11-28",
@@ -1324,7 +1387,7 @@
           classNo: 7,
           isMakeup: true,
           makeupFor: "WED",
-        }, // Makeup #4
+        },
         {
           id: "dec-19",
           dateStr: "2026-12-19",
@@ -1415,7 +1478,7 @@
           classNo: 9,
           isMakeup: true,
           makeupFor: "SAT",
-        }, // Makeup #5
+        },
 
         // January 2027
         {
@@ -1863,9 +1926,9 @@
         const navEval = document.getElementById("nav-assessments");
 
         const inactiveStyle =
-          "flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-900 whitespace-nowrap relative";
+          "flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap relative";
         const activeStyle =
-          "flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-white text-brand-700 shadow-sm whitespace-nowrap relative";
+          "flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 bg-white text-brand-700 shadow-sm whitespace-nowrap relative";
 
         if (navCal)
           navCal.className =
@@ -1897,16 +1960,16 @@
         currentFilter = filter;
         document.querySelectorAll(".filter-btn").forEach((btn) => {
           btn.className =
-            "filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+            "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
         });
         const activeBtn = document.getElementById(`filter-${filter}`);
         if (activeBtn) {
           if (filter === "MAKEUP") {
             activeBtn.className =
-              "filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-amber-500 text-white border-amber-600 shadow-sm";
+              "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-500 shadow-md shadow-amber-500/20";
           } else {
             activeBtn.className =
-              "filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm";
+              "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-gradient-to-r from-brand-600 to-indigo-600 text-white border-brand-600 shadow-md shadow-brand-500/20";
           }
         }
         renderCalendar();
@@ -1932,25 +1995,21 @@
               "bg-gradient-to-br from-indigo-50/90 via-purple-50/50 to-indigo-50/90 border-indigo-200/80",
             headerGrad:
               "from-indigo-600 via-indigo-700 to-purple-700 text-white",
-            badgeBg: "bg-indigo-100 text-indigo-900 border-indigo-200",
           },
           NOV: {
             cardBg:
               "bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-amber-50/90 border-amber-200/80",
             headerGrad: "from-amber-600 via-orange-600 to-red-600 text-white",
-            badgeBg: "bg-amber-100 text-amber-900 border-amber-200",
           },
           DEC: {
             cardBg:
               "bg-gradient-to-br from-emerald-50/90 via-teal-50/50 to-emerald-50/90 border-emerald-200/80",
             headerGrad: "from-emerald-600 via-teal-700 to-cyan-700 text-white",
-            badgeBg: "bg-emerald-100 text-emerald-900 border-emerald-200",
           },
           JAN: {
             cardBg:
               "bg-gradient-to-br from-blue-50/90 via-sky-50/50 to-blue-50/90 border-blue-200/80",
             headerGrad: "from-blue-600 via-sky-600 to-indigo-700 text-white",
-            badgeBg: "bg-blue-100 text-blue-900 border-blue-200",
           },
         };
 
@@ -2029,6 +2088,8 @@
                 let evBadge = "bg-rose-100 text-rose-800 border-rose-200";
                 if (ev.type === "Presentation")
                   evBadge = "bg-indigo-100 text-indigo-800 border-indigo-200";
+                if (ev.type === "Assignment Deadline")
+                  evBadge = "bg-cyan-100 text-cyan-800 border-cyan-200";
                 if (ev.type === "Update")
                   evBadge = "bg-amber-100 text-amber-800 border-amber-200";
 
@@ -2158,19 +2219,23 @@
 
         let testCnt = 0,
           presCnt = 0,
+          assignCnt = 0,
           updCnt = 0;
         userEvaluations.forEach((ev) => {
           if (ev.type === "Class Test") testCnt++;
           if (ev.type === "Presentation") presCnt++;
+          if (ev.type === "Assignment Deadline") assignCnt++;
           if (ev.type === "Update") updCnt++;
         });
 
         const sTest = document.getElementById("sum-tests-count");
         const sPres = document.getElementById("sum-pres-count");
+        const sAssign = document.getElementById("sum-assign-count");
         const sUpd = document.getElementById("sum-upd-count");
 
         if (sTest) sTest.innerText = testCnt;
         if (sPres) sPres.innerText = presCnt;
+        if (sAssign) sAssign.innerText = assignCnt;
         if (sUpd) sUpd.innerText = updCnt;
 
         const tracks = ["SAT", "SUN", "TUE", "WED"];
@@ -2429,6 +2494,7 @@
         let btnId = "eval-filter-ALL";
         if (type === "Class Test") btnId = "eval-filter-Test";
         if (type === "Presentation") btnId = "eval-filter-Pres";
+        if (type === "Assignment Deadline") btnId = "eval-filter-Assign";
         if (type === "Update") btnId = "eval-filter-Upd";
 
         const activeBtn = document.getElementById(btnId);
@@ -2599,6 +2665,11 @@
               iconName = "presentation";
               iconBg =
                 "bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm shadow-indigo-500/30";
+            } else if (ev.type === "Assignment Deadline") {
+              typeBadge = "bg-cyan-50 text-cyan-700 border-cyan-200";
+              iconName = "clipboard";
+              iconBg =
+                "bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-sm shadow-cyan-500/30";
             } else if (ev.type === "Update") {
               typeBadge = "bg-amber-50 text-amber-700 border-amber-200";
               iconName = "alert-circle";
@@ -2667,12 +2738,12 @@
         currentEventFilter = filter;
         document.querySelectorAll(".event-filter-btn").forEach((btn) => {
           btn.className =
-            "event-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+            "event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
         });
         const activeBtn = document.getElementById(`event-filter-${filter}`);
         if (activeBtn) {
           activeBtn.className =
-            "event-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm";
+            "event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm";
         }
         renderEvents();
       }
