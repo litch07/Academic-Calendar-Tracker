@@ -1,0 +1,878 @@
+<!-- Chosen Palette: Light Warm Neutrals & Deep Violet/Emerald Highlights -->
+<!-- Application Structure Plan: A clean single-page interactive app with three primary views: 
+     1) Calendar Grid showing monthly clickable tiles with class status, track tags, and Thu makeup badges; 
+     2) Dashboard & Trackers view featuring an overall progress ring, 4 track progress cards (SAT, SUN, TUE, WED), and detailed regular vs. makeup breakdowns;
+     3) Important Events view listing non-class academic milestones, exam windows, payment installment deadlines, and holidays from Oct 27, 2026 to Feb 4, 2027.
+     Data is persisted in LocalStorage with a reset option. -->
+
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Class & Events Progress Tracker - Calendar 263</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(148, 163, 184, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.5);
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans bg-slate-50 text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo & Title -->
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-brand-600 text-white rounded-xl shadow-md shadow-brand-500/20">
+                        <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight text-slate-900">Calendar 263 Tracker</h1>
+                        <p class="text-xs text-slate-500">Academic Term Classes & Events</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/60">
+                    <button id="nav-calendar" onclick="switchPage('calendar')" class="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-white text-brand-700 shadow-sm">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        <span>Calendar Grid</span>
+                    </button>
+                    <button id="nav-dashboard" onclick="switchPage('dashboard')" class="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-900">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                        <span>Class Trackers</span>
+                    </button>
+                    <button id="nav-events" onclick="switchPage('events')" class="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-900">
+                        <i data-lucide="bell" class="w-4 h-4"></i>
+                        <span>Important Events</span>
+                    </button>
+                </nav>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-2">
+                    <button onclick="openResetModal()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl transition-colors">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                        <span class="hidden sm:inline">Reset</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- PAGE 1: CALENDAR VIEW -->
+        <section id="page-calendar" class="space-y-6">
+            <!-- Filter Bar & Quick Stats -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1">Filter Track:</span>
+                    <button onclick="setFilter('ALL')" id="filter-ALL" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm">All Classes</button>
+                    <button onclick="setFilter('SAT')" id="filter-SAT" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50">SAT Track</button>
+                    <button onclick="setFilter('SUN')" id="filter-SUN" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50">SUN Track</button>
+                    <button onclick="setFilter('TUE')" id="filter-TUE" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50">TUE Track</button>
+                    <button onclick="setFilter('WED')" id="filter-WED" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50">WED Track</button>
+                    <button onclick="setFilter('MAKEUP')" id="filter-MAKEUP" class="filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100">
+                        <i data-lucide="video" class="w-3 h-3 inline mr-1"></i>Online Makeup
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-4 text-xs font-medium text-slate-600 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                        <span>Completed: <strong id="quick-completed-count" class="text-slate-900">0</strong></span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
+                        <span>Remaining: <strong id="quick-remaining-count" class="text-slate-900">48</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notice Banner -->
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-900 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                    <span><strong>Thursday Makeup Notice:</strong> Thursdays highlighted with <span class="bg-amber-200 text-amber-900 font-bold px-1.5 py-0.5 rounded">Online Makeup</span> compensate for specific day tracks (SAT/SUN/WED) to ensure exactly 12 classes per track.</span>
+                </div>
+            </div>
+
+            <!-- Calendar Months Container -->
+            <div id="calendar-container" class="space-y-8">
+                <!-- Dynamically generated month sections -->
+            </div>
+        </section>
+
+        <!-- PAGE 2: DASHBOARD & TRACKERS VIEW -->
+        <section id="page-dashboard" class="space-y-6 hidden">
+            <!-- Top Metric Cards Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <!-- Overall Progress Card -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-6">
+                    <div class="relative w-24 h-24 flex-shrink-0">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="text-slate-100" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path id="overall-ring" class="text-brand-600 transition-all duration-700 ease-out" stroke-dasharray="0, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                            <span id="overall-percentage" class="text-xl font-bold text-slate-900">0%</span>
+                            <span class="text-[10px] text-slate-400 font-medium">DONE</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Overall Completion</h3>
+                        <p class="text-2xl font-black text-slate-900 mt-1"><span id="dash-completed-total">0</span> <span class="text-sm font-semibold text-slate-400">/ 48 Classes</span></p>
+                        <p class="text-xs text-slate-500 mt-1" id="dash-remaining-desc">48 classes remaining to complete term.</p>
+                    </div>
+                </div>
+
+                <!-- Regular vs Makeup Card -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Class Type Breakdown</h3>
+                        <div class="mt-4 space-y-3">
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold mb-1">
+                                    <span class="text-slate-700">Regular Classes</span>
+                                    <span id="reg-count-label" class="text-slate-500">0/43</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div id="reg-progress-bar" class="bg-slate-700 h-full w-0 transition-all duration-500"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold mb-1">
+                                    <span class="text-amber-700 flex items-center gap-1"><i data-lucide="video" class="w-3 h-3"></i> Thu Online Makeup</span>
+                                    <span id="makeup-count-label" class="text-amber-600">0/5</span>
+                                </div>
+                                <div class="w-full bg-amber-100 h-2 rounded-full overflow-hidden">
+                                    <div id="makeup-progress-bar" class="bg-amber-500 h-full w-0 transition-all duration-500"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Academic Calendar Milestones -->
+                <div class="bg-gradient-to-br from-brand-900 to-indigo-950 p-6 rounded-2xl text-white shadow-md flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold tracking-wider uppercase text-brand-200">Calendar Milestones</span>
+                            <span class="text-[10px] bg-brand-800/80 text-brand-200 px-2 py-0.5 rounded-full border border-brand-700">2026-2027</span>
+                        </div>
+                        <ul class="space-y-2.5 text-xs">
+                            <li class="flex justify-between items-center py-1 border-b border-brand-800/60">
+                                <span class="text-slate-300">Term Start:</span>
+                                <span class="font-semibold text-brand-100">Oct 27, 2026</span>
+                            </li>
+                            <li class="flex justify-between items-center py-1 border-b border-brand-800/60">
+                                <span class="text-amber-300 font-medium">Mid Exam Week:</span>
+                                <span class="font-semibold text-amber-200">Dec 5 - Dec 12</span>
+                            </li>
+                            <li class="flex justify-between items-center py-1">
+                                <span class="text-rose-300 font-medium">Final Exam Week:</span>
+                                <span class="font-semibold text-rose-200">Jan 25 - Feb 1</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Track Progress Grid (4 Trackers) -->
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2 pt-2">
+                <i data-lucide="check-square" class="w-5 h-5 text-brand-600"></i>
+                Track Progress (12 Classes Each Track)
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5" id="track-cards-grid">
+                <!-- Dynamically populated 4 day track cards -->
+            </div>
+
+            <!-- Detailed Breakdowns Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+                <!-- Detailed Schedule List per Track -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-sm font-bold text-slate-900 flex items-center justify-between">
+                        <span>Class Schedule Timeline</span>
+                        <span class="text-xs font-normal text-slate-500">Sorted by Date</span>
+                    </h3>
+                    <div id="schedule-timeline" class="max-h-[380px] overflow-y-auto custom-scrollbar space-y-2 pr-1">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Online Makeup Summary Card -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="video" class="w-4 h-4 text-amber-600"></i>
+                        <span>Thursday Online Makeup Schedule (5 Classes)</span>
+                    </h3>
+                    <p class="text-xs text-slate-500">
+                        These makeup classes take place on Thursdays and fulfill class count requirements for specific tracks.
+                    </p>
+                    <div id="makeup-schedule-list" class="space-y-2.5">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: IMPORTANT EVENTS VIEW -->
+        <section id="page-events" class="space-y-6 hidden">
+            <!-- Events Header & Filters -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="calendar-days" class="w-5 h-5 text-brand-600"></i>
+                        Academic Calendar Important Events
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Key deadlines, exam schedules, fee installment dates, and holidays (Oct 27, 2026 – Feb 4, 2027)</p>
+                </div>
+
+                <div class="flex items-center gap-4 text-xs font-medium text-slate-600 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                        <span>Completed: <strong id="events-completed-count" class="text-slate-900">0</strong></span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+                        <span>Remaining: <strong id="events-remaining-count" class="text-slate-900">0</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Filter Buttons -->
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1">Category:</span>
+                <button onclick="setEventFilter('ALL')" id="event-filter-ALL" class="event-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm">All Events</button>
+                <button onclick="setEventFilter('EXAM')" id="event-filter-EXAM" class="event-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50">Exams</button>
+                <button onclick="setEventFilter('PAYMENT')" id="event-filter-PAYMENT" class="event-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50">Installments</button>
+                <button onclick="setEventFilter('HOLIDAY')" id="event-filter-HOLIDAY" class="event-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50">Holidays</button>
+                <button onclick="setEventFilter('ACADEMIC')" id="event-filter-ACADEMIC" class="event-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50">Academic Deadlines</button>
+            </div>
+
+            <!-- Events List -->
+            <div id="events-container" class="space-y-3">
+                <!-- Dynamically populated by JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Reset Confirmation Modal -->
+    <div id="reset-modal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-100 transform transition-all">
+            <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-lg font-bold text-center text-slate-900">Reset All Progress?</h3>
+            <p class="text-xs text-center text-slate-500 mt-2">
+                This will uncheck all completed classes and important events. This action cannot be undone.
+            </p>
+            <div class="mt-6 flex gap-3">
+                <button onclick="closeResetModal()" class="flex-1 px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                    Cancel
+                </button>
+                <button onclick="confirmReset()" class="flex-1 px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors shadow-sm">
+                    Yes, Reset All
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application JavaScript -->
+    <script>
+        // Master Data Structure: Exactly 43 Regular Classes and 5 Online Makeup Classes (48 Total)
+        const ALL_CLASSES = [
+            // October 2026
+            { id: 'oct-27', dateStr: '2026-10-27', month: 'OCT', dayNum: 27, dayName: 'TUE', track: 'TUE', classNo: 1, isMakeup: false },
+            { id: 'oct-28', dateStr: '2026-10-28', month: 'OCT', dayNum: 28, dayName: 'WED', track: 'WED', classNo: 1, isMakeup: false },
+            { id: 'oct-31', dateStr: '2026-10-31', month: 'OCT', dayNum: 31, dayName: 'SAT', track: 'SAT', classNo: 1, isMakeup: false },
+            
+            // November 2026
+            { id: 'nov-01', dateStr: '2026-11-01', month: 'NOV', dayNum: 1, dayName: 'SUN', track: 'SUN', classNo: 1, isMakeup: false },
+            { id: 'nov-03', dateStr: '2026-11-03', month: 'NOV', dayNum: 3, dayName: 'TUE', track: 'TUE', classNo: 2, isMakeup: false },
+            { id: 'nov-04', dateStr: '2026-11-04', month: 'NOV', dayNum: 4, dayName: 'WED', track: 'WED', classNo: 2, isMakeup: false },
+            { id: 'nov-05', dateStr: '2026-11-05', month: 'NOV', dayNum: 5, dayName: 'THU', track: 'SAT', classNo: 2, isMakeup: true, makeupFor: 'SAT' }, // Makeup #1
+            { id: 'nov-08', dateStr: '2026-11-08', month: 'NOV', dayNum: 8, dayName: 'SUN', track: 'SUN', classNo: 2, isMakeup: false },
+            { id: 'nov-10', dateStr: '2026-11-10', month: 'NOV', dayNum: 10, dayName: 'TUE', track: 'TUE', classNo: 3, isMakeup: false },
+            { id: 'nov-11', dateStr: '2026-11-11', month: 'NOV', dayNum: 11, dayName: 'WED', track: 'WED', classNo: 3, isMakeup: false },
+            { id: 'nov-12', dateStr: '2026-11-12', month: 'NOV', dayNum: 12, dayName: 'THU', track: 'SAT', classNo: 3, isMakeup: true, makeupFor: 'SAT' }, // Makeup #2
+            { id: 'nov-14', dateStr: '2026-11-14', month: 'NOV', dayNum: 14, dayName: 'SAT', track: 'SAT', classNo: 4, isMakeup: false },
+            { id: 'nov-15', dateStr: '2026-11-15', month: 'NOV', dayNum: 15, dayName: 'SUN', track: 'SUN', classNo: 3, isMakeup: false },
+            { id: 'nov-17', dateStr: '2026-11-17', month: 'NOV', dayNum: 17, dayName: 'TUE', track: 'TUE', classNo: 4, isMakeup: false },
+            { id: 'nov-18', dateStr: '2026-11-18', month: 'NOV', dayNum: 18, dayName: 'WED', track: 'WED', classNo: 4, isMakeup: false },
+            { id: 'nov-21', dateStr: '2026-11-21', month: 'NOV', dayNum: 21, dayName: 'SAT', track: 'SAT', classNo: 5, isMakeup: false },
+            { id: 'nov-22', dateStr: '2026-11-22', month: 'NOV', dayNum: 22, dayName: 'SUN', track: 'SUN', classNo: 4, isMakeup: false },
+            { id: 'nov-24', dateStr: '2026-11-24', month: 'NOV', dayNum: 24, dayName: 'TUE', track: 'TUE', classNo: 5, isMakeup: false },
+            { id: 'nov-25', dateStr: '2026-11-25', month: 'NOV', dayNum: 25, dayName: 'WED', track: 'WED', classNo: 5, isMakeup: false },
+            { id: 'nov-26', dateStr: '2026-11-26', month: 'NOV', dayNum: 26, dayName: 'THU', track: 'SUN', classNo: 5, isMakeup: true, makeupFor: 'SUN' }, // Makeup #3
+            { id: 'nov-28', dateStr: '2026-11-28', month: 'NOV', dayNum: 28, dayName: 'SAT', track: 'SAT', classNo: 6, isMakeup: false },
+            { id: 'nov-29', dateStr: '2026-11-29', month: 'NOV', dayNum: 29, dayName: 'SUN', track: 'SUN', classNo: 6, isMakeup: false },
+
+            // December 2026
+            { id: 'dec-01', dateStr: '2026-12-01', month: 'DEC', dayNum: 1, dayName: 'TUE', track: 'TUE', classNo: 6, isMakeup: false },
+            { id: 'dec-02', dateStr: '2026-12-02', month: 'DEC', dayNum: 2, dayName: 'WED', track: 'WED', classNo: 6, isMakeup: false },
+            { id: 'dec-13', dateStr: '2026-12-13', month: 'DEC', dayNum: 13, dayName: 'SUN', track: 'SUN', classNo: 7, isMakeup: false },
+            { id: 'dec-15', dateStr: '2026-12-15', month: 'DEC', dayNum: 15, dayName: 'TUE', track: 'TUE', classNo: 7, isMakeup: false },
+            { id: 'dec-17', dateStr: '2026-12-17', month: 'DEC', dayNum: 17, dayName: 'THU', track: 'WED', classNo: 7, isMakeup: true, makeupFor: 'WED' }, // Makeup #4
+            { id: 'dec-19', dateStr: '2026-12-19', month: 'DEC', dayNum: 19, dayName: 'SAT', track: 'SAT', classNo: 7, isMakeup: false },
+            { id: 'dec-20', dateStr: '2026-12-20', month: 'DEC', dayNum: 20, dayName: 'SUN', track: 'SUN', classNo: 8, isMakeup: false },
+            { id: 'dec-22', dateStr: '2026-12-22', month: 'DEC', dayNum: 22, dayName: 'TUE', track: 'TUE', classNo: 8, isMakeup: false },
+            { id: 'dec-23', dateStr: '2026-12-23', month: 'DEC', dayNum: 23, dayName: 'WED', track: 'WED', classNo: 8, isMakeup: false },
+            { id: 'dec-26', dateStr: '2026-12-26', month: 'DEC', dayNum: 26, dayName: 'SAT', track: 'SAT', classNo: 8, isMakeup: false },
+            { id: 'dec-27', dateStr: '2026-12-27', month: 'DEC', dayNum: 27, dayName: 'SUN', track: 'SUN', classNo: 9, isMakeup: false },
+            { id: 'dec-29', dateStr: '2026-12-29', month: 'DEC', dayNum: 29, dayName: 'TUE', track: 'TUE', classNo: 9, isMakeup: false },
+            { id: 'dec-30', dateStr: '2026-12-30', month: 'DEC', dayNum: 30, dayName: 'WED', track: 'WED', classNo: 9, isMakeup: false },
+            { id: 'dec-31', dateStr: '2026-12-31', month: 'DEC', dayNum: 31, dayName: 'THU', track: 'SAT', classNo: 9, isMakeup: true, makeupFor: 'SAT' }, // Makeup #5
+
+            // January 2027
+            { id: 'jan-02', dateStr: '2027-01-02', month: 'JAN', dayNum: 2, dayName: 'SAT', track: 'SAT', classNo: 10, isMakeup: false },
+            { id: 'jan-03', dateStr: '2027-01-03', month: 'JAN', dayNum: 3, dayName: 'SUN', track: 'SUN', classNo: 10, isMakeup: false },
+            { id: 'jan-05', dateStr: '2027-01-05', month: 'JAN', dayNum: 5, dayName: 'TUE', track: 'TUE', classNo: 10, isMakeup: false },
+            { id: 'jan-06', dateStr: '2027-01-06', month: 'JAN', dayNum: 6, dayName: 'WED', track: 'WED', classNo: 10, isMakeup: false },
+            { id: 'jan-09', dateStr: '2027-01-09', month: 'JAN', dayNum: 9, dayName: 'SAT', track: 'SAT', classNo: 11, isMakeup: false },
+            { id: 'jan-10', dateStr: '2027-01-10', month: 'JAN', dayNum: 10, dayName: 'SUN', track: 'SUN', classNo: 11, isMakeup: false },
+            { id: 'jan-12', dateStr: '2027-01-12', month: 'JAN', dayNum: 12, dayName: 'TUE', track: 'TUE', classNo: 11, isMakeup: false },
+            { id: 'jan-13', dateStr: '2027-01-13', month: 'JAN', dayNum: 13, dayName: 'WED', track: 'WED', classNo: 11, isMakeup: false },
+            { id: 'jan-16', dateStr: '2027-01-16', month: 'JAN', dayNum: 16, dayName: 'SAT', track: 'SAT', classNo: 12, isMakeup: false },
+            { id: 'jan-17', dateStr: '2027-01-17', month: 'JAN', dayNum: 17, dayName: 'SUN', track: 'SUN', classNo: 12, isMakeup: false },
+            { id: 'jan-19', dateStr: '2027-01-19', month: 'JAN', dayNum: 19, dayName: 'TUE', track: 'TUE', classNo: 12, isMakeup: false },
+            { id: 'jan-20', dateStr: '2027-01-20', month: 'JAN', dayNum: 20, dayName: 'WED', track: 'WED', classNo: 12, isMakeup: false }
+        ];
+
+        // Academic Calendar Important Events (Oct 27, 2026 to Feb 4, 2027)
+        // Excludes online makeup classes as they are already tracked in the Calendar grid
+        const ACADEMIC_EVENTS = [
+            { id: 'evt-1', dateDisplay: 'Oct 27, 2026', dayName: 'Tue', category: 'ACADEMIC', title: 'Classes Begin', note: 'Start of Fall 2026 Trimester classes' },
+            { id: 'evt-2', dateDisplay: 'Oct 31, 2026', dayName: 'Sat', category: 'ACADEMIC', title: 'Course Drop Deadline (100% Refund)', note: 'Last day to drop course(s) with 100% adjustable refund' },
+            { id: 'evt-3', dateDisplay: 'Nov 4, 2026', dayName: 'Wed', category: 'ACADEMIC', title: 'Grade Change Application Deadline', note: 'Last day to apply for Grade Change of Summer 2026 Trimester' },
+            { id: 'evt-4', dateDisplay: 'Nov 7, 2026', dayName: 'Sat', category: 'HOLIDAY', title: 'Holiday: National Revolution & Solidarity Day', note: 'University closed' },
+            { id: 'evt-5', dateDisplay: 'Nov 8, 2026', dayName: 'Sun', category: 'ACADEMIC', title: 'Grade Submission & 50% Drop Deadline', note: 'Last day of Grade Submission for Project/Thesis/Internship & 50% refund drop deadline' },
+            { id: 'evt-6', dateDisplay: 'Nov 9, 2026', dayName: 'Mon', category: 'ACADEMIC', title: 'Late Advising & Incomplete Grade Deadline', note: 'Course Advising with Fine (Tk. 500/-) & Incomplete grade submission deadline' },
+            { id: 'evt-7', dateDisplay: 'Nov 22, 2026', dayName: 'Sun', category: 'PAYMENT', title: '1st Installment Payment Deadline', note: 'Must pay 40% Tuition + Trimester Fee (Fine Tk. 500/- after deadline)' },
+            { id: 'evt-8', dateDisplay: 'Dec 5 – Dec 12, 2026', dayName: 'Sat - Sat', category: 'EXAM', title: 'Mid-Term Examinations', note: 'Mid-Term Exam Week for all undergraduate programs' },
+            { id: 'evt-9', dateDisplay: 'Dec 15, 2026', dayName: 'Tue', category: 'PAYMENT', title: '2nd Installment Payment Deadline', note: 'Must pay 70% Tuition + Trimester Fee (Fine Tk. 500/- after deadline)' },
+            { id: 'evt-10', dateDisplay: 'Dec 16, 2026', dayName: 'Wed', category: 'HOLIDAY', title: 'Holiday: Victory Day', note: 'University closed' },
+            { id: 'evt-11', dateDisplay: 'Dec 23, 2026', dayName: 'Wed', category: 'ACADEMIC', title: 'Last Day of Course Withdrawal', note: 'Final deadline to withdraw from course(s)' },
+            { id: 'evt-12', dateDisplay: 'Dec 25, 2026', dayName: 'Fri', category: 'HOLIDAY', title: 'Holiday: Christmas Day', note: 'University closed' },
+            { id: 'evt-13', dateDisplay: 'Jan 13, 2027', dayName: 'Wed', category: 'PAYMENT', title: '3rd Installment Payment Deadline', note: 'Must pay 100% Tuition + Trimester Fee (Fine Tk. 500/- after deadline)' },
+            { id: 'evt-14', dateDisplay: 'Jan 21 – Jan 24, 2027', dayName: 'Thu - Sun', category: 'ACADEMIC', title: 'Classes Suspended', note: 'Classes remain suspended ahead of Final Exams' },
+            { id: 'evt-15', dateDisplay: 'Jan 24, 2027', dayName: 'Sun', category: 'HOLIDAY', title: 'Holiday: Shab-e-Barat', note: 'Subject to appearance of the moon' },
+            { id: 'evt-16', dateDisplay: 'Jan 25 – Feb 1, 2027', dayName: 'Mon - Mon', category: 'EXAM', title: 'Final Examinations', note: 'Final Exam Week for Fall 2026 Trimester' },
+            { id: 'evt-17', dateDisplay: 'Feb 4, 2027', dayName: 'Thu', category: 'ACADEMIC', title: 'Final Grade Submission Deadline', note: 'Last day of Grade Submission (including Self-Study courses)' }
+        ];
+
+        // App State
+        let completedClasses = new Set();
+        let completedEvents = new Set();
+        let currentFilter = 'ALL';
+        let currentEventFilter = 'ALL';
+        let currentPage = 'calendar';
+
+        const STORAGE_KEY = 'calendar_263_completed_classes_v1';
+        const EVENTS_STORAGE_KEY = 'calendar_263_completed_events_v1';
+
+        // Load persisted state
+        function loadState() {
+            try {
+                const savedClasses = localStorage.getItem(STORAGE_KEY);
+                if (savedClasses) {
+                    completedClasses = new Set(JSON.parse(savedClasses));
+                }
+                const savedEvents = localStorage.getItem(EVENTS_STORAGE_KEY);
+                if (savedEvents) {
+                    completedEvents = new Set(JSON.parse(savedEvents));
+                }
+            } catch (e) {
+                console.error("Failed loading saved state:", e);
+            }
+        }
+
+        // Save state to LocalStorage
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify([...completedClasses]));
+                localStorage.setItem(EVENTS_STORAGE_KEY, JSON.stringify([...completedEvents]));
+            } catch (e) {
+                console.error("Failed saving state:", e);
+            }
+        }
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderCalendar();
+            renderDashboard();
+            renderEvents();
+            updateNavigation();
+            lucide.createIcons();
+        });
+
+        // Navigation Controller
+        function switchPage(page) {
+            currentPage = page;
+            const pageCal = document.getElementById('page-calendar');
+            const pageDash = document.getElementById('page-dashboard');
+            const pageEvt = document.getElementById('page-events');
+            
+            pageCal.classList.add('hidden');
+            pageDash.classList.add('hidden');
+            pageEvt.classList.add('hidden');
+
+            if (page === 'calendar') {
+                pageCal.classList.remove('hidden');
+                renderCalendar();
+            } else if (page === 'dashboard') {
+                pageDash.classList.remove('hidden');
+                renderDashboard();
+            } else if (page === 'events') {
+                pageEvt.classList.remove('hidden');
+                renderEvents();
+            }
+            updateNavigation();
+        }
+
+        function updateNavigation() {
+            const navCal = document.getElementById('nav-calendar');
+            const navDash = document.getElementById('nav-dashboard');
+            const navEvt = document.getElementById('nav-events');
+
+            const inactiveStyle = 'flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 text-slate-600 hover:text-slate-900';
+            const activeStyle = 'flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-white text-brand-700 shadow-sm';
+
+            navCal.className = currentPage === 'calendar' ? activeStyle : inactiveStyle;
+            navDash.className = currentPage === 'dashboard' ? activeStyle : inactiveStyle;
+            navEvt.className = currentPage === 'events' ? activeStyle : inactiveStyle;
+        }
+
+        // Toggle Class Completion
+        function toggleClass(id) {
+            if (completedClasses.has(id)) {
+                completedClasses.delete(id);
+            } else {
+                completedClasses.add(id);
+            }
+            saveState();
+            renderCalendar();
+            renderDashboard();
+        }
+
+        // Filter Logic
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = 'filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50';
+            });
+            const activeBtn = document.getElementById(`filter-${filter}`);
+            if (activeBtn) {
+                if (filter === 'MAKEUP') {
+                    activeBtn.className = 'filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-amber-500 text-white border-amber-600 shadow-sm';
+                } else {
+                    activeBtn.className = 'filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm';
+                }
+            }
+            renderCalendar();
+        }
+
+        // Render Calendar Grid
+        function renderCalendar() {
+            const container = document.getElementById('calendar-container');
+            if (!container) return;
+            
+            container.innerHTML = '';
+
+            const months = ['OCT', 'NOV', 'DEC', 'JAN'];
+            const monthTitles = {
+                'OCT': 'October 2026',
+                'NOV': 'November 2026',
+                'DEC': 'December 2026',
+                'JAN': 'January 2027'
+            };
+
+            months.forEach(m => {
+                const monthClasses = ALL_CLASSES.filter(c => c.month === m);
+                
+                const filteredClasses = monthClasses.filter(c => {
+                    if (currentFilter === 'ALL') return true;
+                    if (currentFilter === 'MAKEUP') return c.isMakeup;
+                    return c.track === currentFilter;
+                });
+
+                if (filteredClasses.length === 0 && currentFilter !== 'ALL') return;
+
+                const monthSection = document.createElement('div');
+                monthSection.className = 'bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4';
+
+                // Month Header
+                const completedInMonth = monthClasses.filter(c => completedClasses.has(c.id)).length;
+                monthSection.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-base font-bold text-slate-900">${monthTitles[m]}</h2>
+                            <span class="text-xs font-medium bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full">${monthClasses.length} Scheduled</span>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-500">${completedInMonth} / ${monthClasses.length} Done</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5" id="grid-${m}">
+                    </div>
+                `;
+
+                container.appendChild(monthSection);
+                const grid = document.getElementById(`grid-${m}`);
+
+                monthClasses.forEach(item => {
+                    const isVisible = filteredClasses.some(fc => fc.id === item.id);
+                    if (!isVisible) return;
+
+                    const isDone = completedClasses.has(item.id);
+                    const card = document.createElement('div');
+                    
+                    let borderStyle = isDone 
+                        ? 'border-emerald-500 bg-emerald-50/80 hover:bg-emerald-100 shadow-sm' 
+                        : (item.isMakeup 
+                            ? 'border-amber-300 bg-amber-50/60 hover:bg-amber-100/70' 
+                            : 'border-slate-200 bg-white hover:border-brand-300 hover:shadow-sm');
+
+                    card.className = `relative flex flex-col justify-between p-3.5 rounded-xl border-2 transition-all cursor-pointer select-none ${borderStyle}`;
+                    card.onclick = () => toggleClass(item.id);
+
+                    let trackBadgeClass = 'bg-slate-100 text-slate-700';
+                    if (item.track === 'SAT') trackBadgeClass = 'bg-indigo-100 text-indigo-800';
+                    if (item.track === 'SUN') trackBadgeClass = 'bg-blue-100 text-blue-800';
+                    if (item.track === 'TUE') trackBadgeClass = 'bg-emerald-100 text-emerald-800';
+                    if (item.track === 'WED') trackBadgeClass = 'bg-purple-100 text-purple-800';
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-extrabold ${isDone ? 'text-emerald-900' : 'text-slate-900'}">${item.month} ${item.dayNum}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${trackBadgeClass}">${item.dayName}</span>
+                            </div>
+
+                            <div class="space-y-1">
+                                <span class="text-xs ${isDone ? 'text-emerald-700' : 'text-slate-500'} font-medium block">Track: <strong class="${isDone ? 'text-emerald-900' : 'text-slate-800'}">${item.track}</strong> (#${item.classNo})</span>
+                                ${item.isMakeup 
+                                    ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">
+                                        <i data-lucide="video" class="w-3 h-3"></i> Online Makeup
+                                       </span>`
+                                    : `<span class="text-[10px] ${isDone ? 'text-emerald-600' : 'text-slate-400'}">Regular Class</span>`
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-2 border-t ${isDone ? 'border-emerald-200' : 'border-slate-100'} flex items-center justify-between">
+                            <span class="text-[11px] font-bold ${isDone ? 'text-emerald-700' : 'text-slate-400'}">
+                                ${isDone ? 'Completed' : 'Mark Done'}
+                            </span>
+                            <div class="w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${isDone ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 bg-white'}">
+                                ${isDone ? '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>' : ''}
+                            </div>
+                        </div>
+                    `;
+
+                    grid.appendChild(card);
+                });
+            });
+
+            // Update Quick Stats
+            const completedCount = completedClasses.size;
+            document.getElementById('quick-completed-count').innerText = completedCount;
+            document.getElementById('quick-remaining-count').innerText = 48 - completedCount;
+
+            lucide.createIcons();
+        }
+
+        // Render Dashboard View
+        function renderDashboard() {
+            const total = 48;
+            const done = completedClasses.size;
+            const remaining = total - done;
+            const percentage = Math.round((done / total) * 100);
+
+            // Ring animation
+            const ring = document.getElementById('overall-ring');
+            if (ring) {
+                ring.setAttribute('stroke-dasharray', `${percentage}, 100`);
+            }
+
+            document.getElementById('overall-percentage').innerText = `${percentage}%`;
+            document.getElementById('dash-completed-total').innerText = done;
+            document.getElementById('dash-remaining-desc').innerText = `${remaining} classes remaining for full credit.`;
+
+            // Regular vs Makeup Breakdown (43 Regular, 5 Makeup)
+            const regularClasses = ALL_CLASSES.filter(c => !c.isMakeup);
+            const makeupClasses = ALL_CLASSES.filter(c => c.isMakeup);
+
+            const regDone = regularClasses.filter(c => completedClasses.has(c.id)).length;
+            const makeupDone = makeupClasses.filter(c => completedClasses.has(c.id)).length;
+
+            document.getElementById('reg-count-label').innerText = `${regDone}/43`;
+            document.getElementById('reg-progress-bar').style.width = `${(regDone / 43) * 100}%`;
+
+            document.getElementById('makeup-count-label').innerText = `${makeupDone}/5`;
+            document.getElementById('makeup-progress-bar').style.width = `${(makeupDone / 5) * 100}%`;
+
+            // Track Progress Cards Generation
+            const tracks = ['SAT', 'SUN', 'TUE', 'WED'];
+            const trackGrid = document.getElementById('track-cards-grid');
+            if (trackGrid) {
+                trackGrid.innerHTML = '';
+
+                tracks.forEach(t => {
+                    const trackClasses = ALL_CLASSES.filter(c => c.track === t);
+                    const trackDone = trackClasses.filter(c => completedClasses.has(c.id)).length;
+                    const trackPct = Math.round((trackDone / 12) * 100);
+
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4';
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">${t} Track</span>
+                                <span class="text-xs font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md">${trackDone} / 12</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-slate-900">${t} Track</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">${12 - trackDone} classes remaining</p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span class="text-slate-500">Progress</span>
+                                <span class="text-slate-900 font-bold">${trackPct}%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                                <div class="h-full bg-brand-600 rounded-full transition-all duration-500" style="width: ${trackPct}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Mini status slots (12 classes) -->
+                        <div class="grid grid-cols-6 gap-1.5 pt-2 border-t border-slate-100">
+                            ${trackClasses.map(c => {
+                                const isC = completedClasses.has(c.id);
+                                return `
+                                    <div title="${c.month} ${c.dayNum} (${c.dayName}) - ${isC ? 'Completed' : 'Pending'}" 
+                                         class="h-6 rounded-md flex items-center justify-center text-[10px] font-bold ${isC ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
+                                        ${c.classNo}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                    trackGrid.appendChild(card);
+                });
+            }
+
+            // Timeline List Generation
+            const timeline = document.getElementById('schedule-timeline');
+            if (timeline) {
+                timeline.innerHTML = '';
+                ALL_CLASSES.forEach(c => {
+                    const isDone = completedClasses.has(c.id);
+                    const item = document.createElement('div');
+                    item.className = `flex items-center justify-between p-2.5 rounded-xl border text-xs transition-colors ${isDone ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'}`;
+                    item.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-slate-900 w-16">${c.month} ${c.dayNum}</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-white border border-slate-200 text-slate-700">${c.dayName}</span>
+                            <span class="text-slate-600 font-medium">Track: <strong class="text-slate-800">${c.track}</strong> (#${c.classNo})</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            ${c.isMakeup ? '<span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">Makeup</span>' : ''}
+                            <span class="font-semibold ${isDone ? 'text-emerald-600' : 'text-slate-400'}">
+                                ${isDone ? 'Done' : 'Pending'}
+                            </span>
+                        </div>
+                    `;
+                    timeline.appendChild(item);
+                });
+            }
+
+            // Online Makeup Summary List (5 Makeup Classes)
+            const makeupList = document.getElementById('makeup-schedule-list');
+            if (makeupList) {
+                makeupList.innerHTML = '';
+                makeupClasses.forEach(c => {
+                    const isDone = completedClasses.has(c.id);
+                    const item = document.createElement('div');
+                    item.className = `p-3 rounded-xl border flex items-center justify-between ${isDone ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50/50 border-amber-200'}`;
+                    item.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-lg bg-amber-100 text-amber-700">
+                                <i data-lucide="video" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-bold text-xs text-slate-900">${c.month} ${c.dayNum} (${c.dayName})</h4>
+                                    <span class="text-[10px] font-bold px-1.5 py-0.5 bg-amber-200 text-amber-900 rounded">For ${c.makeupFor} Track</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Counts as ${c.makeupFor} Class #${c.classNo}</p>
+                            </div>
+                        </div>
+                        <button onclick="toggleClass('${c.id}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold ${isDone ? 'bg-emerald-600 text-white' : 'bg-white border border-amber-300 text-amber-800 hover:bg-amber-100'} transition-colors">
+                            ${isDone ? 'Completed' : 'Mark Done'}
+                        </button>
+                    `;
+                    makeupList.appendChild(item);
+                });
+            }
+
+            lucide.createIcons();
+        }
+
+        // Toggle Event Completion
+        function toggleEvent(id) {
+            if (completedEvents.has(id)) {
+                completedEvents.delete(id);
+            } else {
+                completedEvents.add(id);
+            }
+            saveState();
+            renderEvents();
+        }
+
+        function setEventFilter(filter) {
+            currentEventFilter = filter;
+            document.querySelectorAll('.event-filter-btn').forEach(btn => {
+                btn.className = 'event-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50';
+            });
+            const activeBtn = document.getElementById(`event-filter-${filter}`);
+            if (activeBtn) {
+                activeBtn.className = 'event-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm';
+            }
+            renderEvents();
+        }
+
+        // Render Events View
+        function renderEvents() {
+            const container = document.getElementById('events-container');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            const filtered = ACADEMIC_EVENTS.filter(evt => {
+                if (currentEventFilter === 'ALL') return true;
+                return evt.category === currentEventFilter;
+            });
+
+            filtered.forEach(evt => {
+                const isDone = completedEvents.has(evt.id);
+                const item = document.createElement('div');
+
+                let catBadge = 'bg-slate-100 text-slate-700 border-slate-200';
+                let iconName = 'calendar';
+
+                if (evt.category === 'EXAM') {
+                    catBadge = 'bg-rose-100 text-rose-800 border-rose-200';
+                    iconName = 'file-text';
+                } else if (evt.category === 'PAYMENT') {
+                    catBadge = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                    iconName = 'credit-card';
+                } else if (evt.category === 'HOLIDAY') {
+                    catBadge = 'bg-amber-100 text-amber-800 border-amber-200';
+                    iconName = 'sun';
+                } else if (evt.category === 'ACADEMIC') {
+                    catBadge = 'bg-indigo-100 text-indigo-800 border-indigo-200';
+                    iconName = 'clock';
+                }
+
+                item.className = `p-4 rounded-2xl border-2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer select-none ${
+                    isDone ? 'bg-emerald-50/80 border-emerald-500 shadow-sm' : 'bg-white border-slate-200 hover:border-brand-300'
+                }`;
+
+                item.onclick = () => toggleEvent(evt.id);
+
+                item.innerHTML = `
+                    <div class="flex items-start gap-3.5">
+                        <div class="p-2.5 rounded-xl ${isDone ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600'} shrink-0 mt-0.5 sm:mt-0">
+                            <i data-lucide="${iconName}" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <span class="text-xs font-extrabold ${isDone ? 'text-emerald-950' : 'text-slate-900'}">${evt.dateDisplay} (${evt.dayName})</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border ${catBadge}">${evt.category}</span>
+                            </div>
+                            <h3 class="text-sm font-bold ${isDone ? 'text-emerald-900 line-through' : 'text-slate-900'}">${evt.title}</h3>
+                            <p class="text-xs ${isDone ? 'text-emerald-700' : 'text-slate-500'} mt-0.5">${evt.note}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
+                        <span class="text-xs font-bold ${isDone ? 'text-emerald-700' : 'text-slate-400'}">
+                            ${isDone ? 'Completed' : 'Mark Done'}
+                        </span>
+                        <div class="w-6 h-6 rounded-lg border flex items-center justify-center transition-colors ${isDone ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 bg-white'}">
+                            ${isDone ? '<i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>' : ''}
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(item);
+            });
+
+            // Update Header Counts
+            const totalEvents = ACADEMIC_EVENTS.length;
+            const completedCount = completedEvents.size;
+            document.getElementById('events-completed-count').innerText = completedCount;
+            document.getElementById('events-remaining-count').innerText = totalEvents - completedCount;
+
+            lucide.createIcons();
+        }
+
+        // Reset Modal Controls
+        function openResetModal() {
+            document.getElementById('reset-modal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-modal').classList.add('hidden');
+        }
+
+        function confirmReset() {
+            completedClasses.clear();
+            completedEvents.clear();
+            saveState();
+            renderCalendar();
+            renderDashboard();
+            renderEvents();
+            closeResetModal();
+        }
+    </script>
+</body>
+</html>
