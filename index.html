@@ -533,8 +533,12 @@
             <h2
               class="text-base font-extrabold text-slate-900 flex items-center gap-2"
             >
-              <i data-lucide="pen-tool" class="w-5 h-5 text-brand-600"></i>
-              Upcoming Assessments & Examinations
+              <div
+                class="p-2 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 text-white shadow-sm"
+              >
+                <i data-lucide="pen-tool" class="w-5 h-5"></i>
+              </div>
+              <span>Upcoming Assessments & Examinations</span>
             </h2>
             <p class="text-xs font-medium text-slate-500 mt-0.5">
               Custom planned evaluations sorted chronologically by date with
@@ -620,16 +624,18 @@
         >
           <button
             onclick="toggleSection('midterm-section')"
-            class="w-full px-6 py-4 bg-gradient-to-r from-slate-900 via-brand-950 to-slate-900 text-white flex items-center justify-between font-extrabold text-sm hover:opacity-95 transition-opacity"
+            class="w-full px-6 py-4 bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white flex items-center justify-between font-extrabold text-sm hover:opacity-95 transition-opacity shadow-sm"
           >
             <div class="flex items-center gap-2.5">
-              <i data-lucide="file-text" class="w-4 h-4 text-amber-400"></i>
+              <div class="p-1.5 rounded-lg bg-white/20 backdrop-blur-md">
+                <i data-lucide="file-text" class="w-4 h-4 text-amber-100"></i>
+              </div>
               <span
                 >Mid-Term Examination Window Schedule (Dec 5 – Dec 12,
                 2026)</span
               >
               <span
-                class="text-[10px] bg-amber-400/20 text-amber-300 px-2.5 py-0.5 rounded-full border border-amber-400/30 font-bold"
+                class="text-[10px] bg-white/20 text-white px-2.5 py-0.5 rounded-full border border-white/30 font-bold"
                 >7 Days</span
               >
             </div>
@@ -641,7 +647,7 @@
           </button>
           <div
             id="midterm-section"
-            class="p-5 space-y-2.5 bg-slate-50/80 border-t border-slate-200"
+            class="p-5 space-y-2.5 bg-amber-50/40 border-t border-amber-200/80"
           >
             <div id="midterm-exam-list" class="space-y-2">
               <!-- Auto-generated mid exam days -->
@@ -655,15 +661,17 @@
         >
           <button
             onclick="toggleSection('final-section')"
-            class="w-full px-6 py-4 bg-gradient-to-r from-slate-900 via-brand-950 to-slate-900 text-white flex items-center justify-between font-extrabold text-sm hover:opacity-95 transition-opacity"
+            class="w-full px-6 py-4 bg-gradient-to-r from-rose-600 via-purple-600 to-indigo-700 text-white flex items-center justify-between font-extrabold text-sm hover:opacity-95 transition-opacity shadow-sm"
           >
             <div class="flex items-center gap-2.5">
-              <i data-lucide="award" class="w-4 h-4 text-rose-400"></i>
+              <div class="p-1.5 rounded-lg bg-white/20 backdrop-blur-md">
+                <i data-lucide="award" class="w-4 h-4 text-rose-100"></i>
+              </div>
               <span
                 >Final Examination Window Schedule (Jan 25 – Feb 1, 2027)</span
               >
               <span
-                class="text-[10px] bg-rose-400/20 text-rose-300 px-2.5 py-0.5 rounded-full border border-rose-400/30 font-bold"
+                class="text-[10px] bg-white/20 text-white px-2.5 py-0.5 rounded-full border border-white/30 font-bold"
                 >7 Days</span
               >
             </div>
@@ -675,7 +683,7 @@
           </button>
           <div
             id="final-section"
-            class="p-5 space-y-2.5 bg-slate-50/80 border-t border-slate-200"
+            class="p-5 space-y-2.5 bg-rose-50/30 border-t border-rose-200/80"
           >
             <div id="final-exam-list" class="space-y-2">
               <!-- Auto-generated final exam days -->
@@ -715,8 +723,12 @@
             <h2
               class="text-base font-extrabold text-slate-900 flex items-center gap-2"
             >
-              <i data-lucide="calendar-days" class="w-5 h-5 text-brand-600"></i>
-              Academic Calendar Important Events
+              <div
+                class="p-2 rounded-xl bg-gradient-to-tr from-brand-600 to-purple-600 text-white shadow-sm"
+              >
+                <i data-lucide="calendar-days" class="w-5 h-5"></i>
+              </div>
+              <span>Academic Calendar Important Events</span>
             </h2>
             <p class="text-xs font-medium text-slate-500 mt-0.5">
               Key deadlines, exam schedules, fee installment dates, and holidays
@@ -874,6 +886,7 @@
               >
                 <option value="Class Test">Class Test</option>
                 <option value="Presentation">Presentation</option>
+                <option value="Assignment Deadline">Assignment Deadline</option>
                 <option value="Update">Update / Lab Task</option>
               </select>
             </div>
@@ -1913,6 +1926,34 @@
           JAN: "January 2027",
         };
 
+        const monthThemeMap = {
+          OCT: {
+            cardBg:
+              "bg-gradient-to-br from-indigo-50/90 via-purple-50/50 to-indigo-50/90 border-indigo-200/80",
+            headerGrad:
+              "from-indigo-600 via-indigo-700 to-purple-700 text-white",
+            badgeBg: "bg-indigo-100 text-indigo-900 border-indigo-200",
+          },
+          NOV: {
+            cardBg:
+              "bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-amber-50/90 border-amber-200/80",
+            headerGrad: "from-amber-600 via-orange-600 to-red-600 text-white",
+            badgeBg: "bg-amber-100 text-amber-900 border-amber-200",
+          },
+          DEC: {
+            cardBg:
+              "bg-gradient-to-br from-emerald-50/90 via-teal-50/50 to-emerald-50/90 border-emerald-200/80",
+            headerGrad: "from-emerald-600 via-teal-700 to-cyan-700 text-white",
+            badgeBg: "bg-emerald-100 text-emerald-900 border-emerald-200",
+          },
+          JAN: {
+            cardBg:
+              "bg-gradient-to-br from-blue-50/90 via-sky-50/50 to-blue-50/90 border-blue-200/80",
+            headerGrad: "from-blue-600 via-sky-600 to-indigo-700 text-white",
+            badgeBg: "bg-blue-100 text-blue-900 border-blue-200",
+          },
+        };
+
         months.forEach((m) => {
           const monthClasses = ALL_CLASSES.filter((c) => c.month === m);
           const filteredClasses = monthClasses.filter((c) => {
@@ -1923,27 +1964,32 @@
 
           if (filteredClasses.length === 0 && currentFilter !== "ALL") return;
 
+          const theme = monthThemeMap[m];
+
           const monthSection = document.createElement("div");
-          monthSection.className =
-            "bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4";
+          monthSection.className = `rounded-3xl border-2 shadow-sm p-5 space-y-4 ${theme.cardBg}`;
 
           const completedInMonth = monthClasses.filter((c) =>
             completedClasses.has(c.id),
           ).length;
           monthSection.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                        <div class="flex items-center gap-2">
-                            <h2 class="text-base font-bold text-slate-900">${monthTitles[m]}</h2>
-                            <span class="text-xs font-medium bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full">${monthClasses.length} Scheduled</span>
+                    <button onclick="toggleSection('month-sec-${m}')" class="w-full flex items-center justify-between bg-gradient-to-r ${theme.headerGrad} p-3.5 rounded-2xl shadow-sm cursor-pointer hover:opacity-95 transition-opacity">
+                        <div class="flex items-center gap-2.5">
+                            <i data-lucide="calendar" class="w-5 h-5 opacity-90"></i>
+                            <h2 class="text-base font-extrabold tracking-wide">${monthTitles[m]}</h2>
+                            <span class="text-[11px] font-bold bg-white/20 backdrop-blur-md text-white px-2.5 py-0.5 rounded-full border border-white/30">${monthClasses.length} Scheduled</span>
                         </div>
-                        <span class="text-xs font-semibold text-slate-500">${completedInMonth} / ${monthClasses.length} Done</span>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5" id="grid-${m}">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-xl border border-white/30">${completedInMonth} / ${monthClasses.length} Done</span>
+                            <i id="month-sec-${m}-arrow" data-lucide="chevron-down" class="w-5 h-5 transform transition-transform"></i>
+                        </div>
+                    </button>
+                    <div id="month-sec-${m}" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5 transition-all">
                     </div>
                 `;
 
           container.appendChild(monthSection);
-          const grid = document.getElementById(`grid-${m}`);
+          const grid = document.getElementById(`month-sec-${m}`);
 
           monthClasses.forEach((item) => {
             const isVisible = filteredClasses.some((fc) => fc.id === item.id);
@@ -2545,13 +2591,19 @@
 
             let typeBadge = "bg-rose-50 text-rose-700 border-rose-200";
             let iconName = "file-text";
+            let iconBg =
+              "bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-sm shadow-rose-500/30";
 
             if (ev.type === "Presentation") {
               typeBadge = "bg-indigo-50 text-indigo-700 border-indigo-200";
               iconName = "presentation";
+              iconBg =
+                "bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm shadow-indigo-500/30";
             } else if (ev.type === "Update") {
               typeBadge = "bg-amber-50 text-amber-700 border-amber-200";
               iconName = "alert-circle";
+              iconBg =
+                "bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-sm shadow-amber-500/30";
             }
 
             const item = document.createElement("div");
@@ -2565,7 +2617,7 @@
 
             item.innerHTML = `
                     <div class="flex items-start gap-3.5">
-                        <div class="p-2.5 rounded-xl ${isDone ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-600"} shrink-0 mt-0.5 sm:mt-0">
+                        <div class="p-2.5 rounded-xl ${isDone ? "bg-emerald-600 text-white" : iconBg} shrink-0 mt-0.5 sm:mt-0">
                             <i data-lucide="${iconName}" class="w-5 h-5"></i>
                         </div>
                         <div>
@@ -2642,19 +2694,29 @@
 
           let catBadge = "bg-slate-100 text-slate-700 border-slate-200";
           let iconName = "calendar";
+          let iconBg =
+            "bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm shadow-indigo-500/30";
 
           if (evt.category === "EXAM") {
             catBadge = "bg-rose-100 text-rose-800 border-rose-200";
             iconName = "file-text";
+            iconBg =
+              "bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-sm shadow-rose-500/30";
           } else if (evt.category === "PAYMENT") {
             catBadge = "bg-emerald-100 text-emerald-800 border-emerald-200";
             iconName = "credit-card";
+            iconBg =
+              "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-sm shadow-emerald-500/30";
           } else if (evt.category === "HOLIDAY") {
             catBadge = "bg-amber-100 text-amber-800 border-amber-200";
             iconName = "sun";
+            iconBg =
+              "bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-sm shadow-amber-500/30";
           } else if (evt.category === "ACADEMIC") {
             catBadge = "bg-indigo-100 text-indigo-800 border-indigo-200";
             iconName = "clock";
+            iconBg =
+              "bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-sm shadow-blue-500/30";
           }
 
           item.className = `p-4 rounded-2xl border-2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer select-none ${
@@ -2667,7 +2729,7 @@
 
           item.innerHTML = `
                     <div class="flex items-start gap-3.5">
-                        <div class="p-2.5 rounded-xl ${isDone ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-600"} shrink-0 mt-0.5 sm:mt-0">
+                        <div class="p-2.5 rounded-xl ${isDone ? "bg-emerald-600 text-white" : iconBg} shrink-0 mt-0.5 sm:mt-0">
                             <i data-lucide="${iconName}" class="w-5 h-5"></i>
                         </div>
                         <div>
