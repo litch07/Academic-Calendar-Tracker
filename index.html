@@ -4,8 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UIU Fall 2026 Academic Dashboard & Tracker</title>
+    <!-- Favicon / Tab Bar Branding -->
+    <link rel="icon" type="image/webp" href="img/uiu-logo.webp" />
+    <link rel="shortcut icon" type="image/webp" href="img/uiu-logo.webp" />
+    <link rel="apple-touch-icon" href="img/uiu-logo.webp" />
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Firebase SDK (v9 Compat for simple browser script loading) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
@@ -31,114 +38,235 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body
-    class="h-full flex flex-col font-sans bg-gradient-to-br from-slate-100 via-indigo-50/40 to-slate-100 text-slate-800 antialiased selection:bg-brand-500 selection:text-white min-h-screen"
+    class="h-full flex flex-col font-sans bg-slate-50 text-slate-800 antialiased selection:bg-brand-500 selection:text-white min-h-screen"
   >
+    <!-- Full-screen Outside-Click Backdrop for Floating Menu Overlay -->
+    <div
+      id="mobile-nav-backdrop"
+      onclick="toggleMobileMenu(false)"
+      class="hidden fixed inset-0 z-35 bg-slate-900/10 cursor-pointer"
+      aria-hidden="true"
+    ></div>
     <!-- Header Navigation -->
-    <header
-      class="bg-white/80 backdrop-blur-md border-b border-indigo-100 sticky top-0 z-30 shadow-sm"
-    >
+    <header class="bg-white/95 backdrop-blur-md border-b border-slate-200/90 sticky top-0 z-40 shadow-xs">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div
-          class="flex flex-col md:flex-row md:items-center justify-between py-2.5 sm:py-3 gap-2 min-w-0"
-        >
-          <!-- Top Row on Mobile: Logo & Title on Left, Reset Button on Right -->
-          <div
-            class="flex items-center justify-between w-full md:w-auto shrink-0 min-w-0 gap-2"
+        <div class="flex items-center justify-between py-2.5 sm:py-3 gap-2 min-w-0">
+          <!-- Logo & Title (Responsive Interactive Brand Button) -->
+          <button
+            type="button"
+            id="brand-home-btn"
+            onclick="navigateToHome(event)"
+            class="flex items-center gap-2.5 sm:gap-3 text-left shrink-0 min-w-0 cursor-pointer group select-none transition-transform duration-150 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded-2xl p-1 -m-1"
+            title="Return to Home Dashboard"
+            aria-label="UIU Calendar 263 - Return to Home Dashboard"
           >
-            <!-- Logo & Title -->
-            <div class="flex items-center gap-2.5 shrink-0 min-w-0">
-              <div
-                class="p-2 sm:p-2.5 bg-gradient-to-tr from-brand-700 to-indigo-500 text-white rounded-2xl shadow-md shadow-brand-500/30 shrink-0"
-              >
-                <i
-                  data-lucide="graduation-cap"
-                  class="w-5 h-5 sm:w-6 sm:h-6"
-                ></i>
-              </div>
-              <div class="min-w-0">
-                <h1
-                  class="font-extrabold text-xs sm:text-base md:text-lg leading-tight bg-gradient-to-r from-slate-900 via-brand-900 to-indigo-900 bg-clip-text text-transparent truncate"
-                >
-                  UIU Calendar 263
-                </h1>
-                <p
-                  class="text-[9px] sm:text-[11px] font-semibold text-brand-600 truncate"
-                >
-                  Academic Term Classes & Evaluations
-                </p>
-              </div>
+            <div
+              class="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-white border border-slate-200/90 p-1 flex items-center justify-center shadow-xs group-hover:border-orange-300 group-hover:shadow-md group-hover:bg-orange-50/10 group-active:scale-95 transition-all duration-200 shrink-0 overflow-hidden group-hover:ring-2 group-hover:ring-orange-200/60"
+            >
+              <img
+                src="img/uiu-logo.webp"
+                alt="UIU Logo"
+                class="w-full h-full object-contain transform group-hover:scale-105 group-active:scale-95 transition-transform duration-200"
+              />
             </div>
-
-            <!-- Actions (Visible on Mobile Top-Right) -->
-            <div class="flex items-center gap-2 shrink-0 md:hidden">
-              <button
-                onclick="openResetModal()"
-                class="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-100/70 border border-rose-200 rounded-xl transition-all shadow-sm"
+            <div class="min-w-0">
+              <h1
+                class="font-extrabold text-xs sm:text-base md:text-lg leading-tight text-slate-900 group-hover:text-brand-700 transition-colors duration-150 truncate"
               >
-                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-                <span>Reset</span>
-              </button>
+                UIU Calendar 263
+              </h1>
+              <p
+                class="text-[9px] sm:text-[11px] font-semibold text-brand-600 group-hover:text-brand-700 transition-colors duration-150 truncate"
+              >
+                Academic Term Classes & Evaluations
+              </p>
             </div>
-          </div>
+          </button>
 
-          <!-- Navigation Tabs (Below Title on Mobile, In-Line on Desktop) -->
+          <!-- Desktop Navigation Tabs (Visible on md and above - never disappears on tablet or resized window!) -->
           <nav
-            class="flex items-center gap-1 sm:gap-1.5 bg-slate-200/60 p-1 sm:p-1.5 rounded-2xl border border-slate-300/50 overflow-x-auto min-w-0 w-full md:w-auto custom-scrollbar md:mx-2"
+            class="hidden md:flex items-center gap-1 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/80 min-w-0 shrink-0 shadow-2xs"
           >
+            <button
+              id="nav-home"
+              onclick="switchPage('home')"
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 bg-white text-brand-700 shadow-sm whitespace-nowrap shrink-0 cursor-pointer"
+            >
+              <i data-lucide="home" class="w-4 h-4"></i>
+              <span>Home</span>
+            </button>
             <button
               id="nav-calendar"
               onclick="switchPage('calendar')"
-              class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 bg-white text-brand-700 shadow-sm whitespace-nowrap shrink-0"
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/60 whitespace-nowrap shrink-0 cursor-pointer"
             >
-              <i
-                data-lucide="calendar"
-                class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-600"
-              ></i>
+              <i data-lucide="calendar" class="w-4 h-4"></i>
               <span>Calendar Grid</span>
             </button>
             <button
               id="nav-dashboard"
               onclick="switchPage('dashboard')"
-              class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap shrink-0"
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/60 whitespace-nowrap shrink-0 cursor-pointer"
             >
-              <i
-                data-lucide="layout-dashboard"
-                class="w-3.5 h-3.5 sm:w-4 sm:h-4"
-              ></i>
-              <span>Class Trackers</span>
+              <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+              <span>Trackers</span>
             </button>
             <button
               id="nav-assessments"
               onclick="switchPage('assessments')"
-              class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap shrink-0 relative"
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/60 whitespace-nowrap shrink-0 relative cursor-pointer"
             >
-              <i data-lucide="pen-tool" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
-              <span>Upcoming Assessments</span>
+              <i data-lucide="pen-tool" class="w-4 h-4"></i>
+              <span>Assessments</span>
               <span
                 id="nav-eval-badge"
-                class="ml-0.5 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-extrabold rounded-full bg-rose-500 text-white shadow-sm shadow-rose-500/40 hidden"
+                class="ml-0.5 px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-500 text-white shadow-xs hidden"
                 >0</span
               >
             </button>
             <button
               id="nav-events"
               onclick="switchPage('events')"
-              class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50 whitespace-nowrap shrink-0"
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/60 whitespace-nowrap shrink-0 cursor-pointer"
             >
-              <i data-lucide="bell" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
-              <span>Important Events</span>
+              <i data-lucide="bell" class="w-4 h-4"></i>
+              <span>Events</span>
             </button>
           </nav>
 
-          <!-- Desktop Actions (Reset Button on Right) -->
+          <!-- Desktop Actions (Visible on md and above) -->
           <div class="hidden md:flex items-center gap-2 shrink-0">
             <button
+              onclick="openSyncModal()"
+              class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-xl transition-all shadow-2xs cursor-pointer"
+            >
+              <i data-lucide="cloud" class="w-4 h-4 text-brand-600"></i>
+              <span>Sync Devices</span>
+            </button>
+            <button
               onclick="openResetModal()"
-              class="flex items-center gap-1 px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100/70 border border-rose-200 rounded-xl transition-all shadow-sm"
+              class="flex items-center gap-1 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100/70 border border-rose-200 rounded-xl transition-all shadow-2xs cursor-pointer"
             >
               <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
               <span>Reset</span>
             </button>
+          </div>
+
+          <!-- Mobile & Reduced Window Controls (Visible below md: Quick Sync + Compact Floating Popover Menu) -->
+          <div class="flex md:hidden items-center gap-1.5 shrink-0 relative">
+            <button
+              onclick="openSyncModal()"
+              class="p-2 text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-xl transition-all shadow-2xs cursor-pointer"
+              title="Cloud Sync"
+              aria-label="Cloud Sync Devices"
+            >
+              <i data-lucide="cloud" class="w-4 h-4 text-brand-600"></i>
+            </button>
+
+            <!-- Menu Toggle Button -->
+            <button
+              id="mobile-menu-btn"
+              type="button"
+              onclick="toggleMobileMenu()"
+              class="flex items-center gap-1.5 px-2.5 py-2 text-slate-700 bg-slate-100 hover:bg-slate-200/80 active:bg-slate-300 border border-slate-200/90 rounded-xl transition-all shadow-2xs relative cursor-pointer select-none"
+              aria-label="Toggle navigation menu"
+              aria-expanded="false"
+              aria-controls="mobile-nav-panel"
+            >
+              <i data-lucide="menu" id="menu-icon-bars" class="w-4 h-4"></i>
+              <i data-lucide="x" id="menu-icon-close" class="w-4 h-4 hidden"></i>
+              <span class="text-xs font-bold text-slate-700 hidden sm:inline">Menu</span>
+              <span
+                id="menu-notification-dot"
+                class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white hidden animate-pulse"
+              ></span>
+            </button>
+
+                        <!-- Sleek Floating Popover Dropdown (Anchored directly under button, NEVER pushes page down!) -->
+            <div
+              id="mobile-nav-panel"
+              style="background-color: #ffffff !important;"
+              class="hidden absolute right-0 top-[calc(100%+8px)] w-64 bg-white border border-slate-200/90 rounded-2xl shadow-2xl shadow-slate-900/15 p-2 z-50 transform origin-top-right transition-all"
+            >
+              <div class="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                Navigation
+              </div>
+
+              <!-- Compact, single-row navigation links -->
+              <div class="space-y-0.5">
+                <button
+                  id="mob-nav-home"
+                  onclick="switchPage('home'); toggleMobileMenu(false);"
+                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all w-full text-left cursor-pointer bg-brand-50 text-brand-700"
+                >
+                  <i data-lucide="home" class="w-4 h-4 text-brand-600 shrink-0"></i>
+                  <span class="flex-1 truncate">Home Dashboard</span>
+                </button>
+
+                <button
+                  id="mob-nav-calendar"
+                  onclick="switchPage('calendar'); toggleMobileMenu(false);"
+                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all w-full text-left cursor-pointer"
+                >
+                  <i data-lucide="calendar" class="w-4 h-4 text-indigo-600 shrink-0"></i>
+                  <span class="flex-1 truncate">Calendar Grid</span>
+                </button>
+
+                <button
+                  id="mob-nav-dashboard"
+                  onclick="switchPage('dashboard'); toggleMobileMenu(false);"
+                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all w-full text-left cursor-pointer"
+                >
+                  <i data-lucide="layout-dashboard" class="w-4 h-4 text-sky-600 shrink-0"></i>
+                  <span class="flex-1 truncate">Trackers</span>
+                </button>
+
+                <button
+                  id="mob-nav-assessments"
+                  onclick="switchPage('assessments'); toggleMobileMenu(false);"
+                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all w-full text-left cursor-pointer relative"
+                >
+                  <i data-lucide="pen-tool" class="w-4 h-4 text-rose-600 shrink-0"></i>
+                  <span class="flex-1 truncate">Assessments</span>
+                  <span
+                    id="mobile-eval-badge"
+                    class="ml-auto px-1.5 py-0.5 text-[10px] font-black rounded-full bg-rose-500 text-white shadow-xs hidden"
+                    >0</span
+                  >
+                </button>
+
+                <button
+                  id="mob-nav-events"
+                  onclick="switchPage('events'); toggleMobileMenu(false);"
+                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all w-full text-left cursor-pointer"
+                >
+                  <i data-lucide="bell" class="w-4 h-4 text-purple-600 shrink-0"></i>
+                  <span class="flex-1 truncate">Events</span>
+                </button>
+              </div>
+
+              <!-- Compact Divider -->
+              <div class="h-px bg-slate-100 my-1.5"></div>
+
+              <!-- Quick Utility Shortcuts -->
+              <div class="space-y-0.5">
+                <button
+                  onclick="openSyncModal(); toggleMobileMenu(false);"
+                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors w-full text-left cursor-pointer"
+                >
+                  <i data-lucide="cloud" class="w-4 h-4 text-brand-600 shrink-0"></i>
+                  <span class="flex-1 truncate">Cloud Sync</span>
+                </button>
+
+                <button
+                  onclick="openResetModal(); toggleMobileMenu(false);"
+                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors w-full text-left cursor-pointer"
+                >
+                  <i data-lucide="rotate-ccw" class="w-4 h-4 text-rose-500 shrink-0"></i>
+                  <span class="flex-1 truncate">Reset Term Data</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -147,7 +275,15 @@
     <!-- Main Content Container -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <!-- PAGE 1: CALENDAR VIEW -->
-      <section id="page-calendar" class="space-y-6">
+            <!-- PAGE 0: HOME / LANDING VIEW -->
+      <section id="page-home" class="space-y-6">
+        <div id="home-container" class="space-y-6">
+          <!-- Rendered dynamically by renderHome() -->
+        </div>
+      </section>
+
+      <!-- PAGE 1: CALENDAR VIEW -->
+      <section id="page-calendar" class="space-y-6 hidden">
         <!-- Filter Bar & Quick Stats -->
         <div
           class="bg-white/90 p-4 rounded-2xl border border-indigo-100/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
@@ -161,7 +297,7 @@
             <button
               onclick="setFilter('ALL')"
               id="filter-ALL"
-              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-gradient-to-r from-brand-600 to-indigo-600 text-white border-brand-600 shadow-md shadow-brand-500/20"
+              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-xs"
             >
               All Classes
             </button>
@@ -196,7 +332,7 @@
             <button
               onclick="setFilter('MAKEUP')"
               id="filter-MAKEUP"
-              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-500 shadow-md shadow-amber-500/20"
+              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-amber-800 border-amber-200 hover:bg-amber-50"
             >
               <i data-lucide="video" class="w-3.5 h-3.5 inline mr-1"></i>Online
               Makeup
@@ -271,7 +407,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5">
           <!-- Overall Progress Card -->
           <div
-            class="lg:col-span-4 bg-gradient-to-br from-indigo-900 via-brand-900 to-slate-900 text-white p-6 rounded-3xl shadow-lg shadow-brand-900/20 flex items-center gap-6 border border-brand-700/50 relative overflow-hidden"
+            class="lg:col-span-4 bg-gradient-to-br from-indigo-900 via-brand-900 to-slate-900 text-white p-6 rounded-3xl shadow-lg shadow-brand-900/20 flex items-center gap-6 border border-brand-700/50 relative overflow-hidden card-hover-pop"
           >
             <div
               class="absolute -right-6 -bottom-6 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl"
@@ -334,7 +470,7 @@
 
           <!-- Regular vs Makeup Card -->
           <div
-            class="lg:col-span-3 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col justify-between"
+            class="lg:col-span-3 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col justify-between card-hover-pop"
           >
             <div>
               <h3
@@ -344,9 +480,9 @@
                 Class Breakdown
               </h3>
               <div class="mt-4 space-y-3.5">
-                <div>
+                <div onclick="switchPage('calendar'); setFilter('ALL');" class="cursor-pointer group" title="View all regular classes in Calendar Grid">
                   <div class="flex justify-between text-xs font-bold mb-1.5">
-                    <span class="text-slate-700">Regular On-Campus</span>
+                    <span class="text-slate-700 group-hover:text-brand-700 transition-colors">Regular On-Campus</span>
                     <span id="reg-count-label" class="text-brand-700"
                       >0/43</span
                     >
@@ -360,9 +496,9 @@
                     ></div>
                   </div>
                 </div>
-                <div>
+                <div onclick="switchPage('calendar'); setFilter('MAKEUP');" class="cursor-pointer group" title="Filter to Online Makeup classes in Calendar Grid">
                   <div class="flex justify-between text-xs font-bold mb-1.5">
-                    <span class="text-amber-800 flex items-center gap-1"
+                    <span class="text-amber-800 flex items-center gap-1 group-hover:text-amber-900 transition-colors"
                       ><i
                         data-lucide="video"
                         class="w-3.5 h-3.5 text-amber-600"
@@ -388,7 +524,7 @@
 
           <!-- User Assessments Summary Card (Expanded & High Importance) -->
           <div
-            class="md:col-span-2 lg:col-span-5 bg-white p-6 rounded-3xl border-2 border-brand-200/90 shadow-md shadow-brand-500/5 flex flex-col justify-between"
+            class="md:col-span-2 lg:col-span-5 bg-white p-6 rounded-3xl border-2 border-brand-200/90 shadow-md shadow-brand-500/5 flex flex-col justify-between card-hover-pop"
           >
             <div class="flex justify-between items-center">
               <h3
@@ -408,7 +544,7 @@
               class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mt-4 text-center"
             >
               <div
-                class="bg-rose-50/90 p-3 rounded-2xl border border-rose-200 flex flex-col items-center justify-between"
+                class="bg-rose-50/90 p-3 rounded-2xl border border-rose-200 flex flex-col items-center justify-between card-hover-pop-subtle"
               >
                 <div class="flex items-center gap-1 text-rose-600 mb-1">
                   <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
@@ -425,7 +561,7 @@
                 </p>
               </div>
               <div
-                class="bg-indigo-50/90 p-3 rounded-2xl border border-indigo-200 flex flex-col items-center justify-between"
+                class="bg-indigo-50/90 p-3 rounded-2xl border border-indigo-200 flex flex-col items-center justify-between card-hover-pop-subtle"
               >
                 <div class="flex items-center gap-1 text-indigo-600 mb-1">
                   <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
@@ -442,7 +578,7 @@
                 </p>
               </div>
               <div
-                class="bg-cyan-50/90 p-3 rounded-2xl border border-cyan-200 flex flex-col items-center justify-between"
+                class="bg-cyan-50/90 p-3 rounded-2xl border border-cyan-200 flex flex-col items-center justify-between card-hover-pop-subtle"
               >
                 <div class="flex items-center gap-1 text-cyan-600 mb-1">
                   <i data-lucide="clipboard" class="w-3.5 h-3.5"></i>
@@ -459,7 +595,7 @@
                 </p>
               </div>
               <div
-                class="bg-amber-50/90 p-3 rounded-2xl border border-amber-200 flex flex-col items-center justify-between"
+                class="bg-amber-50/90 p-3 rounded-2xl border border-amber-200 flex flex-col items-center justify-between card-hover-pop-subtle"
               >
                 <div class="flex items-center gap-1 text-amber-600 mb-1">
                   <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
@@ -498,7 +634,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
           <!-- Detailed Schedule List per Track -->
           <div
-            class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4"
+            class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4 card-hover-pop"
           >
             <h3
               class="text-sm font-extrabold text-slate-900 flex items-center justify-between"
@@ -524,7 +660,7 @@
 
           <!-- Online Makeup Summary Card -->
           <div
-            class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4"
+            class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4 card-hover-pop"
           >
             <h3
               class="text-sm font-extrabold text-slate-900 flex items-center gap-2"
@@ -545,200 +681,237 @@
 
       <!-- PAGE 3: UPCOMING ASSESSMENTS / EVALUATIONS VIEW -->
       <section id="page-assessments" class="space-y-6 hidden">
-        <!-- Header & Filter Bar -->
-        <div
-          class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
-        >
-          <div>
-            <h2
-              class="text-base font-extrabold text-slate-900 flex items-center gap-2"
-            >
-              <div
-                class="p-2 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 text-white shadow-sm"
-              >
-                <i data-lucide="pen-tool" class="w-5 h-5"></i>
+        <!-- Unified Executive Assessments Command Card -->
+        <div class="bg-white rounded-3xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 space-y-4">
+          <!-- Top Row: Page Title & Primary Action Button -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-brand-50 text-brand-700 border border-brand-200/80 flex items-center justify-center shadow-2xs shrink-0">
+                <i data-lucide="pen-tool" class="w-5 h-5 text-brand-600"></i>
               </div>
-              <span>Upcoming Assessments & Examinations</span>
-            </h2>
-            <p class="text-xs font-medium text-slate-500 mt-0.5">
-              Custom planned evaluations sorted chronologically by date with
-              live urgency countdowns.
-            </p>
-          </div>
-
-          <!-- Type Filters -->
-          <div class="flex flex-wrap items-center gap-2">
-            <button
-              onclick="filterEvaluations('ALL')"
-              id="eval-filter-ALL"
-              class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-slate-900 text-white border-slate-900 shadow-sm"
-            >
-              All Types
-            </button>
-            <button
-              onclick="filterEvaluations('Class Test')"
-              id="eval-filter-Test"
-              class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-rose-700 border-rose-200 hover:bg-rose-50"
-            >
-              <span
-                class="inline-block w-2 h-2 rounded-full bg-rose-500 mr-1.5"
-              ></span
-              >Class Tests
-            </button>
-            <button
-              onclick="filterEvaluations('Presentation')"
-              id="eval-filter-Pres"
-              class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
-            >
-              <span
-                class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5"
-              ></span
-              >Presentations
-            </button>
-            <button
-              onclick="filterEvaluations('Assignment Deadline')"
-              id="eval-filter-Assign"
-              class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-cyan-700 border-cyan-200 hover:bg-cyan-50"
-            >
-              <span
-                class="inline-block w-2 h-2 rounded-full bg-cyan-500 mr-1.5"
-              ></span
-              >Assignment Deadlines
-            </button>
-            <button
-              onclick="filterEvaluations('Update')"
-              id="eval-filter-Upd"
-              class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-amber-700 border-amber-200 hover:bg-amber-50"
-            >
-              <span
-                class="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1.5"
-              ></span
-              >Updates
-            </button>
-          </div>
-        </div>
-
-        <!-- Urgency Legend Banner -->
-        <div
-          class="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-3.5 text-xs text-indigo-950 flex flex-wrap items-center justify-between gap-3 shadow-sm"
-        >
-          <span class="font-extrabold flex items-center gap-1.5">
-            <i data-lucide="clock" class="w-4 h-4 text-brand-600"></i> Urgency
-            Countdown Rules:
-          </span>
-          <div class="flex flex-wrap items-center gap-3">
-            <span
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-rose-100 text-rose-900 font-bold border border-rose-200 shadow-2xs"
-            >
-              <span class="w-2 h-2 rounded-full bg-rose-600"></span> &lt; 7 Days
-              (Urgent)
-            </span>
-            <span
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-100 text-amber-900 font-bold border border-amber-200 shadow-2xs"
-            >
-              <span class="w-2 h-2 rounded-full bg-amber-600"></span> 7 – 14
-              Days (Prepare)
-            </span>
-            <span
-              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-900 font-bold border border-emerald-200 shadow-2xs"
-            >
-              <span class="w-2 h-2 rounded-full bg-emerald-600"></span> &gt; 14
-              Days (Plan)
-            </span>
-          </div>
-        </div>
-
-        <!-- Collapsible Mid-Term Exam Block -->
-        <div
-          class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden"
-        >
-          <button
-            onclick="toggleSection('midterm-section')"
-            class="w-full px-6 py-4 bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white flex items-center justify-between font-extrabold text-sm hover:opacity-95 transition-opacity shadow-sm"
-          >
-            <div class="flex items-center gap-2.5">
-              <div class="p-1.5 rounded-lg bg-white/20 backdrop-blur-md">
-                <i data-lucide="file-text" class="w-4 h-4 text-amber-100"></i>
+              <div>
+                <h2 class="text-base font-extrabold text-slate-900 tracking-tight">
+                  Upcoming Assessments & Examinations
+                </h2>
+                <p class="text-xs font-medium text-slate-500 mt-0.5">
+                  Custom planned evaluations sorted chronologically by date with live urgency countdowns.
+                </p>
               </div>
-              <span
-                >Mid-Term Examination Window Schedule (Dec 5 – Dec 12,
-                2026)</span
-              >
-              <span
-                class="text-[10px] bg-white/20 text-white px-2.5 py-0.5 rounded-full border border-white/30 font-bold"
-                >7 Days</span
-              >
             </div>
-            <i
-              id="midterm-section-arrow"
-              data-lucide="chevron-down"
-              class="w-5 h-5 transform transition-transform"
-            ></i>
-          </button>
-          <div
-            id="midterm-section"
-            class="p-5 space-y-2.5 bg-amber-50/40 border-t border-amber-200/80"
-          >
-            <div id="midterm-exam-list" class="space-y-2">
-              <!-- Auto-generated mid exam days -->
+
+            <!-- Primary Action: + Add Assessment Button (Prominent & Clean at Top Right) -->
+            <button
+              onclick="openHomeEvalModal(event)"
+              class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 shadow-sm shadow-brand-500/20 active:scale-95 transition-all cursor-pointer shrink-0"
+              title="Add Custom Assessment"
+            >
+              <i data-lucide="plus" class="w-4 h-4 stroke-[2.5]"></i>
+              <span>Add Assessment</span>
+            </button>
+          </div>
+
+          <!-- Bottom Row: Filter Controls (Left) & Compact Urgency Legend (Right) -->
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-0.5">
+            <!-- Filter Pills (Now has the entire left side, NEVER cramped, NEVER awkwardly wrapping!) -->
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button
+                onclick="filterEvaluations('ALL')"
+                id="eval-filter-ALL"
+                class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-2xs cursor-pointer"
+              >
+                All Types
+              </button>
+              <button
+                onclick="filterEvaluations('Class Test')"
+                id="eval-filter-Test"
+                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+              >
+                <span class="inline-block w-2 h-2 rounded-full bg-rose-500 mr-1.5"></span>Class Tests
+              </button>
+              <button
+                onclick="filterEvaluations('Presentation')"
+                id="eval-filter-Pres"
+                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+              >
+                <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5"></span>Presentations
+              </button>
+              <button
+                onclick="filterEvaluations('Assignment Deadline')"
+                id="eval-filter-Assign"
+                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+              >
+                <span class="inline-block w-2 h-2 rounded-full bg-cyan-500 mr-1.5"></span>Assignment Deadlines
+              </button>
+              <button
+                onclick="filterEvaluations('Update')"
+                id="eval-filter-Upd"
+                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+              >
+                <span class="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1.5"></span>Updates
+              </button>
+            </div>
+
+            <!-- Integrated Compact Urgency Legend (Seamlessly embedded on the right!) -->
+            <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-medium text-slate-500 bg-slate-50/90 px-3 py-1.5 rounded-xl border border-slate-200/80 shrink-0">
+              <span class="font-bold text-slate-700 flex items-center gap-1 mr-1">
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-brand-600"></i>
+                <span>Urgency Rules:</span>
+              </span>
+              <span class="inline-flex items-center gap-1 text-rose-700 font-bold px-1.5 py-0.5 rounded-md bg-rose-50 border border-rose-200/60">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>&lt;7d Urgent
+              </span>
+              <span class="text-slate-300">•</span>
+              <span class="inline-flex items-center gap-1 text-amber-800 font-bold px-1.5 py-0.5 rounded-md bg-amber-50 border border-amber-200/60">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>7–14d Prepare
+              </span>
+              <span class="text-slate-300">•</span>
+              <span class="inline-flex items-center gap-1 text-emerald-800 font-bold px-1.5 py-0.5 rounded-md bg-emerald-50 border border-emerald-200/60">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>&gt;14d Plan
+              </span>
             </div>
           </div>
         </div>
 
-        <!-- Collapsible Final Exam Block -->
-        <div
-          class="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden"
-        >
-          <button
-            onclick="toggleSection('final-section')"
-            class="w-full px-6 py-4 bg-gradient-to-r from-rose-600 via-purple-600 to-indigo-700 text-white flex items-center justify-between font-extrabold text-sm hover:opacity-95 transition-opacity shadow-sm"
-          >
-            <div class="flex items-center gap-2.5">
-              <div class="p-1.5 rounded-lg bg-white/20 backdrop-blur-md">
-                <i data-lucide="award" class="w-4 h-4 text-rose-100"></i>
-              </div>
-              <span
-                >Final Examination Window Schedule (Jan 25 – Feb 1, 2027)</span
-              >
-              <span
-                class="text-[10px] bg-white/20 text-white px-2.5 py-0.5 rounded-full border border-white/30 font-bold"
-                >7 Days</span
-              >
-            </div>
-            <i
-              id="final-section-arrow"
-              data-lucide="chevron-down"
-              class="w-5 h-5 transform transition-transform"
-            ></i>
-          </button>
-          <div
-            id="final-section"
-            class="p-5 space-y-2.5 bg-rose-50/30 border-t border-rose-200/80"
-          >
-            <div id="final-exam-list" class="space-y-2">
-              <!-- Auto-generated final exam days -->
-            </div>
-          </div>
-        </div>
-
-        <!-- User Planned Evaluations Section -->
+        <!-- 1. USER PLANNED EVALUATIONS SECTION (PLACED ON TOP FOR IMMEDIATE VISIBILITY & FILTERING) -->
         <div class="space-y-3">
-          <h3
-            class="text-sm font-extrabold text-slate-900 flex items-center justify-between pt-2"
+          <div
+            class="flex items-center justify-between pt-1"
           >
-            <span class="flex items-center gap-2"
-              ><i
-                data-lucide="clipboard-list"
-                class="w-4 h-4 text-brand-600"
-              ></i>
-              User Added Assessments & Lab Tasks</span
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                <i
+                  data-lucide="clipboard-list"
+                  class="w-4 h-4 text-brand-600"
+                ></i>
+                <span>User Added Assessments & Lab Tasks</span>
+              </h3>
+              <span id="eval-count-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                Active Tasks
+              </span>
+            </div>
+            <button
+              onclick="openHomeEvalModal(event)"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 transition-colors cursor-pointer shadow-2xs"
             >
-            <span class="text-xs font-semibold text-slate-400"
-              >Sorted Chronologically</span
-            >
-          </h3>
+              <i data-lucide="plus" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+              <span>New Assessment</span>
+            </button>
+          </div>
           <div id="evaluations-list" class="space-y-3">
             <!-- Dynamically populated user evaluations -->
+          </div>
+        </div>
+
+        <!-- 2. OFFICIAL TRIMESTER EXAMINATION WINDOWS SECTION (COLLAPSIBLE WINDOWS) -->
+        <div class="space-y-3 pt-2 border-t border-slate-200/80">
+          <div class="flex items-center justify-between px-0.5">
+            <div>
+              <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
+                <i data-lucide="award" class="w-4 h-4 text-brand-600"></i>
+                <span>Official Trimester Examination Windows</span>
+              </h3>
+              <p class="text-xs font-medium text-slate-500">
+                Centralized university examination periods scheduled for Fall 2026.
+              </p>
+            </div>
+          </div>
+
+          <!-- Mid-Term Exam Block (Executive Light Theme, Open by Default) -->
+          <div
+            class="bg-white rounded-3xl border border-amber-200/80 shadow-2xs overflow-hidden card-hover-pop transition-all hover:border-amber-300"
+          >
+            <button
+              type="button"
+              onclick="toggleSection('midterm-section')"
+              class="w-full px-5 py-3.5 bg-gradient-to-r from-amber-50/90 via-amber-50/40 to-white text-slate-900 flex items-center justify-between font-extrabold text-xs sm:text-sm hover:bg-amber-100/40 transition-colors cursor-pointer border-b border-amber-100/80"
+            >
+              <div class="flex items-center gap-2.5">
+                <div class="p-1.5 rounded-xl bg-amber-500 text-white shadow-2xs">
+                  <i data-lucide="file-text" class="w-4 h-4"></i>
+                </div>
+                <div class="text-left">
+                  <span class="text-amber-950 font-bold"
+                    >Mid-Term Examination Window Schedule</span
+                  >
+                  <span class="text-xs font-semibold text-amber-800/80 ml-1.5 hidden sm:inline"
+                    >(Dec 5 – Dec 12, 2026)</span
+                  >
+                </div>
+                <span
+                  class="text-[10px] bg-amber-100 text-amber-900 border border-amber-200 px-2.5 py-0.5 rounded-full font-bold ml-1"
+                  >7 Days</span
+                >
+                <span
+                  class="text-[10px] bg-amber-600 text-white px-2 py-0.5 rounded-full font-bold hidden md:inline"
+                  >Upcoming Window</span
+                >
+              </div>
+              <div class="flex items-center gap-2 text-slate-400">
+                <span class="text-xs font-semibold text-slate-500 hidden sm:inline">Toggle View</span>
+                <i
+                  id="midterm-section-arrow"
+                  data-lucide="chevron-down"
+                  class="w-4 h-4 transform transition-transform rotate-180 text-amber-900"
+                ></i>
+              </div>
+            </button>
+            <div
+              id="midterm-section"
+              class="p-4 space-y-2 bg-amber-50/30"
+            >
+              <div id="midterm-exam-list" class="space-y-2">
+                <!-- Auto-generated mid exam days -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Final Exam Block (Executive Light Theme, Collapsed by Default) -->
+          <div
+            class="bg-white rounded-3xl border border-indigo-200/80 shadow-2xs overflow-hidden card-hover-pop transition-all hover:border-indigo-300"
+          >
+            <button
+              type="button"
+              onclick="toggleSection('final-section')"
+              class="w-full px-5 py-3.5 bg-gradient-to-r from-indigo-50/90 via-indigo-50/40 to-white text-slate-900 flex items-center justify-between font-extrabold text-xs sm:text-sm hover:bg-indigo-100/40 transition-colors cursor-pointer border-b border-indigo-100/80"
+            >
+              <div class="flex items-center gap-2.5">
+                <div class="p-1.5 rounded-xl bg-indigo-600 text-white shadow-2xs">
+                  <i data-lucide="award" class="w-4 h-4"></i>
+                </div>
+                <div class="text-left">
+                  <span class="text-indigo-950 font-bold"
+                    >Final Examination Window Schedule</span
+                  >
+                  <span class="text-xs font-semibold text-indigo-800/80 ml-1.5 hidden sm:inline"
+                    >(Jan 25 – Feb 1, 2027)</span
+                  >
+                </div>
+                <span
+                  class="text-[10px] bg-indigo-100 text-indigo-900 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold ml-1"
+                  >7 Days</span
+                >
+                <span
+                  class="text-[10px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 rounded-full font-semibold hidden md:inline"
+                  >Term Finals</span
+                >
+              </div>
+              <div class="flex items-center gap-2 text-slate-400">
+                <span class="text-xs font-semibold text-slate-500 hidden sm:inline">Toggle View</span>
+                <i
+                  id="final-section-arrow"
+                  data-lucide="chevron-down"
+                  class="w-4 h-4 transform transition-transform text-indigo-900"
+                ></i>
+              </div>
+            </button>
+            <div
+              id="final-section"
+              class="p-4 space-y-2 bg-indigo-50/20 hidden"
+            >
+              <div id="final-exam-list" class="space-y-2">
+                <!-- Auto-generated final exam days -->
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -881,15 +1054,22 @@
           <input type="hidden" id="eval-date-str" />
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1"
-              >Target Date</label
-            >
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="eval-date-input" class="block text-xs font-bold text-slate-700">Assessment Date *</label>
+              <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+                <i data-lucide="calendar" class="w-3 h-3 text-brand-600"></i> Click to open calendar
+              </span>
+            </div>
             <input
-              type="text"
-              id="eval-date-display"
-              readonly
-              class="w-full text-xs font-bold bg-slate-100/80 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-700 outline-none"
+              type="date"
+              id="eval-date-input"
+              required
+              min="2026-10-01"
+              max="2027-02-28"
+              onchange="onEvalDateChange(this.value)"
+              class="w-full text-xs font-bold bg-white border border-slate-300 hover:border-brand-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 rounded-xl px-3.5 py-2.5 text-slate-800 outline-none transition-all cursor-pointer shadow-xs"
             />
+            <p id="eval-date-hint" class="text-[11px] text-brand-700 font-semibold mt-1.5 flex items-center gap-1.5"></p>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
@@ -1098,6 +1278,108 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+        <!-- MODAL 4: FIREBASE MULTI-DEVICE CLOUD SYNC MODAL -->
+    <div
+      id="sync-modal"
+      class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-md hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all space-y-5"
+      >
+        <div
+          class="flex items-center justify-between border-b border-slate-100 pb-3"
+        >
+          <div class="flex items-center gap-2.5">
+            <div class="p-2 bg-brand-100 text-brand-700 rounded-2xl">
+              <i data-lucide="cloud-lightning" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-extrabold text-slate-900">
+                Cross-Device Cloud Sync
+              </h3>
+              <p class="text-[11px] text-slate-500 font-medium">
+                High security 8-character unique sync session
+              </p>
+            </div>
+          </div>
+          <button
+            onclick="closeSyncModal()"
+            class="text-slate-400 hover:text-slate-600 p-1 rounded-xl hover:bg-slate-100 transition-colors"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Current Device Sync Code Display -->
+        <div
+          class="bg-gradient-to-br from-brand-50 via-indigo-50/50 to-brand-50 p-4 rounded-2xl border border-brand-200/80 text-center space-y-2"
+        >
+          <span
+            class="text-[11px] font-bold uppercase tracking-wider text-brand-700 block"
+          >
+            Your Unique 8-Character Device Sync Code
+          </span>
+          <div class="flex items-center justify-center gap-2">
+            <span
+              id="sync-code-display"
+              class="text-lg sm:text-xl font-black tracking-widest text-brand-900 font-mono bg-white px-3.5 py-1.5 rounded-xl border border-brand-300 shadow-xs select-all"
+            >
+              VERIFYING...
+            </span>
+            <button
+              onclick="copySyncCode()"
+              class="p-2 text-brand-700 bg-white hover:bg-brand-100 border border-brand-300 rounded-xl transition-all shadow-xs"
+              title="Copy Sync Code"
+            >
+              <i data-lucide="copy" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <p class="text-[10px] text-slate-500 font-medium leading-relaxed">
+            Enter this code on your mobile phone or PC to mirror your calendar
+            state securely in real time.
+          </p>
+        </div>
+
+        <!-- Form to Connect/Pair an Existing Sync Code -->
+        <form
+          onsubmit="connectSyncCode(event)"
+          class="space-y-3 pt-2 border-t border-slate-100"
+        >
+          <label class="block text-xs font-extrabold text-slate-800">
+            Connect to Existing Session Code
+          </label>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="input-sync-code"
+              required
+              placeholder="e.g. FALL-2026-X9K2-M7P4"
+              class="flex-1 text-xs font-mono font-bold uppercase bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-800 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all"
+            />
+            <button
+              type="submit"
+              class="px-4 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 rounded-xl transition-all shadow-md shadow-brand-500/20 shrink-0"
+            >
+              Connect
+            </button>
+          </div>
+          <p
+            id="sync-status-msg"
+            class="text-[11px] font-bold text-emerald-600 text-center hidden"
+          ></p>
+        </form>
+
+        <div class="pt-2">
+          <button
+            onclick="closeSyncModal()"
+            class="w-full py-2.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
 

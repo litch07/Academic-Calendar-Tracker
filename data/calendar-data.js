@@ -516,6 +516,7 @@ const ALL_CLASSES = [
 const ACADEMIC_EVENTS = [
   {
     id: "evt-1",
+    dateStr: "2026-10-27",
     dateDisplay: "Oct 27, 2026",
     dayName: "Tue",
     category: "ACADEMIC",
@@ -524,6 +525,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-2",
+    dateStr: "2026-10-31",
     dateDisplay: "Oct 31, 2026",
     dayName: "Sat",
     category: "ACADEMIC",
@@ -532,6 +534,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-3",
+    dateStr: "2026-11-04",
     dateDisplay: "Nov 4, 2026",
     dayName: "Wed",
     category: "ACADEMIC",
@@ -540,6 +543,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-4",
+    dateStr: "2026-11-07",
     dateDisplay: "Nov 7, 2026",
     dayName: "Sat",
     category: "HOLIDAY",
@@ -548,6 +552,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-5",
+    dateStr: "2026-11-08",
     dateDisplay: "Nov 8, 2026",
     dayName: "Sun",
     category: "ACADEMIC",
@@ -556,6 +561,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-6",
+    dateStr: "2026-11-09",
     dateDisplay: "Nov 9, 2026",
     dayName: "Mon",
     category: "ACADEMIC",
@@ -564,6 +570,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-7",
+    dateStr: "2026-11-22",
     dateDisplay: "Nov 22, 2026",
     dayName: "Sun",
     category: "PAYMENT",
@@ -572,6 +579,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-8",
+    dateStr: "2026-12-05",
     dateDisplay: "Dec 5 – Dec 12, 2026",
     dayName: "Sat - Sat",
     category: "EXAM",
@@ -580,6 +588,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-9",
+    dateStr: "2026-12-15",
     dateDisplay: "Dec 15, 2026",
     dayName: "Tue",
     category: "PAYMENT",
@@ -588,6 +597,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-10",
+    dateStr: "2026-12-16",
     dateDisplay: "Dec 16, 2026",
     dayName: "Wed",
     category: "HOLIDAY",
@@ -596,6 +606,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-11",
+    dateStr: "2026-12-23",
     dateDisplay: "Dec 23, 2026",
     dayName: "Wed",
     category: "ACADEMIC",
@@ -604,6 +615,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-12",
+    dateStr: "2026-12-25",
     dateDisplay: "Dec 25, 2026",
     dayName: "Fri",
     category: "HOLIDAY",
@@ -612,6 +624,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-13",
+    dateStr: "2027-01-13",
     dateDisplay: "Jan 13, 2027",
     dayName: "Wed",
     category: "PAYMENT",
@@ -620,6 +633,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-14",
+    dateStr: "2027-01-21",
     dateDisplay: "Jan 21 – Jan 24, 2027",
     dayName: "Thu - Sun",
     category: "ACADEMIC",
@@ -628,6 +642,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-15",
+    dateStr: "2027-01-24",
     dateDisplay: "Jan 24, 2027",
     dayName: "Sun",
     category: "HOLIDAY",
@@ -636,6 +651,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-16",
+    dateStr: "2027-01-25",
     dateDisplay: "Jan 25 – Feb 1, 2027",
     dayName: "Mon - Mon",
     category: "EXAM",
@@ -644,6 +660,7 @@ const ACADEMIC_EVENTS = [
   },
   {
     id: "evt-17",
+    dateStr: "2027-02-04",
     dateDisplay: "Feb 4, 2027",
     dayName: "Thu",
     category: "ACADEMIC",
