@@ -586,9 +586,10 @@ function openHomeEvalModal(event) {
 
 function handleDeliverablesClick(event) {
   if (event) event.stopPropagation();
-  switchPage('assessments');
   if (!userEvaluations || userEvaluations.length === 0) {
-    openHomeEvalModal();
+    openHomeEvalModal(event);
+  } else {
+    switchPage('assessments');
   }
 }
 
@@ -709,6 +710,7 @@ function renderHome() {
     .filter((e) => !e.done)
     .sort((a, b) => (a.dateStr > b.dateStr ? 1 : a.dateStr < b.dateStr ? -1 : 0));
   const pendingEvals = activeEvals.length;
+  const evalCompletionPct = totalEvals > 0 ? Math.round((completedEvals / totalEvals) * 100) : 0;
 
   const nextClass = ALL_CLASSES.find((c) => c.dateStr > todayStr);
   const nextMidtermDay = MIDTERM_DAYS.find((d) => !completedExams.has(d.id));
@@ -745,24 +747,17 @@ function renderHome() {
   const upcomingEvals = activeEvals.filter((e) => e.dateStr >= todayStr);
   const nextUpcomingEval = upcomingEvals[0] || null;
 
-  let deliverableTimelineProgress = 0;
+  let deliverableTimelineProgress = evalCompletionPct;
   let deliverableTimelineSubtext = "";
-  let deliverableMetricLabel = pendingEvals === 1 ? "Active Task" : "Active Tasks";
+  let deliverableMetricLabel = totalEvals > 0 ? `/ ${totalEvals} Completed (${evalCompletionPct}%)` : "/ 0 Completed (0%)";
 
   if (totalEvals === 0) {
-    // No custom evaluations added yet
     deliverableTimelineProgress = 0;
-    deliverableTimelineSubtext = "No deliverables scheduled &bull; Click to add";
+    deliverableTimelineSubtext = "No assessments scheduled &bull; Click to add";
   } else if (pendingEvals === 0) {
-    // All scheduled deliverables completed
     deliverableTimelineProgress = 100;
-    deliverableMetricLabel = "All Completed";
-    deliverableTimelineSubtext = `All ${totalEvals} scheduled deliverables completed!`;
+    deliverableTimelineSubtext = `All ${totalEvals} scheduled ${totalEvals === 1 ? "assessment" : "assessments"} completed!`;
   } else {
-    // Active deliverables exist: Progress represents completion rate of coursework
-    deliverableTimelineProgress = Math.round((completedEvals / totalEvals) * 100);
-    deliverableMetricLabel = `${pendingEvals} ${pendingEvals === 1 ? "Task" : "Tasks"} (${completedEvals}/${totalEvals} Done)`;
-
     if (nextUpcomingEval) {
       const evalTargetDate = new Date(nextUpcomingEval.dateStr + "T00:00:00");
       const daysUntilTask = Math.ceil((evalTargetDate - nowDate) / (1000 * 60 * 60 * 24));
@@ -772,17 +767,18 @@ function renderHome() {
       } else if (daysUntilTask === 1) {
         deliverableTimelineSubtext = `<span class="text-amber-800 font-bold">Due Tomorrow: ${nextUpcomingEval.code} ${nextUpcomingEval.type}</span>`;
       } else {
-        deliverableTimelineSubtext = `Next: ${nextUpcomingEval.code} ${nextUpcomingEval.type} (${daysUntilTask} days left)`;
+        deliverableTimelineSubtext = `Next: ${nextUpcomingEval.code} ${nextUpcomingEval.type} (${daysUntilTask}d left)`;
       }
 
       if (overdueEvals.length > 0) {
         deliverableTimelineSubtext += ` &bull; <span class="text-rose-600 font-bold">${overdueEvals.length} overdue</span>`;
       }
     } else if (overdueEvals.length > 0) {
-      // Only overdue evaluations remain
       const mostRecentOverdue = overdueEvals[overdueEvals.length - 1];
       const overdueDays = Math.max(1, Math.ceil((nowDate - new Date(mostRecentOverdue.dateStr + "T00:00:00")) / (1000 * 60 * 60 * 24)));
       deliverableTimelineSubtext = `<span class="text-rose-600 font-bold">${mostRecentOverdue.code} &bull; Overdue by ${overdueDays === 1 ? "1 day" : overdueDays + " days"}!</span>`;
+    } else {
+      deliverableTimelineSubtext = `${pendingEvals} pending ${pendingEvals === 1 ? "task" : "tasks"}`;
     }
   }
 
@@ -964,20 +960,20 @@ function renderHome() {
         </div>
       </div>
 
-      <!-- KPI 2: Active Deliverables & Reviews -->
+      <!-- KPI 2: Coursework Assessments & Deliverables -->
       <div onclick="handleDeliverablesClick(event)" class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs hover:border-amber-300 hover:shadow-md cursor-pointer group card-hover-pop">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Pending Deliverables</span>
-          <div class="p-2.5 rounded-xl ${pendingEvals > 0 ? "bg-amber-100 text-amber-800 border border-amber-200" : "bg-amber-50 text-amber-700 border border-amber-100"} group-hover:bg-amber-500 group-hover:text-white transition-all">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Assessments & Tasks</span>
+          <div class="p-2.5 rounded-xl ${totalEvals > 0 && completedEvals === totalEvals ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-amber-50 text-amber-700 border border-amber-100"} group-hover:bg-amber-500 group-hover:text-white transition-all">
             <i data-lucide="check-square" class="w-4 h-4"></i>
           </div>
         </div>
         <div class="flex items-baseline gap-2 mt-3">
-          <h3 class="text-3xl font-black text-slate-900 tracking-tight">${pendingEvals}</h3>
-          <span class="text-xs font-bold text-amber-700">${deliverableMetricLabel}</span>
+          <h3 class="text-3xl font-black text-slate-900 tracking-tight">${completedEvals}</h3>
+          <span class="text-xs font-bold ${totalEvals > 0 && completedEvals === totalEvals ? "text-emerald-700" : "text-amber-700"}">${deliverableMetricLabel}</span>
         </div>
         <div class="w-full bg-slate-100 rounded-full h-2 mt-3 overflow-hidden">
-          <div class="${pendingEvals === 0 && userEvaluations.length > 0 ? "bg-gradient-to-r from-emerald-400 to-teal-500" : "bg-gradient-to-r from-amber-400 to-orange-500"} h-2 rounded-full transition-all duration-300" style="width: ${deliverableTimelineProgress}%"></div>
+          <div class="${totalEvals > 0 && completedEvals === totalEvals ? "bg-gradient-to-r from-emerald-400 to-teal-500" : "bg-gradient-to-r from-amber-400 to-orange-500"} h-2 rounded-full transition-all duration-300" style="width: ${evalCompletionPct}%"></div>
         </div>
         <div class="flex items-center justify-between mt-2.5 text-xs text-slate-500 font-medium">
           <span class="truncate">${deliverableTimelineSubtext}</span>
@@ -1298,17 +1294,37 @@ function renderHome() {
   // ── 6. Right Column: Upcoming Assessments ───────────────────────────────────
   let assessmentContentHtml = "";
   if (activeEvals.length === 0) {
-    assessmentContentHtml = `
-      <div class="p-6 text-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50">
-        <i data-lucide="check-circle" class="w-6 h-6 mx-auto text-emerald-600 mb-2"></i>
-        <p class="text-xs font-bold text-slate-800">No Pending Assessments</p>
-        <p class="text-[11px] text-slate-500 mt-0.5">Schedule quizzes, lab assignments, or midterm deliverables.</p>
-        <button onclick="openHomeEvalModal(event)" class="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer">
-          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-          <span>Schedule Assessment</span>
-        </button>
-      </div>
-    `;
+    if (totalEvals > 0) {
+      assessmentContentHtml = `
+        <div class="p-5 text-center rounded-2xl border border-emerald-200 bg-emerald-50/50 space-y-2">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 border border-emerald-300 flex items-center justify-center mx-auto shadow-2xs">
+            <i data-lucide="check-check" class="w-5 h-5"></i>
+          </div>
+          <p class="text-xs font-black text-emerald-900">All ${totalEvals} Assessments Completed!</p>
+          <p class="text-[11px] text-emerald-700/80 font-medium">You are all caught up on scheduled coursework.</p>
+          <div class="pt-1.5 flex items-center justify-center gap-2">
+            <button onclick="switchPage('assessments')" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold border border-slate-200/90 transition-all shadow-2xs cursor-pointer">
+              Review All
+            </button>
+            <button onclick="openHomeEvalModal(event)" class="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer">
+              + Add New
+            </button>
+          </div>
+        </div>
+      `;
+    } else {
+      assessmentContentHtml = `
+        <div class="p-6 text-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50">
+          <i data-lucide="check-circle" class="w-6 h-6 mx-auto text-emerald-600 mb-2"></i>
+          <p class="text-xs font-bold text-slate-800">No Pending Assessments</p>
+          <p class="text-[11px] text-slate-500 mt-0.5">Schedule quizzes, lab assignments, or midterm deliverables.</p>
+          <button onclick="openHomeEvalModal(event)" class="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>Schedule Assessment</span>
+          </button>
+        </div>
+      `;
+    }
   } else {
     assessmentContentHtml = '<div class="space-y-2.5">';
     activeEvals.slice(0, 4).forEach((ev) => {
@@ -1327,13 +1343,13 @@ function renderHome() {
         urgencyBadge = "Due Today!";
         urgencyClass = "bg-rose-100 text-rose-800 border-rose-300 font-black animate-pulse";
       } else if (diffDays < 7) {
-        urgencyBadge = `${diffDays === 1 ? "1 Day Left" : diffDays + " Days Left"} (High Priority)`;
+        urgencyBadge = `${diffDays === 1 ? "1 Day Left" : diffDays + " Days Left"}`;
         urgencyClass = "bg-rose-50 text-rose-700 border-rose-200 font-bold";
       } else if (diffDays <= 14) {
-        urgencyBadge = `${diffDays} Days Left (Prepare)`;
+        urgencyBadge = `${diffDays} Days Left`;
         urgencyClass = "bg-amber-50 text-amber-800 border-amber-200 font-bold";
       } else {
-        urgencyBadge = `${diffDays} Days Left (Plan)`;
+        urgencyBadge = `${diffDays} Days Left`;
         urgencyClass = "bg-emerald-50 text-emerald-800 border-emerald-200 font-bold";
       }
 
@@ -1352,11 +1368,11 @@ function renderHome() {
             </div>
             <p class="text-xs font-semibold text-slate-700 truncate">${ev.desc}</p>
             <div class="flex items-center gap-2 mt-1.5">
-              <span class="text-[11px] text-slate-500 font-medium">${ev.dateStr}</span>
+              <span class="text-[11px] text-slate-500 font-medium">${formatHumanDate(ev.dateStr)}</span>
               <span class="text-[10px] px-2 py-0.5 rounded border ${urgencyClass}">${urgencyBadge}</span>
             </div>
           </div>
-          <button onclick="toggleEvalDone('${ev.id}')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors shrink-0 cursor-pointer" title="Mark Completed">
+          <button onclick="event.stopPropagation(); toggleEvalDone('${ev.id}', event);" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 border border-slate-200 transition-colors shrink-0 cursor-pointer" title="Mark Completed">
             Done
           </button>
         </div>
@@ -1372,11 +1388,28 @@ function renderHome() {
           <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Upcoming Assessments</h3>
           <p class="text-xs text-slate-500 font-medium">Quizzes, deadlines, and milestone deliverables</p>
         </div>
-        <button onclick="switchPage('assessments')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1 cursor-pointer">
-          <span>All (${activeEvals.length})</span>
+        <button onclick="switchPage('assessments')" class="text-xs font-bold text-brand-700 hover:text-brand-900 flex items-center gap-1 cursor-pointer">
+          <span>All (${totalEvals})</span>
           <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
         </button>
       </div>
+
+      <!-- Coursework Progress Bar -->
+      ${totalEvals > 0 ? `
+        <div class="space-y-1.5 pb-1">
+          <div class="flex items-center justify-between text-xs font-semibold">
+            <span class="text-slate-500 flex items-center gap-1">
+              <i data-lucide="trending-up" class="w-3.5 h-3.5 text-brand-600"></i>
+              <span>Coursework Progress</span>
+            </span>
+            <span class="text-slate-900 font-bold">${completedEvals} / ${totalEvals} Completed (${evalCompletionPct}%)</span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200/60">
+            <div class="${completedEvals === totalEvals ? "bg-gradient-to-r from-emerald-500 to-teal-500" : "bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500"} h-2 rounded-full transition-all duration-500" style="width: ${evalCompletionPct}%"></div>
+          </div>
+        </div>
+      ` : ""}
+
       ${assessmentContentHtml}
     </div>
   `;
@@ -2043,13 +2076,20 @@ function renderHome() {
           dInput.value = targetDateStr;
           onEvalDateChange(targetDateStr);
         }
-        if (modal) modal.classList.remove("hidden");
+        if (modal) {
+          modal.classList.remove("hidden");
+          modal.style.display = "flex";
+        }
+        if (window.lucide) lucide.createIcons();
       }
 
       function closeEvalModal() {
         const modal = document.getElementById("eval-modal");
         const form = document.getElementById("eval-form");
-        if (modal) modal.classList.add("hidden");
+        if (modal) {
+          modal.classList.add("hidden");
+          modal.style.display = "none";
+        }
         if (form) form.reset();
       }
 
@@ -2279,7 +2319,7 @@ function renderHome() {
                   <p class="text-[11px] text-slate-500 font-medium">Trimester Mid-Term Exam Day #${d.dayNo}</p>
                 </div>
               </div>
-              <button onclick="toggleExamDone('${d.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer touch-manipulation ${
+              <button onclick="toggleExamDone('${d.id}', event)" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer touch-manipulation ${
                 isDone
                   ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs"
                   : "bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200"
@@ -2558,7 +2598,7 @@ function renderHome() {
                 </div>
 
                 <div class="flex items-center gap-2">
-                  <button onclick="toggleEvalDone('${ev.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer touch-manipulation ${
+                  <button onclick="toggleEvalDone('${ev.id}', event)" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer touch-manipulation ${
                     isDone
                       ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs"
                       : "bg-brand-600 hover:bg-brand-700 text-white shadow-xs"

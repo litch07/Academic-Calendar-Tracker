@@ -35,7 +35,7 @@
       };
     </script>
     <!-- Custom Stylesheet -->
-    <link rel="stylesheet" href="css/style.css?v=263.2.1" />
+    <link rel="stylesheet" href="css/style.css?v=263.2.2" />
 
     <!-- Immediate Resilient Controller for Data & Sync Modal (Bypasses all cache delays) -->
     <script>
@@ -1019,6 +1019,8 @@
     <!-- MODAL 1: ADD ASSESSMENT / EVALUATION MODAL -->
     <div
       id="eval-modal"
+      onclick="if (event.target === this) closeEvalModal()"
+      style="display: none;"
       class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-md hidden flex items-end sm:items-center justify-center p-0 sm:p-4"
     >
       <div
@@ -1570,9 +1572,9 @@
     </div>
 
     <!-- Master Calendar Schedule Data -->
-    <script src="data/calendar-data.js?v=263.2.1"></script>
+    <script src="data/calendar-data.js?v=263.2.2"></script>
 
     <!-- Application Logic -->
-    <script src="js/app.js?v=263.2.1"></script>
+    <script src="js/app.js?v=263.2.2"></script>
   </body>
 </html>
