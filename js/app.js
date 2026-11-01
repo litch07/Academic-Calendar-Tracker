@@ -179,8 +179,17 @@ function getTemporalState(dateStr) {
         }
       }
 
-      // Mobile Drawer Controller
-      function toggleMobileMenu(forceState) {
+      // Mobile & Responsive Drawer Controller
+      function toggleMobileMenu(forceState, event) {
+        // If passed an Event as first argument (from onclick="toggleMobileMenu(event)")
+        const e = (forceState && typeof forceState.stopPropagation === "function")
+          ? forceState
+          : ((event && typeof event.stopPropagation === "function") ? event : null);
+        if (e) {
+          e.stopPropagation();
+        }
+
+        const isForced = typeof forceState === "boolean";
         const panel = document.getElementById("mobile-nav-panel");
         const backdrop = document.getElementById("mobile-nav-backdrop");
         const iconBars = document.getElementById("menu-icon-bars");
@@ -190,7 +199,7 @@ function getTemporalState(dateStr) {
         if (!panel) return;
 
         const isCurrentlyOpen = !panel.classList.contains("hidden");
-        const shouldOpen = typeof forceState === "boolean" ? forceState : !isCurrentlyOpen;
+        const shouldOpen = isForced ? forceState : !isCurrentlyOpen;
 
         if (shouldOpen) {
           panel.classList.remove("hidden");
@@ -198,17 +207,12 @@ function getTemporalState(dateStr) {
           if (iconBars) iconBars.classList.add("hidden");
           if (iconClose) iconClose.classList.remove("hidden");
           if (btn && typeof btn.setAttribute === "function") btn.setAttribute("aria-expanded", "true");
-
         } else {
           panel.classList.add("hidden");
           if (backdrop) backdrop.classList.add("hidden");
           if (iconBars) iconBars.classList.remove("hidden");
           if (iconClose) iconClose.classList.add("hidden");
           if (btn && typeof btn.setAttribute === "function") btn.setAttribute("aria-expanded", "false");
-
-        }
-        if (typeof lucide !== "undefined" && typeof lucide.createIcons === "function") {
-          lucide.createIcons();
         }
       }
 
@@ -2738,7 +2742,7 @@ function renderHome() {
             const panel = document.getElementById("mobile-nav-panel");
             const btn = document.getElementById("mobile-menu-btn");
             if (!panel || panel.classList.contains("hidden")) return;
-            if (panel.contains(event.target) || (btn && btn.contains(event.target))) return;
+            if (panel.contains(event.target) || (btn && (btn === event.target || btn.contains(event.target)))) return;
             toggleMobileMenu(false);
           });
         }

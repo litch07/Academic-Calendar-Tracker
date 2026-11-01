@@ -205,3 +205,13 @@ body {
   background-color: #ffffff !important;
   opacity: 1 !important;
 }
+/* Responsive Mobile & Desktop Menu Button Tap Optimizations */
+#mobile-menu-btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+#mobile-menu-btn * {
+  pointer-events: none;
+}

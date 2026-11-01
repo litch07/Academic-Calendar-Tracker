@@ -43,7 +43,7 @@
     <!-- Full-screen Outside-Click Backdrop for Floating Menu Overlay -->
     <div
       id="mobile-nav-backdrop"
-      onclick="toggleMobileMenu(false)"
+      onclick="toggleMobileMenu(false, event)"
       class="hidden fixed inset-0 z-35 bg-slate-900/10 cursor-pointer"
       aria-hidden="true"
     ></div>
@@ -85,7 +85,7 @@
 
           <!-- Desktop Navigation Tabs (Visible on md and above - never disappears on tablet or resized window!) -->
           <nav
-            class="hidden md:flex items-center gap-1 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/80 min-w-0 shrink-0 shadow-2xs"
+            class="hidden lg:flex items-center gap-1 p-1 bg-slate-100/80 rounded-2xl border border-slate-200/80 min-w-0 shrink-0 shadow-2xs"
           >
             <button
               id="nav-home"
@@ -135,7 +135,7 @@
           </nav>
 
           <!-- Desktop Actions (Visible on md and above) -->
-          <div class="hidden md:flex items-center gap-2 shrink-0">
+          <div class="hidden lg:flex items-center gap-2 shrink-0">
             <button
               onclick="openSyncModal()"
               class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-xl transition-all shadow-2xs cursor-pointer"
@@ -153,7 +153,7 @@
           </div>
 
           <!-- Mobile & Reduced Window Controls (Visible below md: Quick Sync + Compact Floating Popover Menu) -->
-          <div class="flex md:hidden items-center gap-1.5 shrink-0 relative">
+          <div class="flex lg:hidden items-center gap-1.5 shrink-0 relative">
             <button
               onclick="openSyncModal()"
               class="p-2 text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-xl transition-all shadow-2xs cursor-pointer"
@@ -167,18 +167,18 @@
             <button
               id="mobile-menu-btn"
               type="button"
-              onclick="toggleMobileMenu()"
-              class="flex items-center gap-1.5 px-2.5 py-2 text-slate-700 bg-slate-100 hover:bg-slate-200/80 active:bg-slate-300 border border-slate-200/90 rounded-xl transition-all shadow-2xs relative cursor-pointer select-none"
+              onclick="toggleMobileMenu(event)"
+              class="flex items-center gap-1.5 px-3 py-2 text-slate-700 bg-slate-100 hover:bg-slate-200/80 active:bg-slate-300 border border-slate-200/90 rounded-xl transition-all shadow-2xs relative cursor-pointer select-none touch-manipulation min-h-[40px] min-w-[40px] justify-center"
               aria-label="Toggle navigation menu"
               aria-expanded="false"
               aria-controls="mobile-nav-panel"
             >
-              <i data-lucide="menu" id="menu-icon-bars" class="w-4 h-4"></i>
-              <i data-lucide="x" id="menu-icon-close" class="w-4 h-4 hidden"></i>
-              <span class="text-xs font-bold text-slate-700 hidden sm:inline">Menu</span>
+              <i data-lucide="menu" id="menu-icon-bars" class="w-4 h-4 pointer-events-none"></i>
+              <i data-lucide="x" id="menu-icon-close" class="w-4 h-4 hidden pointer-events-none"></i>
+              <span class="text-xs font-bold text-slate-700 hidden sm:inline pointer-events-none">Menu</span>
               <span
                 id="menu-notification-dot"
-                class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white hidden animate-pulse"
+                class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white hidden animate-pulse pointer-events-none"
               ></span>
             </button>
 
