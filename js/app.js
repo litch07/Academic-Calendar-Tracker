@@ -2899,14 +2899,20 @@ function renderHome() {
         const modal = document.getElementById("data-sync-modal") || document.getElementById("sync-modal");
         const displayEl = document.getElementById("sync-code-display");
         if (displayEl) displayEl.innerText = syncCode || "GENERATING...";
-        if (modal) modal.classList.remove("hidden");
+        if (modal) {
+          modal.classList.remove("hidden");
+          modal.style.display = "flex";
+        }
         if (window.lucide) lucide.createIcons();
       }
 
       function closeDataModal() {
         const modal = document.getElementById("data-sync-modal") || document.getElementById("sync-modal");
         const msg = document.getElementById("sync-status-msg");
-        if (modal) modal.classList.add("hidden");
+        if (modal) {
+          modal.classList.add("hidden");
+          modal.style.display = "none";
+        }
         if (msg) msg.classList.add("hidden");
       }
 

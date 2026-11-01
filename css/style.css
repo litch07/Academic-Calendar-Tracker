@@ -54,7 +54,9 @@ body {
    Global Crisp Typography & Subpixel Rendering
    ========================================================================== */
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -115,16 +117,13 @@ body {
 
 /* On mobile & touch devices, disable hover translations completely to prevent sticky jitter or blur */
 @media (hover: none) {
+
   .card-hover-pop:hover,
   .card-hover-pop-subtle:hover,
   .calendar-tile-pop:hover {
     transform: none !important;
   }
 }
-
-/* ==========================================================================
-   Executive Targeted Focus & Highlight Spotlight Animations
-   ========================================================================== */
 
 @keyframes executiveSpotlightIndigo {
   0% {
@@ -230,6 +229,7 @@ body {
   background-color: #ffffff !important;
   opacity: 1 !important;
 }
+
 /* Responsive Mobile & Desktop Menu Button Tap Optimizations */
 #mobile-menu-btn {
   touch-action: manipulation;
@@ -245,6 +245,7 @@ body {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;
