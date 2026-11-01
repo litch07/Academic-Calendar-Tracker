@@ -2647,7 +2647,6 @@ function renderHome() {
         }
 
         filtered.forEach((evt) => {
-          const isDone = completedEvents.has(evt.id);
           const evtDateStr = evt.dateStr || parseEventDate(evt.dateDisplay);
           const targetDate = new Date(evtDateStr + "T00:00:00");
           const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
@@ -2682,25 +2681,22 @@ function renderHome() {
             cardBorder = "border-2 border-indigo-200/90 hover:border-indigo-300";
           }
 
-          if (isDone) {
-            cardBorder = "border-2 border-emerald-300 bg-emerald-50/40 hover:border-emerald-400";
-          } else if (isToday) {
-            cardBorder = "border-2 border-brand-500 bg-gradient-to-r from-brand-50/40 to-white ring-2 ring-brand-500/20 shadow-md";
+          if (isToday) {
+            cardBorder = "border-2 border-brand-500 bg-gradient-to-r from-brand-50/40 via-white to-white ring-2 ring-brand-500/20 shadow-md";
+          } else if (isPast) {
+            cardBorder = "border border-slate-200 bg-slate-50/70 text-slate-500 opacity-75 hover:opacity-100 shadow-none";
           }
 
-          // Single-line compact live countdown status badge
+          // Single-line compact countdown badge (No fake "Acknowledged" status!)
           let urgencyClass = "bg-slate-100 text-slate-700 border-slate-200";
           let urgencyBadge = "";
 
-          if (isDone) {
-            urgencyClass = "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold";
-            urgencyBadge = '<span class="inline-flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i><span>Acknowledged</span></span>';
-          } else if (isToday) {
+          if (isToday) {
             urgencyClass = "bg-rose-100 text-rose-800 border-rose-300 font-black animate-pulse";
             urgencyBadge = '<span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span><span>Happening Today!</span></span>';
           } else if (isPast) {
             const pastDays = Math.abs(diffDays);
-            urgencyClass = "bg-slate-100 text-slate-600 border-slate-200 font-semibold";
+            urgencyClass = "bg-slate-100 text-slate-600 border-slate-200 font-medium";
             urgencyBadge = `<span class="inline-flex items-center gap-1"><i data-lucide="check" class="w-3 h-3 text-slate-400"></i><span>Concluded (${pastDays === 1 ? "1d ago" : pastDays + "d ago"})</span></span>`;
           } else if (diffDays === 1) {
             urgencyClass = "bg-rose-100 text-rose-800 border-rose-200 font-bold";
@@ -2724,12 +2720,12 @@ function renderHome() {
             <!-- Top Row: Date, Category Chip & Pinned Urgency Badge -->
             <div class="flex items-start justify-between gap-2.5">
               <div class="flex items-center gap-3 min-w-0">
-                <div class="w-9 h-9 rounded-2xl ${isDone ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : iconBoxStyle} border flex items-center justify-center shrink-0 shadow-2xs">
-                  <i data-lucide="${isDone ? "check" : iconName}" class="w-4 h-4 stroke-[2.5]"></i>
+                <div class="w-9 h-9 rounded-2xl ${isPast ? "bg-slate-100 text-slate-600 border border-slate-200" : iconBoxStyle} border flex items-center justify-center shrink-0 shadow-2xs">
+                  <i data-lucide="${iconName}" class="w-4 h-4 stroke-[2.5]"></i>
                 </div>
                 <div class="min-w-0">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="text-xs font-black ${isDone ? "text-emerald-950" : "text-slate-900"} tracking-tight">
+                    <span class="text-xs font-black ${isPast ? "text-slate-600" : "text-slate-900"} tracking-tight">
                       ${evt.dateDisplay} (${evt.dayName})
                     </span>
                     <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-md border ${catBadge} shrink-0">
@@ -2749,7 +2745,7 @@ function renderHome() {
 
             <!-- Middle Section: Main Event Title & Description Note -->
             <div class="space-y-1 pl-0.5">
-              <h3 class="text-sm sm:text-base font-extrabold ${isDone ? "text-slate-400 line-through" : "text-slate-900"} leading-snug">
+              <h3 class="text-sm sm:text-base font-extrabold ${isPast ? "text-slate-600" : "text-slate-900"} leading-snug">
                 ${evt.title}
               </h3>
               <p class="text-xs text-slate-500 leading-relaxed">
@@ -2757,34 +2753,29 @@ function renderHome() {
               </p>
             </div>
 
-            <!-- Pinned Bottom Action Footer: Status & Action Button -->
-            <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2" onclick="event.stopPropagation()">
+            <!-- Pinned Bottom Context Row -->
+            <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
               <div class="text-xs font-bold">
-                ${isDone ? `
-                  <span class="text-emerald-700 flex items-center gap-1.5 text-[11px]">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>Event Acknowledged</span>
+                ${isToday ? `
+                  <span class="text-brand-700 flex items-center gap-1.5 text-[11px]">
+                    <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                    <span>Active Today</span>
                   </span>
                 ` : isPast ? `
                   <span class="text-slate-400 flex items-center gap-1.5 text-[11px]">
                     <span class="w-2 h-2 rounded-full bg-slate-300"></span>
-                    <span>Past Event</span>
+                    <span>Past University Milestone</span>
                   </span>
                 ` : `
-                  <span class="text-amber-700 flex items-center gap-1.5 text-[11px]">
-                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span>Scheduled University Event</span>
+                  <span class="text-indigo-700 flex items-center gap-1.5 text-[11px]">
+                    <i data-lucide="bell" class="w-3.5 h-3.5 text-indigo-500"></i>
+                    <span>Official University Notice</span>
                   </span>
                 `}
               </div>
 
-              <button onclick="toggleEvent('${evt.id}', event)" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer touch-manipulation ${
-                isDone
-                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs"
-                  : "bg-brand-600 hover:bg-brand-700 text-white shadow-xs"
-              }">
-                <i data-lucide="${isDone ? "check-check" : "circle"}" class="w-3.5 h-3.5 stroke-[2.5]"></i>
-                <span>${isDone ? "Acknowledged" : "Mark Done"}</span>
+              <button onclick="openHomeEvalModal(event)" class="inline-flex items-center gap-1 text-[11px] font-bold text-brand-700 hover:text-brand-900 bg-brand-50 hover:bg-brand-100 px-2.5 py-1 rounded-lg transition-colors cursor-pointer touch-manipulation" title="Add personal assessment or task for this event">
+                <i data-lucide="plus" class="w-3 h-3"></i> Task
               </button>
             </div>
           `;
@@ -2792,19 +2783,10 @@ function renderHome() {
           container.appendChild(item);
         });
 
-        const totalEvents = ACADEMIC_EVENTS.length;
-        const completedCount = completedEvents.size;
-
-        const eComp = document.getElementById("events-completed-count");
-        const eRem = document.getElementById("events-remaining-count");
-
-        if (eComp) eComp.innerText = completedCount;
-        if (eRem) eRem.innerText = totalEvents - completedCount;
-
         lucide.createIcons();
       }
 
-            // ─── Firebase Cloud Sync Engine ──────────────────────────────────────────
+      // ─── Firebase Cloud Sync Engine ──────────────────────────────────────────
       // 8-Character Random String Generator (e.g. X9K2-M7P4)
       function generateRaw8CharToken() {
         const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -2975,21 +2957,6 @@ function renderHome() {
 
           if (now >= classCutoff && !completedClasses.has(c.id) && !unmarkedClasses.has(c.id)) {
             completedClasses.add(c.id);
-            stateChanged = true;
-          }
-        });
-
-        ACADEMIC_EVENTS.forEach((evt) => {
-          if (!evt.dateStr) return;
-          // Important events complete after the full day finishes
-          const evtDate = new Date(evt.dateStr);
-          evtDate.setHours(0, 0, 0, 0);
-
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-
-          if (evtDate < today && !completedEvents.has(evt.id)) {
-            completedEvents.add(evt.id);
             stateChanged = true;
           }
         });
