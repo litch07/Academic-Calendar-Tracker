@@ -11,6 +11,15 @@ function getTodayStr() {
   return formatLocalDate(new Date());
 }
 
+function formatHumanDate(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T00:00:00");
+  if (isNaN(d.getTime())) return dateStr;
+  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${dayNames[d.getDay()]}, ${monthNames[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
 function parseEventDate(dateDisplay) {
   if (!dateDisplay) return null;
   if (dateDisplay.includes("–")) {
@@ -230,16 +239,38 @@ function getTemporalState(dateStr) {
         if (activeEl) activeEl.classList.remove("hidden");
 
         if (page === "home") renderHome();
-        else if (page === "calendar") renderCalendar(true);
+        else if (page === "calendar") renderCalendar(false);
         else if (page === "dashboard") renderDashboard();
         else if (page === "assessments") renderEvaluations();
         else if (page === "events") renderEvents();
 
         updateNavigation();
 
-        if (scrollToTop && page !== "calendar" && typeof window !== "undefined" && typeof window.scrollTo === "function") {
+        if (scrollToTop && typeof window !== "undefined" && typeof window.scrollTo === "function") {
           window.scrollTo({ top: 0, behavior: "instant" });
         }
+      }
+
+      function scrollToTodayTile() {
+        const todayStr = getTodayStr();
+        const todayClass = ALL_CLASSES.find((c) => c.dateStr === todayStr);
+        if (todayClass) {
+          const monthSecId = `month-sec-${todayClass.month}`;
+          const monthSec = document.getElementById(monthSecId);
+          if (monthSec && monthSec.classList.contains("hidden")) {
+            toggleSection(monthSecId);
+          }
+        }
+        setTimeout(() => {
+          const todayTile = document.getElementById("today-calendar-tile");
+          if (todayTile && typeof todayTile.scrollIntoView === "function") {
+            todayTile.scrollIntoView({ behavior: "smooth", block: "center" });
+            todayTile.classList.add("ring-4", "ring-indigo-400");
+            setTimeout(() => {
+              todayTile.classList.remove("ring-4", "ring-indigo-400");
+            }, 1200);
+          }
+        }, 100);
       }
 
       // Direct Navigation & Attention Highlight Helpers
@@ -308,7 +339,7 @@ function getTemporalState(dateStr) {
             const allBtn = document.getElementById("event-filter-ALL");
             if (allBtn) {
               allBtn.className =
-                "event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm";
+                "event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm whitespace-nowrap shrink-0 cursor-pointer touch-manipulation";
             }
           }
         }
@@ -429,37 +460,55 @@ function getTemporalState(dateStr) {
             navBadge.classList.add("hidden");
           }
         }
+        const bottomBadge = document.getElementById("bottom-eval-badge");
+        if (bottomBadge) {
+          if (pendingCount > 0) {
+            bottomBadge.innerText = pendingCount;
+            bottomBadge.classList.remove("hidden");
+          } else {
+            bottomBadge.classList.add("hidden");
+          }
+        }
+        const menuBadge = document.getElementById("menu-eval-badge");
+        if (menuBadge) {
+          if (pendingCount > 0) {
+            menuBadge.innerText = pendingCount;
+            menuBadge.classList.remove("hidden");
+          } else {
+            menuBadge.classList.add("hidden");
+          }
+        }
         const evalCountBadge = document.getElementById("eval-count-badge");
         if (evalCountBadge) {
           evalCountBadge.innerText = `${pendingCount} Active ${pendingCount === 1 ? "Task" : "Tasks"}`;
         }
 
-        // Update Mobile Popover Navigation styles
-        const mobPages = ["home", "calendar", "dashboard", "assessments", "events"];
-        mobPages.forEach((p) => {
-          const mobBtn = document.getElementById(`mob-nav-${p}`);
-          if (mobBtn) {
+        // Update Mobile Bottom Bar active items
+        const bottomPages = ["home", "calendar", "dashboard", "assessments", "events"];
+        const bottomIcons = {
+          home: "text-brand-600",
+          calendar: "text-indigo-600",
+          dashboard: "text-sky-600",
+          assessments: "text-rose-600",
+          events: "text-purple-600",
+        };
+        bottomPages.forEach((p) => {
+          const btn = document.getElementById(`bottom-nav-${p}`);
+          if (btn) {
+            const icon = btn.querySelector("svg, i");
             if (currentPage === p) {
-              mobBtn.className = "flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold bg-brand-50 text-brand-700 border border-brand-200/80 shadow-2xs transition-all w-full text-left cursor-pointer";
+              btn.className = "flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl text-[10px] font-bold text-brand-700 bg-brand-50/80 transition-all touch-manipulation cursor-pointer";
+              if (icon) {
+                icon.className = `w-4 h-4 pointer-events-none mb-0.5 ${bottomIcons[p] || "text-brand-600"}`;
+              }
             } else {
-              mobBtn.className = "flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all w-full text-left cursor-pointer";
+              btn.className = "flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl text-[10px] font-semibold text-slate-500 hover:text-slate-800 transition-all touch-manipulation cursor-pointer";
+              if (icon) {
+                icon.className = "w-4 h-4 pointer-events-none mb-0.5 text-slate-400";
+              }
             }
           }
         });
-
-        // Also update mobile assessment badge and hamburger notification dot
-        const mobBadge = document.getElementById("mobile-eval-badge");
-        const hamburgerDot = document.getElementById("menu-notification-dot");
-        if (pendingCount > 0) {
-          if (mobBadge) {
-            mobBadge.innerText = pendingCount;
-            mobBadge.classList.remove("hidden");
-          }
-          if (hamburgerDot) hamburgerDot.classList.remove("hidden");
-        } else {
-          if (mobBadge) mobBadge.classList.add("hidden");
-          if (hamburgerDot) hamburgerDot.classList.add("hidden");
-        }
       }
 
       function toggleClass(id, event) {
@@ -481,29 +530,23 @@ function getTemporalState(dateStr) {
         currentFilter = filter;
         document.querySelectorAll(".filter-btn").forEach((btn) => {
           btn.className =
-            "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-600 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 shadow-2xs cursor-pointer";
+            "filter-btn px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-600 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 shadow-2xs cursor-pointer flex items-center justify-center touch-manipulation";
         });
         const activeBtn = document.getElementById(`filter-${filter}`);
         if (activeBtn) {
+          let activeClass = "bg-brand-600 text-white border-brand-600 font-bold";
           if (filter === "MAKEUP") {
-            activeBtn.className =
-              "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-amber-500 text-slate-950 border-amber-500 shadow-xs cursor-pointer";
+            activeClass = "bg-amber-500 text-slate-950 border-amber-500 font-extrabold";
           } else if (filter === "SAT") {
-            activeBtn.className =
-              "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-indigo-600 text-white border-indigo-600 shadow-xs cursor-pointer";
+            activeClass = "bg-indigo-600 text-white border-indigo-600 font-bold";
           } else if (filter === "SUN") {
-            activeBtn.className =
-              "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-sky-600 text-white border-sky-600 shadow-xs cursor-pointer";
+            activeClass = "bg-sky-600 text-white border-sky-600 font-bold";
           } else if (filter === "TUE") {
-            activeBtn.className =
-              "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-emerald-600 text-white border-emerald-600 shadow-xs cursor-pointer";
+            activeClass = "bg-emerald-600 text-white border-emerald-600 font-bold";
           } else if (filter === "WED") {
-            activeBtn.className =
-              "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-purple-600 text-white border-purple-600 shadow-xs cursor-pointer";
-          } else {
-            activeBtn.className =
-              "filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-xs cursor-pointer";
+            activeClass = "bg-purple-600 text-white border-purple-600 font-bold";
           }
+          activeBtn.className = `filter-btn px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs border transition-all ${activeClass} shadow-xs cursor-pointer flex items-center justify-center touch-manipulation`;
         }
         renderCalendar();
       }
@@ -806,18 +849,29 @@ function renderHome() {
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             ${greeting} &bull; Daily Academic Briefing
           </span>
-          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          <h2 class="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
             ${todayClass
               ? `${todayClass.track} Track &bull; Class #${todayClass.classNo} Scheduled Today`
               : "No Classes Scheduled Today"}
           </h2>
-          <p class="text-sm text-slate-600 font-medium mt-2 max-w-2xl leading-relaxed">
+          <p class="text-sm text-slate-600 font-medium mt-1.5 max-w-2xl leading-relaxed">
             ${todayClass
               ? `${todayClass.isMakeup ? "Online makeup lecture compensating for " + todayClass.makeupFor + " Track." : "Regular on-campus lecture session."} ${remaining} classes remaining in curriculum.`
-              : nextClass
-                ? `Timetable is clear today for independent study. Next upcoming lecture is <strong class="text-slate-900 font-bold">${nextClass.track} Track (#${nextClass.classNo})</strong> scheduled ${nextClassLabel}.`
-                : "All scheduled lectures for UIU Term 263 have successfully concluded."}
+              : "Timetable is open today for independent study, coursework, and review."}
           </p>
+
+          ${!todayClass && nextClass ? `
+            <div class="mt-3.5 inline-flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-2xs max-w-xl">
+              <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex flex-col items-center justify-center font-black text-xs shrink-0 shadow-xs">
+                <span>${nextClass.track}</span>
+                <span class="text-[9px] font-bold text-indigo-200">#${nextClass.classNo}</span>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-black text-slate-900 truncate">Next Lecture: ${nextClass.track} Track &bull; Class #${nextClass.classNo}</div>
+                <div class="text-[11px] font-semibold text-indigo-700 mt-0.5">${nextClass.month} ${nextClass.dayNum} (${nextClass.dayName}) &bull; ${nextClassLabel}</div>
+              </div>
+            </div>
+          ` : ""}
         </div>
 
         <!-- Primary Context Actions -->
@@ -978,7 +1032,7 @@ function renderHome() {
     if (classMatch) {
       dayItems.push({
         type: "CLASS",
-        title: `${classMatch.track} Track &bull; Class #${classMatch.classNo}`,
+        title: `Lecture #${classMatch.classNo}`, 
         subtitle: classMatch.isMakeup
           ? `Online Makeup Class compensating for ${classMatch.makeupFor} Track`
           : "Regular On-Campus Lecture Session",
@@ -1087,7 +1141,7 @@ function renderHome() {
             <div class="flex items-center gap-3">
               <!-- Calendar Date Stamp Block -->
               <div class="flex flex-col items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-xl ${dateBadgeStyle} shrink-0">
-                <span class="text-[9px] uppercase tracking-wider ${dateMonthColor}">${group.monthShort}</span>
+                <span class="text-[10px] uppercase tracking-wider ${dateMonthColor}">${group.monthShort}</span>
                 <span class="text-base sm:text-lg leading-none ${dateNumColor}">${group.dayNum}</span>
               </div>
               <div>
@@ -1349,7 +1403,7 @@ function renderHome() {
           <div class="min-w-0">
             <div class="flex items-center gap-2 mb-0.5">
               <span class="text-xs font-bold text-slate-900 truncate">${evt.title}</span>
-              <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded border ${catBadge}">${evt.category}</span>
+              <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded border ${catBadge}">${evt.category}</span>
             </div>
             <p class="text-xs text-slate-500 truncate">${evt.dateDisplay} &bull; ${evt.note}</p>
           </div>
@@ -1456,6 +1510,20 @@ function renderHome() {
 
   const todayStr = getTodayStr();
 
+  // Determine current active month (only this month will be open by default; others collapsed)
+  const todayDateObj = new Date(todayStr + "T00:00:00");
+  const monthShortNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  const wallMonth = monthShortNames[todayDateObj.getMonth()];
+  let activeMonth = months.includes(wallMonth) ? wallMonth : null;
+  if (!activeMonth) {
+    const todayClassObj = ALL_CLASSES.find((c) => c.dateStr === todayStr);
+    if (todayClassObj) activeMonth = todayClassObj.month;
+  }
+  if (!activeMonth) {
+    const nextUpcoming = ALL_CLASSES.find((c) => c.dateStr >= todayStr);
+    activeMonth = nextUpcoming ? nextUpcoming.month : "OCT";
+  }
+
   months.forEach((m) => {
     const monthClasses = ALL_CLASSES.filter((c) => c.month === m);
     const filteredClasses = monthClasses.filter((c) => {
@@ -1475,14 +1543,14 @@ function renderHome() {
     const mStyle = monthThemeStyles[m] || monthThemeStyles.OCT;
     const isAllDone = completedInMonth === monthClasses.length;
 
-    // Check if month has concluded (all scheduled classes in this month are in the past)
+    // Check month status
+    const isCurrentMonth = (m === activeMonth);
     const lastClassInMonth = monthClasses[monthClasses.length - 1];
     const isMonthPast = lastClassInMonth ? todayStr > lastClassInMonth.dateStr : false;
-    const isCurrentMonth = monthClasses.some((c) => c.dateStr === todayStr);
 
-    // Auto-collapse if month is gone, unless user manually toggled it
+    // ONLY show the current month grid; keep all other months collapsed by default!
     const isUserToggled = Object.prototype.hasOwnProperty.call(userMonthToggles, m);
-    const isCollapsed = isUserToggled ? userMonthToggles[m] : isMonthPast;
+    const isCollapsed = isUserToggled ? userMonthToggles[m] : !isCurrentMonth;
 
     let monthStatusBadge = "";
     if (isCurrentMonth) {
@@ -1510,7 +1578,7 @@ function renderHome() {
           <i id="month-sec-${m}-arrow" data-lucide="chevron-down" class="w-5 h-5 ${mStyle.arrow} transform transition-transform ${isCollapsed ? "" : "rotate-180"}"></i>
         </div>
       </button>
-      <div id="month-sec-${m}" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5 transition-all ${isCollapsed ? "hidden" : ""}">
+      <div id="month-sec-${m}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-3.5 transition-all ${isCollapsed ? "hidden" : ""}">
       </div>
     `;
 
@@ -1523,81 +1591,111 @@ function renderHome() {
 
       const isDone = completedClasses.has(item.id);
       const temporal = getTemporalState(item.dateStr);
-      const dayEvals = userEvaluations.filter(
-        (e) => e.dateId === item.id,
-      );
+      const dayEvals = userEvaluations.filter((e) => e.dateId === item.id);
       const linkData = makeupMeetingLinks[item.id];
 
       const card = document.createElement("div");
-
-      let borderStyle = "";
-      let temporalBadge = "";
-      let statusSubtitle = "";
-
       card.dataset.classId = item.id;
       card.id = `class-tile-${item.id}`;
+
+      // Track Theme Symmetrical Borders & Badges (Smooth rounded corners, no lopsided borders)
+      let borderStyle = "";
+      let trackBadgeClass = "bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold";
+
       if (temporal === "TODAY") {
         card.id = "today-calendar-tile";
         if (isDone) {
-          borderStyle = "border-2 border-emerald-600 bg-gradient-to-b from-emerald-50/70 via-white to-white shadow-sm ring-1 ring-emerald-500/20";
-          temporalBadge = '<span class="inline-flex items-center gap-1 text-[9px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-600 text-white shadow-xs"><i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i>Attended Today</span>';
-          statusSubtitle = '<span class="text-[10px] text-emerald-700 font-semibold block">Attended Today\'s Lecture</span>';
+          borderStyle = "border-2 border-emerald-500 bg-emerald-50/70 shadow-sm ring-2 ring-emerald-500/20";
         } else {
-          borderStyle = "border-2 border-indigo-600 bg-gradient-to-b from-indigo-50/60 via-white to-white shadow-sm ring-1 ring-indigo-500/20";
-          temporalBadge = '<span class="inline-flex items-center gap-1 text-[9px] font-black px-2 py-0.5 rounded-md bg-indigo-600 text-white shadow-xs"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>TODAY</span>';
-          statusSubtitle = '<span class="text-[10px] text-indigo-700 font-bold block">Lecture Scheduled Today</span>';
+          borderStyle = "border-2 border-indigo-600 bg-gradient-to-b from-indigo-50/50 via-white to-white shadow-md ring-2 ring-indigo-500/25";
         }
       } else if (isDone) {
-        borderStyle = "border-2 border-emerald-500 bg-emerald-50/80 hover:bg-emerald-100/80 shadow-xs";
-        temporalBadge = '<span class="inline-flex items-center gap-1 text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300"><i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i>Attended</span>';
-        statusSubtitle = '<span class="text-[10px] text-emerald-700 font-semibold block">Attended Session</span>';
+        borderStyle = "border-2 border-emerald-300 bg-emerald-50/50 hover:border-emerald-400 shadow-2xs";
       } else if (temporal === "PAST") {
-        borderStyle = "border-2 border-slate-200 bg-slate-100/80 text-slate-500 opacity-80 hover:opacity-100 shadow-none";
-        temporalBadge = '<span class="inline-flex items-center text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-slate-200 text-slate-700 border border-slate-300">Passed</span>';
-        statusSubtitle = '<span class="text-[10px] text-slate-500 font-medium block">Passed</span>';
+        borderStyle = "border border-slate-200 bg-slate-50/90 text-slate-500 opacity-75 hover:opacity-100 shadow-none";
       } else if (item.isMakeup) {
-        borderStyle = "border-2 border-amber-300 bg-amber-50/50 hover:bg-amber-100/60 shadow-xs";
-        statusSubtitle = "";
-      } else {
-        borderStyle = "border-2 border-slate-200 bg-white hover:border-indigo-300 hover:shadow-xs";
-        statusSubtitle = '<span class="text-[10px] text-slate-400 block">Regular Class</span>';
-      }
-
-      card.className = `relative flex flex-col justify-between p-3.5 rounded-xl transition-all cursor-pointer select-none calendar-tile-pop ${borderStyle}`;
-      card.onclick = (e) => toggleClass(item.id, e);
-
-      let trackBadgeClass = "bg-slate-100 text-slate-700";
-      if (item.isMakeup) {
+        borderStyle = "border-2 border-amber-300 bg-amber-50/35 hover:border-amber-400 shadow-2xs";
         trackBadgeClass = "bg-amber-100 text-amber-900 border border-amber-300 font-extrabold";
       } else if (item.track === "SAT") {
-        trackBadgeClass = "bg-indigo-100 text-indigo-800 border border-indigo-200";
+        borderStyle = "border-2 border-indigo-200/90 bg-white hover:border-indigo-400 hover:shadow-xs";
+        trackBadgeClass = "bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold";
       } else if (item.track === "SUN") {
-        trackBadgeClass = "bg-sky-100 text-sky-800 border border-sky-200";
+        borderStyle = "border-2 border-sky-200/90 bg-white hover:border-sky-400 hover:shadow-xs";
+        trackBadgeClass = "bg-sky-50 text-sky-700 border border-sky-200 font-bold";
       } else if (item.track === "TUE") {
-        trackBadgeClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+        borderStyle = "border-2 border-emerald-200/90 bg-white hover:border-emerald-400 hover:shadow-xs";
+        trackBadgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold";
       } else if (item.track === "WED") {
-        trackBadgeClass = "bg-purple-100 text-purple-800 border border-purple-200";
+        borderStyle = "border-2 border-purple-200/90 bg-white hover:border-purple-400 hover:shadow-xs";
+        trackBadgeClass = "bg-purple-50 text-purple-700 border border-purple-200 font-bold";
       }
 
+      // Single-line compact status pills (Never wrap or break card height)
+      let statusPillHtml = "";
+      if (temporal === "TODAY") {
+        if (isDone) {
+          statusPillHtml = '<span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100/90 border border-emerald-300 px-2 py-0.5 rounded-md truncate"><i data-lucide="check" class="w-3 h-3 text-emerald-600 stroke-[3] shrink-0"></i><span class="truncate">Attended Today</span></span>';
+        } else {
+          statusPillHtml = '<span class="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-950 bg-indigo-100 border border-indigo-300 px-2 py-0.5 rounded-md truncate"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span><span class="truncate">Scheduled Today</span></span>';
+        }
+      } else if (isDone) {
+        statusPillHtml = '<span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded-md truncate"><i data-lucide="check" class="w-3 h-3 text-emerald-600 stroke-[3] shrink-0"></i><span class="truncate">Attended</span></span>';
+      } else if (temporal === "PAST") {
+        statusPillHtml = '<span class="inline-flex items-center text-[11px] font-medium text-slate-500 bg-slate-100 border border-slate-200/80 px-2 py-0.5 rounded-md truncate"><span class="truncate">Concluded</span></span>';
+      } else if (item.isMakeup) {
+        statusPillHtml = `<div class="flex items-center justify-between gap-1">
+          <span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-900 bg-amber-100/80 border border-amber-300 px-2 py-0.5 rounded-md truncate">
+            <i data-lucide="video" class="w-3 h-3 text-amber-700 shrink-0"></i>
+            <span class="truncate">Makeup (${item.makeupFor})</span>
+          </span>
+          ${linkData && linkData.url ? `<button onclick="openMeetingModal('${item.id}', '${item.month} ${item.dayNum}', event)" class="text-amber-800 hover:text-amber-950 p-0.5 shrink-0" title="Edit Link"><i data-lucide="edit-3" class="w-3 h-3"></i></button>` : ""}
+        </div>`;
+      } else {
+        statusPillHtml = '<span class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200/70 px-2 py-0.5 rounded-md truncate"><i data-lucide="calendar" class="w-3 h-3 text-slate-400 shrink-0"></i><span class="truncate">Regular Class</span></span>';
+      }
+
+      // Online Makeup Zoom Button
+      let meetingLinkHtml = "";
+      if (item.isMakeup) {
+        if (linkData && linkData.url) {
+          const aliasText = linkData.alias || "Join Meeting";
+          meetingLinkHtml = `
+            <div class="mt-2" onclick="event.stopPropagation()">
+              <a href="${linkData.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 w-full justify-center text-[11px] font-bold text-amber-950 bg-amber-300 hover:bg-amber-400 px-2 py-1 rounded-lg border border-amber-400 transition-colors truncate touch-manipulation shadow-2xs" title="${linkData.url}">
+                <i data-lucide="video" class="w-3.5 h-3.5 text-amber-900 shrink-0"></i>
+                <span class="truncate">${aliasText}</span>
+                <i data-lucide="external-link" class="w-3 h-3 text-amber-900 shrink-0"></i>
+              </a>
+            </div>
+          `;
+        } else {
+          meetingLinkHtml = `
+            <div class="mt-2" onclick="event.stopPropagation()">
+              <button onclick="openMeetingModal('${item.id}', '${item.month} ${item.dayNum}', event)" class="inline-flex items-center gap-1 w-full justify-center text-[11px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-lg border border-amber-300 transition-colors touch-manipulation cursor-pointer">
+                <i data-lucide="link" class="w-3.5 h-3.5"></i> + Add Link
+              </button>
+            </div>
+          `;
+        }
+      }
+
+      // Tasks / Evals
       let evalsHtml = "";
       if (dayEvals.length > 0) {
         evalsHtml = `<div class="mt-2 space-y-1" onclick="event.stopPropagation()">`;
         dayEvals.forEach((ev) => {
-          let evBadge = "bg-rose-100 text-rose-800 border-rose-200";
-          if (ev.type === "Presentation")
-            evBadge = "bg-indigo-100 text-indigo-800 border-indigo-200";
-          if (ev.type === "Assignment Deadline")
-            evBadge = "bg-cyan-100 text-cyan-800 border-cyan-200";
-          if (ev.type === "Update")
-            evBadge = "bg-amber-100 text-amber-800 border-amber-200";
+          let evBadge = "bg-rose-50 text-rose-800 border-rose-200";
+          if (ev.type === "Presentation") evBadge = "bg-indigo-50 text-indigo-800 border-indigo-200";
+          if (ev.type === "Assignment Deadline") evBadge = "bg-cyan-50 text-cyan-800 border-cyan-200";
+          if (ev.type === "Update") evBadge = "bg-amber-50 text-amber-800 border-amber-200";
 
           evalsHtml += `
-            <div class="p-1.5 rounded-lg border text-[10px] ${evBadge} ${ev.done ? "line-through opacity-60" : "font-semibold"} flex items-center justify-between gap-1">
+            <div class="p-1 rounded-lg border text-[11px] ${evBadge} ${ev.done ? "line-through opacity-60" : "font-semibold"} flex items-center justify-between gap-1 shadow-2xs">
               <div class="truncate">
                 <span class="font-extrabold uppercase mr-0.5">${ev.code}:</span>
                 <span>${ev.desc}</span>
               </div>
-              <button onclick="deleteEvaluation('${ev.id}', event)" class="text-slate-400 hover:text-rose-600 shrink-0">
+              <button onclick="deleteEvaluation('${ev.id}', event)" class="text-slate-400 hover:text-rose-600 shrink-0 p-0.5" title="Remove Task">
                 &times;
               </button>
             </div>
@@ -1606,71 +1704,29 @@ function renderHome() {
         evalsHtml += `</div>`;
       }
 
-      let meetingLinkHtml = "";
-      if (item.isMakeup) {
-        if (linkData && linkData.url) {
-          const aliasText = linkData.alias || "Join Meeting";
-          meetingLinkHtml = `
-            <div class="mt-2" onclick="event.stopPropagation()">
-              <a href="${linkData.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 w-full justify-center text-[10px] font-bold text-amber-800 bg-amber-200 hover:bg-amber-300 px-2 py-0.5 rounded border border-amber-300 transition-colors truncate" title="${linkData.url}">
-                <i data-lucide="video" class="w-3 h-3 text-amber-700 shrink-0"></i>
-                <span class="truncate">${aliasText}</span>
-                <i data-lucide="external-link" class="w-2.5 h-2.5 text-amber-700 shrink-0"></i>
-              </a>
-            </div>
-          `;
-        } else {
-          meetingLinkHtml = `
-            <div class="mt-2" onclick="event.stopPropagation()">
-              <button onclick="openMeetingModal('${item.id}', '${item.month} ${item.dayNum}', event)" class="inline-flex items-center gap-1 w-full justify-center text-[10px] font-bold text-amber-700 bg-amber-100 hover:bg-amber-200 px-2 py-0.5 rounded border border-amber-300 transition-colors">
-                <i data-lucide="link" class="w-3 h-3"></i> + Add Link
-              </button>
-            </div>
-          `;
-        }
-      }
-
-      // Dedicated Status Pill (cleanly placed in middle section so top date row NEVER shifts or wraps)
-      let statusPillHtml = "";
-      if (temporal === "TODAY") {
-        if (isDone) {
-          statusPillHtml = '<span class="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-600 text-white shadow-xs"><i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>Attended Today</span>';
-        } else {
-          statusPillHtml = '<span class="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-md bg-indigo-600 text-white shadow-xs"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>TODAY</span>';
-        }
-      } else if (isDone) {
-        statusPillHtml = '<span class="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 border border-emerald-300"><i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i>Attended</span>';
-      } else if (temporal === "PAST") {
-        statusPillHtml = '<span class="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-200 text-slate-700 border border-slate-300">Passed</span>';
-      } else if (item.isMakeup) {
-        statusPillHtml = `<div class="flex items-center justify-between">
-          <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-200">
-            <i data-lucide="video" class="w-3 h-3"></i> Online Makeup
-          </span>
-          ${linkData && linkData.url ? `<button onclick="openMeetingModal('${item.id}', '${item.month} ${item.dayNum}', event)" class="text-[10px] font-bold text-amber-700 hover:text-amber-900" title="Edit Link"><i data-lucide="edit-3" class="w-3 h-3"></i></button>` : ""}
-         </div>`;
-      } else {
-        statusPillHtml = '<span class="text-[10px] text-slate-400 font-medium block">Regular Class</span>';
-      }
+      card.className = `relative flex flex-col justify-between p-3.5 rounded-2xl transition-all cursor-pointer select-none calendar-tile-pop touch-manipulation h-full min-h-[145px] ${borderStyle}`;
+      card.onclick = (e) => toggleClass(item.id, e);
 
       card.innerHTML = `
         <div>
-          <!-- Pinned Top Date Row: Clean 2-column header that NEVER shifts or wraps -->
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs ${isDone ? "text-emerald-950 font-black" : (temporal === "TODAY" ? "text-indigo-950 font-black" : (temporal === "PAST" ? "text-slate-600 font-bold" : "text-slate-900 font-extrabold"))} tracking-tight">
-              ${item.month} ${item.dayNum}
-            </span>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${trackBadgeClass} shrink-0">
-              ${item.dayName}
+          <!-- Pinned Top Date & Track Header -->
+          <div class="flex items-center justify-between gap-1 mb-2">
+            <div class="flex items-baseline gap-1">
+              <span class="text-sm font-black text-slate-900 tracking-tight">
+                ${item.month} ${item.dayNum}
+              </span>
+              <span class="text-[11px] font-bold text-slate-500 uppercase">
+                ${item.dayName}
+              </span>
+            </div>
+            <span class="text-[11px] px-2 py-0.5 rounded-md ${trackBadgeClass} shrink-0 whitespace-nowrap">
+              ${item.isMakeup ? 'MAKEUP' : item.track + ' #' + item.classNo}
             </span>
           </div>
 
-          <!-- Middle Details Section with Dedicated Status Line -->
+          <!-- Compact Status Pill -->
           <div class="space-y-1">
-            <span class="text-xs ${isDone ? "text-emerald-800" : (temporal === "TODAY" ? "text-indigo-900" : "text-slate-500")} font-medium block">
-              Track: <strong class="${isDone ? "text-emerald-950" : (temporal === "TODAY" ? "text-indigo-950" : "text-slate-800")}">${item.track}</strong> (#${item.classNo})
-            </span>
-            <div class="pt-0.5">${statusPillHtml}</div>
+            ${statusPillHtml}
           </div>
 
           ${meetingLinkHtml}
@@ -1678,19 +1734,22 @@ function renderHome() {
         </div>
 
         <!-- Pinned Bottom Action Row -->
-        <div class="mt-3 pt-2 border-t ${isDone ? "border-emerald-200" : (temporal === "TODAY" ? "border-indigo-100" : "border-slate-100")} flex items-center justify-between">
-          <button onclick="openEvalModal('${item.id}', '${item.month} ${item.dayNum}, 2026', event)" class="text-[10px] font-bold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 px-2 py-0.5 rounded transition-colors flex items-center gap-0.5">
+        <div class="mt-3 pt-2 border-t ${isDone ? "border-emerald-200" : (temporal === "TODAY" ? "border-indigo-200/80" : "border-slate-100")} flex items-center justify-between gap-1.5" onclick="event.stopPropagation()">
+          <button onclick="openEvalModal('${item.id}', '${item.month} ${item.dayNum}, 2026', event)" class="inline-flex items-center gap-1 text-[11px] font-bold text-brand-700 hover:text-brand-900 bg-brand-50 hover:bg-brand-100 px-2.5 py-1 rounded-lg transition-colors cursor-pointer touch-manipulation shrink-0" title="Add Assessment for this Date">
             <i data-lucide="plus" class="w-3 h-3"></i> Eval
           </button>
-          <div onclick="toggleClass('${item.id}', event)" class="w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer ${
+          <button onclick="toggleClass('${item.id}', event)" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer touch-manipulation shrink-0 ${
             isDone
-              ? "bg-emerald-600 border-emerald-600 text-white shadow-xs"
+              ? "bg-emerald-600 text-white shadow-2xs hover:bg-emerald-700"
               : (temporal === "TODAY"
-                ? "border-2 border-indigo-400 bg-white hover:border-indigo-600 hover:bg-indigo-50"
-                : "border-slate-300 bg-white hover:border-indigo-400")
-          }" title="${isDone ? "Marked as attended (click to unmark)" : (temporal === "PAST" ? "Missed/Passed (click to mark attended)" : "Click to mark attended")}">
-            ${isDone ? '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>' : ""}
-          </div>
+                ? "bg-indigo-600 text-white shadow-2xs hover:bg-indigo-700"
+                : (temporal === "PAST"
+                  ? "bg-slate-200 text-slate-700 border border-slate-300 hover:bg-slate-300"
+                  : "bg-white text-slate-700 border border-slate-300 hover:bg-slate-100"))
+          }" title="${isDone ? "Marked as attended (tap to unmark)" : "Tap to mark attended"}">
+            <i data-lucide="${isDone ? "check" : (temporal === "TODAY" ? "clock" : "circle")}" class="w-3 h-3 stroke-[2.5]"></i>
+            <span>${isDone ? "Attended" : (temporal === "TODAY" ? "Attend" : "Mark")}</span>
+          </button>
         </div>
       `;
 
@@ -1787,16 +1846,30 @@ function renderHome() {
             const trackPct = Math.round((trackDone / 12) * 100);
 
             const card = document.createElement("div");
-            card.className =
-              "bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4 card-hover-pop hover:border-indigo-300";
+            let cardBorder = "border-2 border-indigo-200 bg-white hover:border-indigo-400";
+            let trackPillColor = "bg-indigo-50 text-indigo-700 border border-indigo-200";
+            let trackBarColor = "bg-indigo-600";
+            if (t === "SUN") {
+              cardBorder = "border-2 border-sky-200 bg-white hover:border-sky-400";
+              trackPillColor = "bg-sky-50 text-sky-700 border border-sky-200";
+              trackBarColor = "bg-sky-600";
+            } else if (t === "TUE") {
+              cardBorder = "border-2 border-emerald-200 bg-white hover:border-emerald-400";
+              trackPillColor = "bg-emerald-50 text-emerald-700 border border-emerald-200";
+              trackBarColor = "bg-emerald-600";
+            } else if (t === "WED") {
+              cardBorder = "border-2 border-purple-200 bg-white hover:border-purple-400";
+              trackPillColor = "bg-purple-50 text-purple-700 border border-purple-200";
+              trackBarColor = "bg-purple-600";
+            }
+            card.className = `p-5 rounded-2xl shadow-2xs flex flex-col justify-between space-y-4 card-hover-pop transition-all ${cardBorder}`;
             card.innerHTML = `
                         <div>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-xs font-bold uppercase tracking-wider text-slate-400">${t} Track</span>
                                 <span class="text-xs font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md">${trackDone} / 12</span>
                             </div>
-                            <h3 class="text-xl font-extrabold text-slate-900">${t} Track</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">${12 - trackDone} classes remaining</p>
+                            <div class="flex items-baseline gap-2 mt-1"><h3 class="text-2xl font-black text-slate-900">${trackPct}%</h3><span class="text-xs font-medium text-slate-500">(${12 - trackDone} remaining)</span></div>
                         </div>
 
                         <div class="space-y-2">
@@ -1805,7 +1878,7 @@ function renderHome() {
                                 <span class="text-slate-900 font-bold">${trackPct}%</span>
                             </div>
                             <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                                <div class="h-full bg-brand-600 rounded-full transition-all duration-500" style="width: ${trackPct}%"></div>
+                                <div class="h-full ${trackBarColor} rounded-full transition-all duration-500" style="width: ${trackPct}%"></div>
                             </div>
                         </div>
 
@@ -1829,7 +1902,7 @@ function renderHome() {
                                   pillClass = "bg-slate-100 text-slate-700 border border-slate-200";
                                   pillTitle += " - Upcoming";
                                 }
-                                return `<div onclick="openClassInGrid('${c.id}', event)" title="${pillTitle} • Click to view in Calendar Grid" class="h-6 rounded-md flex items-center justify-center text-[10px] font-bold ${pillClass} cursor-pointer hover:scale-105 hover:ring-2 hover:ring-indigo-400 transition-all">${c.classNo}</div>`;
+                                return `<div onclick="openClassInGrid('${c.id}', event)" title="${pillTitle} • Click to view in Calendar Grid" class="h-6 rounded-md flex items-center justify-center text-[10px] font-bold ${pillClass} cursor-pointer hover:ring-2 hover:ring-offset-1 hover:ring-indigo-400 transition-all">${c.classNo}</div>`;
                               })
                               .join("")}
                         </div>
@@ -1848,9 +1921,9 @@ function renderHome() {
 
             let temporalPill = "";
             if (temporal === "TODAY") {
-              temporalPill = '<span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-indigo-600 text-white shadow-xs">Today</span>';
+              temporalPill = '<span class="text-[10px] font-black px-1.5 py-0.5 rounded-md bg-indigo-600 text-white shadow-xs">Today</span>';
             } else if (temporal === "PAST" && !isDone) {
-              temporalPill = '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-slate-200 text-slate-600 border border-slate-300">Passed</span>';
+              temporalPill = '<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-200 text-slate-600 border border-slate-300">Passed</span>';
             }
 
             item.onclick = (e) => openClassInGrid(c.id, e);
@@ -2110,7 +2183,7 @@ function renderHome() {
         currentEvalFilter = type;
         document.querySelectorAll(".eval-f-btn").forEach((btn) => {
           btn.className =
-            "eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 cursor-pointer";
+            "eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 cursor-pointer whitespace-nowrap shrink-0 touch-manipulation";
         });
 
         let btnId = "eval-filter-ALL";
@@ -2121,17 +2194,17 @@ function renderHome() {
 
         const activeBtn = document.getElementById(btnId);
         if (activeBtn) {
+          let activeClass = "bg-brand-600 text-white border-brand-600 font-bold";
           if (type === "Class Test") {
-            activeBtn.className = "eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-rose-600 text-white border-rose-600 shadow-xs cursor-pointer";
+            activeClass = "bg-rose-600 text-white border-rose-600 font-bold";
           } else if (type === "Presentation") {
-            activeBtn.className = "eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-indigo-600 text-white border-indigo-600 shadow-xs cursor-pointer";
+            activeClass = "bg-indigo-600 text-white border-indigo-600 font-bold";
           } else if (type === "Assignment Deadline") {
-            activeBtn.className = "eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-cyan-600 text-white border-cyan-600 shadow-xs cursor-pointer";
+            activeClass = "bg-cyan-600 text-white border-cyan-600 font-bold";
           } else if (type === "Update") {
-            activeBtn.className = "eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-amber-500 text-slate-950 border-amber-500 shadow-xs cursor-pointer";
-          } else {
-            activeBtn.className = "eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-xs cursor-pointer";
+            activeClass = "bg-amber-500 text-slate-950 border-amber-500 font-extrabold";
           }
+          activeBtn.className = `eval-f-btn px-3.5 py-1.5 rounded-xl text-xs border transition-all ${activeClass} shadow-xs cursor-pointer whitespace-nowrap shrink-0 touch-manipulation`;
         }
         renderEvaluations();
       }
@@ -2156,90 +2229,145 @@ function renderHome() {
 
         const today = new Date(getTodayStr() + "T00:00:00");
 
+        // 1. Render Midterm Exam Window Days
         if (midContainer) {
           midContainer.innerHTML = "";
+          let midCompletedCount = 0;
           MIDTERM_DAYS.forEach((d) => {
             const isDone = completedExams.has(d.id);
-            const targetDate = new Date(d.dateStr);
-            const diffDays = Math.ceil(
-              (targetDate - today) / (1000 * 60 * 60 * 24),
-            );
+            if (isDone) midCompletedCount++;
+            const targetDate = new Date(d.dateStr + "T00:00:00");
+            const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
 
-            let urgencyClass =
-              diffDays < 7
-                ? "bg-rose-100 text-rose-800 border-rose-300"
-                : diffDays <= 14
-                  ? "bg-amber-100 text-amber-800 border-amber-300"
-                  : "bg-emerald-100 text-emerald-800 border-emerald-300";
-            let urgencyBadge =
-              diffDays < 7
-                ? `${diffDays <= 0 ? "Passed" : (diffDays === 1 ? "1 Day Left" : diffDays + " Days Left")} (Very Important)`
-                : diffDays <= 14
-                  ? `${diffDays} Days Left (Prepare)`
-                  : `${diffDays} Days Left (Plan)`;
+            let urgencyClass = "bg-slate-100 text-slate-700 border-slate-200";
+            let urgencyBadge = "";
+
+            if (diffDays < 0) {
+              const pastDays = Math.abs(diffDays);
+              urgencyClass = "bg-slate-100 text-slate-600 border-slate-200";
+              urgencyBadge = `Concluded (${pastDays === 1 ? "1d ago" : pastDays + "d ago"})`;
+            } else if (diffDays === 0) {
+              urgencyClass = "bg-rose-100 text-rose-800 border-rose-300 font-black animate-pulse";
+              urgencyBadge = "Exam Today!";
+            } else if (diffDays < 7) {
+              urgencyClass = "bg-rose-100 text-rose-800 border-rose-300 font-bold";
+              urgencyBadge = `${diffDays === 1 ? "1 Day Left" : diffDays + " Days Left"}`;
+            } else if (diffDays <= 14) {
+              urgencyClass = "bg-amber-100 text-amber-900 border-amber-200 font-bold";
+              urgencyBadge = `${diffDays} Days Left`;
+            } else {
+              urgencyClass = "bg-emerald-100 text-emerald-800 border-emerald-200 font-bold";
+              urgencyBadge = `${diffDays} Days Left`;
+            }
 
             const item = document.createElement("div");
-            item.className = `p-3.5 rounded-2xl border flex items-center justify-between text-xs card-hover-pop-subtle transition-all ${isDone ? "bg-emerald-50/70 border-emerald-200 opacity-65" : "bg-white border-slate-200/90 hover:border-amber-300 shadow-2xs"}`;
+            item.className = `p-3 sm:p-3.5 rounded-2xl border flex items-center justify-between gap-3 text-xs card-hover-pop-subtle transition-all ${
+              isDone
+                ? "bg-emerald-50/70 border-emerald-200"
+                : "bg-white border-amber-200/80 hover:border-amber-400 shadow-2xs"
+            }`;
             item.innerHTML = `
-                        <div class="flex items-center gap-2.5 sm:gap-3">
-                            <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-900 font-extrabold flex items-center justify-center text-[11px] shrink-0">${d.dayNo}</span>
-                            <span class="font-bold text-slate-800">${d.display}</span>
-                            <span class="px-2 py-0.5 rounded-md border text-[10px] font-bold ${urgencyClass}">${urgencyBadge}</span>
-                        </div>
-                        <button onclick="toggleExamDone('${d.id}')" class="px-3 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${isDone ? "bg-emerald-600 text-white" : "bg-amber-50 text-amber-900 border border-amber-200 hover:bg-amber-100"}">
-                            ${isDone ? "Completed" : "Mark Done"}
-                        </button>
-                    `;
+              <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <span class="w-7 h-7 rounded-xl ${isDone ? "bg-emerald-100 text-emerald-900 border-emerald-300" : "bg-amber-100 text-amber-950 border-amber-300"} border font-black flex items-center justify-center text-xs shrink-0 shadow-2xs">
+                  ${d.dayNo}
+                </span>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-extrabold ${isDone ? "text-slate-400 line-through" : "text-slate-900"} truncate">${d.display}</span>
+                    <span class="px-2 py-0.5 rounded-md border text-[10px] font-bold ${urgencyClass} shrink-0 whitespace-nowrap">${urgencyBadge}</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-medium">Trimester Mid-Term Exam Day #${d.dayNo}</p>
+                </div>
+              </div>
+              <button onclick="toggleExamDone('${d.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer touch-manipulation ${
+                isDone
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs"
+                  : "bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200"
+              }">
+                <i data-lucide="${isDone ? "check-check" : "circle"}" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                <span>${isDone ? "Done" : "Mark"}</span>
+              </button>
+            `;
             midContainer.appendChild(item);
           });
+
+          const midBadge = document.getElementById("midterm-done-count");
+          if (midBadge) midBadge.innerText = `${midCompletedCount} / ${MIDTERM_DAYS.length} Done`;
         }
 
+        // 2. Render Final Exam Window Days
         if (finalContainer) {
           finalContainer.innerHTML = "";
+          let finalCompletedCount = 0;
           FINAL_DAYS.forEach((d) => {
             const isDone = completedExams.has(d.id);
-            const targetDate = new Date(d.dateStr);
-            const diffDays = Math.ceil(
-              (targetDate - today) / (1000 * 60 * 60 * 24),
-            );
+            if (isDone) finalCompletedCount++;
+            const targetDate = new Date(d.dateStr + "T00:00:00");
+            const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
 
-            let urgencyClass =
-              diffDays < 7
-                ? "bg-rose-100 text-rose-800 border-rose-300"
-                : diffDays <= 14
-                  ? "bg-amber-100 text-amber-800 border-amber-300"
-                  : "bg-emerald-100 text-emerald-800 border-emerald-300";
-            let urgencyBadge =
-              diffDays < 7
-                ? `${diffDays <= 0 ? "Passed" : (diffDays === 1 ? "1 Day Left" : diffDays + " Days Left")} (Very Important)`
-                : diffDays <= 14
-                  ? `${diffDays} Days Left (Prepare)`
-                  : `${diffDays} Days Left (Plan)`;
+            let urgencyClass = "bg-slate-100 text-slate-700 border-slate-200";
+            let urgencyBadge = "";
+
+            if (diffDays < 0) {
+              const pastDays = Math.abs(diffDays);
+              urgencyClass = "bg-slate-100 text-slate-600 border-slate-200";
+              urgencyBadge = `Concluded (${pastDays === 1 ? "1d ago" : pastDays + "d ago"})`;
+            } else if (diffDays === 0) {
+              urgencyClass = "bg-rose-100 text-rose-800 border-rose-300 font-black animate-pulse";
+              urgencyBadge = "Final Exam Today!";
+            } else if (diffDays < 7) {
+              urgencyClass = "bg-rose-100 text-rose-800 border-rose-300 font-bold";
+              urgencyBadge = `${diffDays === 1 ? "1 Day Left" : diffDays + " Days Left"}`;
+            } else if (diffDays <= 14) {
+              urgencyClass = "bg-amber-100 text-amber-900 border-amber-200 font-bold";
+              urgencyBadge = `${diffDays} Days Left`;
+            } else {
+              urgencyClass = "bg-emerald-100 text-emerald-800 border-emerald-200 font-bold";
+              urgencyBadge = `${diffDays} Days Left`;
+            }
 
             const item = document.createElement("div");
-            item.className = `p-3.5 rounded-2xl border flex items-center justify-between text-xs card-hover-pop-subtle transition-all ${isDone ? "bg-emerald-50/70 border-emerald-200 opacity-65" : "bg-white border-slate-200/90 hover:border-indigo-300 shadow-2xs"}`;
+            item.className = `p-3 sm:p-3.5 rounded-2xl border flex items-center justify-between gap-3 text-xs card-hover-pop-subtle transition-all ${
+              isDone
+                ? "bg-emerald-50/70 border-emerald-200"
+                : "bg-white border-indigo-200/80 hover:border-indigo-400 shadow-2xs"
+            }`;
             item.innerHTML = `
-                        <div class="flex items-center gap-2.5 sm:gap-3">
-                            <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-900 font-extrabold flex items-center justify-center text-[11px] shrink-0">${d.dayNo}</span>
-                            <span class="font-bold text-slate-800">${d.display}</span>
-                            <span class="px-2 py-0.5 rounded-md border text-[10px] font-bold ${urgencyClass}">${urgencyBadge}</span>
-                        </div>
-                        <button onclick="toggleExamDone('${d.id}')" class="px-3 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${isDone ? "bg-emerald-600 text-white" : "bg-indigo-50 text-indigo-900 border border-indigo-200 hover:bg-indigo-100"}">
-                            ${isDone ? "Completed" : "Mark Done"}
-                        </button>
-                    `;
+              <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <span class="w-7 h-7 rounded-xl ${isDone ? "bg-emerald-100 text-emerald-900 border-emerald-300" : "bg-indigo-100 text-indigo-950 border-indigo-300"} border font-black flex items-center justify-center text-xs shrink-0 shadow-2xs">
+                  ${d.dayNo}
+                </span>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-extrabold ${isDone ? "text-slate-400 line-through" : "text-slate-900"} truncate">${d.display}</span>
+                    <span class="px-2 py-0.5 rounded-md border text-[10px] font-bold ${urgencyClass} shrink-0 whitespace-nowrap">${urgencyBadge}</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 font-medium">Trimester Final Exam Day #${d.dayNo}</p>
+                </div>
+              </div>
+              <button onclick="toggleExamDone('${d.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer touch-manipulation ${
+                isDone
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs"
+                  : "bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200"
+              }">
+                <i data-lucide="${isDone ? "check-check" : "circle"}" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                <span>${isDone ? "Done" : "Mark"}</span>
+              </button>
+            `;
             finalContainer.appendChild(item);
           });
+
+          const finalBadge = document.getElementById("final-done-count");
+          if (finalBadge) finalBadge.innerText = `${finalCompletedCount} / ${FINAL_DAYS.length} Done`;
         }
 
+        // 3. Render User Custom Added Evaluations List
         if (!container) return;
         container.innerHTML = "";
 
         let filtered = userEvaluations;
         if (currentEvalFilter !== "ALL") {
-          filtered = userEvaluations.filter(
-            (e) => e.type === currentEvalFilter,
-          );
+          filtered = userEvaluations.filter((e) => e.type === currentEvalFilter);
         }
 
         const pendingCount = userEvaluations.filter((e) => !e.done).length;
@@ -2252,31 +2380,49 @@ function renderHome() {
             navBadge.classList.add("hidden");
           }
         }
+        const bottomBadge = document.getElementById("bottom-eval-badge");
+        if (bottomBadge) {
+          if (pendingCount > 0) {
+            bottomBadge.innerText = pendingCount;
+            bottomBadge.classList.remove("hidden");
+          } else {
+            bottomBadge.classList.add("hidden");
+          }
+        }
         const evalCountBadge = document.getElementById("eval-count-badge");
         if (evalCountBadge) {
           evalCountBadge.innerText = `${pendingCount} Active ${pendingCount === 1 ? "Task" : "Tasks"}`;
         }
 
         if (filtered.length === 0) {
+          const isFilterActive = currentEvalFilter !== "ALL";
           container.innerHTML = `
-                    <div class="bg-white p-8 text-center rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                        <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto shadow-xs">
-                            <i data-lucide="pen-tool" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-extrabold text-slate-800">No Custom Assessments Added Yet</h3>
-                            <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1">
-                                Schedule your quizzes, class tests, presentations, or assignment deadlines to track countdowns.
-                            </p>
-                        </div>
-                        <div class="pt-1">
-                            <button onclick="openHomeEvalModal(event)" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 shadow-sm shadow-brand-500/20 transition-all cursor-pointer">
-                                <i data-lucide="plus" class="w-4 h-4 stroke-[2.5]"></i>
-                                <span>Add Your First Assessment</span>
-                            </button>
-                        </div>
-                    </div>
-                `;
+            <div class="bg-white p-6 sm:p-8 text-center rounded-3xl border border-slate-200/90 shadow-2xs space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 border border-brand-200/80 flex items-center justify-center mx-auto shadow-2xs">
+                <i data-lucide="${isFilterActive ? "filter" : "pen-tool"}" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h3 class="text-sm sm:text-base font-extrabold text-slate-800">
+                  ${isFilterActive ? `No ${currentEvalFilter}s Found` : "No Custom Assessments Added Yet"}
+                </h3>
+                <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1">
+                  ${isFilterActive ? `No tasks found under the ${currentEvalFilter} filter.` : "Schedule your quizzes, class tests, presentations, or assignment deadlines to track countdowns."}
+                </p>
+              </div>
+              <div class="pt-1 flex items-center justify-center gap-2 flex-wrap">
+                ${isFilterActive ? `
+                  <button onclick="filterEvaluations('ALL')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-all cursor-pointer">
+                    <i data-lucide="layers" class="w-4 h-4"></i>
+                    <span>Show All Types</span>
+                  </button>
+                ` : ""}
+                <button onclick="openHomeEvalModal(event)" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 shadow-sm shadow-brand-500/20 transition-all cursor-pointer">
+                  <i data-lucide="plus" class="w-4 h-4 stroke-[2.5]"></i>
+                  <span>${isFilterActive ? `Add ${currentEvalFilter}` : "Add First Assessment"}</span>
+                </button>
+              </div>
+            </div>
+          `;
           lucide.createIcons();
           return;
         }
@@ -2285,7 +2431,7 @@ function renderHome() {
           .sort((a, b) => new Date(a.dateStr) - new Date(b.dateStr))
           .forEach((ev) => {
             const isDone = ev.done;
-            const targetDate = new Date(ev.dateStr);
+            const targetDate = new Date(ev.dateStr + "T00:00:00");
             const diffTime = targetDate - today;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -2295,84 +2441,137 @@ function renderHome() {
             if (diffDays < 0) {
               const overdueDays = Math.abs(diffDays);
               urgencyClass = "bg-rose-100 text-rose-800 border-rose-300 font-bold";
-              urgencyBadge = `Overdue (${overdueDays === 1 ? "1 day ago" : overdueDays + " days ago"})`;
+              urgencyBadge = `<span class="inline-flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3 text-rose-600 shrink-0"></i><span>Overdue (${overdueDays}d)</span></span>`;
             } else if (diffDays === 0) {
               urgencyClass = "bg-rose-100 text-rose-800 border-rose-300 font-black animate-pulse";
-              urgencyBadge = "Due Today! (Very Important)";
+              urgencyBadge = '<span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span><span>Due Today!</span></span>';
             } else if (diffDays < 7) {
-              urgencyClass = "bg-rose-100 text-rose-800 border-rose-300 font-bold";
-              urgencyBadge = `${diffDays === 1 ? "1 Day Left" : diffDays + " Days Left"} (Very Important)`;
+              urgencyClass = "bg-rose-100 text-rose-800 border-rose-200 font-bold";
+              urgencyBadge = `<span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>${diffDays === 1 ? "1 Day Left" : diffDays + " Days Left"}</span></span>`;
             } else if (diffDays <= 14) {
-              urgencyClass = "bg-amber-100 text-amber-800 border-amber-300 font-bold";
-              urgencyBadge = `${diffDays} Days Left (Prepare)`;
+              urgencyClass = "bg-amber-100 text-amber-900 border-amber-200 font-bold";
+              urgencyBadge = `<span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span>${diffDays} Days Left</span></span>`;
             } else {
-              urgencyClass = "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold";
-              urgencyBadge = `${diffDays} Days Left (Plan)`;
+              urgencyClass = "bg-emerald-100 text-emerald-800 border-emerald-200 font-bold";
+              urgencyBadge = `<span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>${diffDays} Days Left</span></span>`;
             }
 
-            let typeBadge = "bg-rose-50 text-rose-700 border-rose-200";
-            let iconName = "file-text";
-            let iconBg =
-              "bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-sm shadow-rose-500/30";
+            // Assessment Type Themes (Border, Icon, Badges)
+            let typeBadge = "bg-rose-50 text-rose-800 border-rose-200";
+            let typeIcon = "file-text";
+            let iconBoxStyle = "bg-rose-100 text-rose-700 border-rose-200";
+            let cardBorder = "border-2 border-rose-200/90 hover:border-rose-300";
 
             if (ev.type === "Presentation") {
-              typeBadge = "bg-indigo-50 text-indigo-700 border-indigo-200";
-              iconName = "presentation";
-              iconBg =
-                "bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm shadow-indigo-500/30";
+              typeBadge = "bg-indigo-50 text-indigo-800 border-indigo-200";
+              typeIcon = "presentation";
+              iconBoxStyle = "bg-indigo-100 text-indigo-700 border-indigo-200";
+              cardBorder = "border-2 border-indigo-200/90 hover:border-indigo-300";
             } else if (ev.type === "Assignment Deadline") {
-              typeBadge = "bg-cyan-50 text-cyan-700 border-cyan-200";
-              iconName = "clipboard";
-              iconBg =
-                "bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-sm shadow-cyan-500/30";
+              typeBadge = "bg-cyan-50 text-cyan-900 border-cyan-200";
+              typeIcon = "clipboard";
+              iconBoxStyle = "bg-cyan-100 text-cyan-800 border-cyan-200";
+              cardBorder = "border-2 border-cyan-200/90 hover:border-cyan-300";
             } else if (ev.type === "Update") {
-              typeBadge = "bg-amber-50 text-amber-700 border-amber-200";
-              iconName = "alert-circle";
-              iconBg =
-                "bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-sm shadow-amber-500/30";
+              typeBadge = "bg-amber-50 text-amber-900 border-amber-200";
+              typeIcon = "alert-circle";
+              iconBoxStyle = "bg-amber-100 text-amber-800 border-amber-200";
+              cardBorder = "border-2 border-amber-200/90 hover:border-amber-300";
             }
+
+            if (isDone) {
+              cardBorder = "border-2 border-emerald-300 bg-emerald-50/40 hover:border-emerald-400";
+            }
+
+            // Human date and matching academic class
+            const formattedDate = formatHumanDate(ev.dateStr);
+            const matchClass = ALL_CLASSES.find((c) => c.dateStr === ev.dateStr);
 
             const item = document.createElement("div");
             item.id = `eval-card-${ev.id}`;
-            item.className = `p-4 rounded-2xl border-2 transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer select-none card-hover-pop ${
-              isDone
-                ? "bg-emerald-50/60 border-emerald-400 opacity-70"
-                : "bg-white border-slate-200 hover:border-brand-300 shadow-sm"
-            }`;
-
-            item.onclick = () => toggleEvalDone(ev.id);
+            item.className = `p-4 sm:p-5 rounded-3xl transition-all duration-200 card-hover-pop bg-white ${cardBorder} shadow-2xs space-y-3`;
 
             item.innerHTML = `
-                    <div class="flex items-start gap-3.5">
-                        <div class="p-2.5 rounded-xl ${isDone ? "bg-emerald-600 text-white" : iconBg} shrink-0 mt-0.5 sm:mt-0">
-                            <i data-lucide="${iconName}" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <div class="flex flex-wrap items-center gap-2 mb-1">
-                                <span class="text-xs font-extrabold ${isDone ? "text-emerald-950" : "text-slate-900"}">${ev.code}</span>
-                                ${ev.title ? `<span class="text-xs text-slate-500 font-medium">— ${ev.title}</span>` : ""}
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border ${typeBadge}">${ev.type}</span>
-                            </div>
-                            <h3 class="text-sm font-bold ${isDone ? "text-emerald-900 line-through" : "text-slate-900"}">${ev.desc}</h3>
-                            <p class="text-xs text-slate-500 mt-0.5">Scheduled Date: <strong>${ev.dateStr}</strong></p>
-                        </div>
+              <!-- Top Row: Course Header, Type Chip & Pinned Urgency Badge -->
+              <div class="flex items-start justify-between gap-2.5">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-9 h-9 rounded-2xl ${isDone ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : iconBoxStyle} border flex items-center justify-center shrink-0 shadow-2xs">
+                    <i data-lucide="${isDone ? "check" : typeIcon}" class="w-4 h-4 stroke-[2.5]"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="text-xs font-black ${isDone ? "text-emerald-950" : "text-slate-900"} tracking-tight">
+                        ${ev.code}
+                      </span>
+                      ${ev.title ? `<span class="text-xs font-semibold text-slate-500 truncate">• ${ev.title}</span>` : ""}
+                      <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-md border ${typeBadge} shrink-0">
+                        ${ev.type}
+                      </span>
                     </div>
+                  </div>
+                </div>
 
-                    <div class="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0" onclick="event.stopPropagation()">
-                        <span class="px-2.5 py-1 rounded-xl border text-xs font-bold ${urgencyClass}">
-                            ${urgencyBadge}
-                        </span>
+                <!-- Pinned Single-Line Urgency Pill (Never Wraps) -->
+                <div class="shrink-0">
+                  <span class="px-2.5 py-1 rounded-xl border text-[11px] font-bold ${urgencyClass} whitespace-nowrap shadow-2xs inline-block">
+                    ${urgencyBadge}
+                  </span>
+                </div>
+              </div>
 
-                        <div class="flex items-center gap-2">
-                            <button onclick="toggleEvalDone('${ev.id}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold ${isDone ? "bg-emerald-600 text-white" : "bg-white border border-slate-300 text-slate-700 hover:bg-slate-50"} transition-colors">
-                                ${isDone ? "Done" : "Mark Done"}
-                            </button>
-                            <button onclick="deleteEvaluation('${ev.id}', event)" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
+              <!-- Middle Section: Main Task Topic & Academic Date Context -->
+              <div class="space-y-1.5 pl-0.5">
+                <h3 class="text-sm sm:text-base font-extrabold ${isDone ? "text-slate-400 line-through" : "text-slate-900"} leading-snug">
+                  ${ev.desc}
+                </h3>
+                <div class="flex items-center gap-2 flex-wrap text-xs text-slate-500 font-medium">
+                  <span class="inline-flex items-center gap-1">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+                    <strong class="text-slate-700">${formattedDate}</strong>
+                  </span>
+                  ${matchClass ? `
+                    <span class="text-slate-300">•</span>
+                    <span class="inline-flex items-center gap-1 font-semibold text-slate-600">
+                      <span>Class #${matchClass.classNo} (${matchClass.track} Track)</span>
+                      <button onclick="openClassInGrid('${matchClass.id}', event)" class="text-brand-600 hover:text-brand-800 hover:underline font-bold ml-1 cursor-pointer">
+                        View in Grid &rarr;
+                      </button>
+                    </span>
+                  ` : ""}
+                </div>
+              </div>
+
+              <!-- Pinned Bottom Action Footer: Status & Action Buttons -->
+              <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2" onclick="event.stopPropagation()">
+                <div class="text-xs font-bold">
+                  ${isDone ? `
+                    <span class="text-emerald-700 flex items-center gap-1.5 text-[11px]">
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                      <span>Completed</span>
+                    </span>
+                  ` : `
+                    <span class="text-amber-700 flex items-center gap-1.5 text-[11px]">
+                      <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                      <span>Pending Assessment</span>
+                    </span>
+                  `}
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button onclick="toggleEvalDone('${ev.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer touch-manipulation ${
+                    isDone
+                      ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs"
+                      : "bg-brand-600 hover:bg-brand-700 text-white shadow-xs"
+                  }">
+                    <i data-lucide="${isDone ? "check-check" : "circle"}" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                    <span>${isDone ? "Completed" : "Mark Done"}</span>
+                  </button>
+                  <button onclick="deleteEvaluation('${ev.id}', event)" class="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 active:bg-rose-100 transition-colors cursor-pointer touch-manipulation" title="Delete Task">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
+            `;
 
             container.appendChild(item);
           });
@@ -2380,7 +2579,10 @@ function renderHome() {
         lucide.createIcons();
       }
 
-      function toggleEvent(id) {
+      function toggleEvent(id, event) {
+        if (event && typeof event.stopPropagation === "function") {
+          event.stopPropagation();
+        }
         if (completedEvents.has(id)) {
           completedEvents.delete(id);
         } else {
@@ -2395,12 +2597,16 @@ function renderHome() {
         currentEventFilter = filter;
         document.querySelectorAll(".event-filter-btn").forEach((btn) => {
           btn.className =
-            "event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-slate-600 border-slate-200 hover:bg-slate-50";
+            "event-filter-btn px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200 hover:bg-slate-50 cursor-pointer whitespace-nowrap shrink-0 touch-manipulation flex items-center justify-center";
         });
         const activeBtn = document.getElementById(`event-filter-${filter}`);
         if (activeBtn) {
-          activeBtn.className =
-            "event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm";
+          let activeClass = "bg-brand-600 text-white border-brand-600 font-bold";
+          if (filter === "EXAM") activeClass = "bg-rose-600 text-white border-rose-600 font-bold";
+          else if (filter === "PAYMENT") activeClass = "bg-emerald-600 text-white border-emerald-600 font-bold";
+          else if (filter === "HOLIDAY") activeClass = "bg-amber-500 text-slate-950 border-amber-500 font-extrabold";
+          else if (filter === "ACADEMIC") activeClass = "bg-indigo-600 text-white border-indigo-600 font-bold";
+          activeBtn.className = `event-filter-btn px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs border transition-all ${activeClass} shadow-xs cursor-pointer whitespace-nowrap shrink-0 touch-manipulation flex items-center justify-center`;
         }
         renderEvents();
       }
@@ -2410,92 +2616,178 @@ function renderHome() {
         if (!container) return;
 
         container.innerHTML = "";
+        const todayStr = getTodayStr();
+        const today = new Date(todayStr + "T00:00:00");
 
         const filtered = ACADEMIC_EVENTS.filter((evt) => {
           if (currentEventFilter === "ALL") return true;
           return evt.category === currentEventFilter;
         });
 
+        if (filtered.length === 0) {
+          container.innerHTML = `
+            <div class="bg-white p-6 sm:p-8 text-center rounded-3xl border border-slate-200/90 shadow-2xs space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 border border-brand-200/80 flex items-center justify-center mx-auto shadow-2xs">
+                <i data-lucide="calendar" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h3 class="text-sm sm:text-base font-extrabold text-slate-800">No ${currentEventFilter} Events Found</h3>
+                <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1">There are no academic events currently listed under this category.</p>
+              </div>
+              <div class="pt-1">
+                <button onclick="setEventFilter('ALL')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-all cursor-pointer">
+                  <i data-lucide="layers" class="w-4 h-4"></i>
+                  <span>Show All Events</span>
+                </button>
+              </div>
+            </div>
+          `;
+          lucide.createIcons();
+          return;
+        }
+
         filtered.forEach((evt) => {
           const isDone = completedEvents.has(evt.id);
-          const evtDateStr = parseEventDate(evt.dateDisplay);
-          const isPast = evtDateStr && evtDateStr < getTodayStr();
-          const isToday = evtDateStr && evtDateStr === getTodayStr();
+          const evtDateStr = evt.dateStr || parseEventDate(evt.dateDisplay);
+          const targetDate = new Date(evtDateStr + "T00:00:00");
+          const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+          const isToday = (evtDateStr === todayStr) || (diffDays === 0);
+          const isPast = diffDays < 0;
 
-          let eventStatusBadge = "";
-          if (isToday) {
-            eventStatusBadge = '<span class="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-brand-600 text-white animate-pulse">Happening Today</span>';
-          } else if (isPast && !isDone) {
-            eventStatusBadge = '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-200 text-slate-600 border border-slate-300">Concluded</span>';
+          // Category Visual Theme Styles
+          let catBadge = "bg-indigo-50 text-indigo-800 border-indigo-200";
+          let iconName = "calendar";
+          let iconBoxStyle = "bg-indigo-100 text-indigo-700 border-indigo-200";
+          let cardBorder = "border-2 border-indigo-200/90 hover:border-indigo-300";
+
+          if (evt.category === "EXAM") {
+            catBadge = "bg-rose-50 text-rose-800 border-rose-200";
+            iconName = "file-text";
+            iconBoxStyle = "bg-rose-100 text-rose-700 border-rose-200";
+            cardBorder = "border-2 border-rose-200/90 hover:border-rose-300";
+          } else if (evt.category === "PAYMENT") {
+            catBadge = "bg-emerald-50 text-emerald-800 border-emerald-200";
+            iconName = "credit-card";
+            iconBoxStyle = "bg-emerald-100 text-emerald-700 border-emerald-200";
+            cardBorder = "border-2 border-emerald-200/90 hover:border-emerald-300";
+          } else if (evt.category === "HOLIDAY") {
+            catBadge = "bg-amber-50 text-amber-900 border-amber-200";
+            iconName = "sun";
+            iconBoxStyle = "bg-amber-100 text-amber-800 border-amber-200";
+            cardBorder = "border-2 border-amber-200/90 hover:border-amber-300";
+          } else if (evt.category === "ACADEMIC") {
+            catBadge = "bg-indigo-50 text-indigo-800 border-indigo-200";
+            iconName = "clock";
+            iconBoxStyle = "bg-indigo-100 text-indigo-700 border-indigo-200";
+            cardBorder = "border-2 border-indigo-200/90 hover:border-indigo-300";
+          }
+
+          if (isDone) {
+            cardBorder = "border-2 border-emerald-300 bg-emerald-50/40 hover:border-emerald-400";
+          } else if (isToday) {
+            cardBorder = "border-2 border-brand-500 bg-gradient-to-r from-brand-50/40 to-white ring-2 ring-brand-500/20 shadow-md";
+          }
+
+          // Single-line compact live countdown status badge
+          let urgencyClass = "bg-slate-100 text-slate-700 border-slate-200";
+          let urgencyBadge = "";
+
+          if (isDone) {
+            urgencyClass = "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold";
+            urgencyBadge = '<span class="inline-flex items-center gap-1"><i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i><span>Acknowledged</span></span>';
+          } else if (isToday) {
+            urgencyClass = "bg-rose-100 text-rose-800 border-rose-300 font-black animate-pulse";
+            urgencyBadge = '<span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span><span>Happening Today!</span></span>';
+          } else if (isPast) {
+            const pastDays = Math.abs(diffDays);
+            urgencyClass = "bg-slate-100 text-slate-600 border-slate-200 font-semibold";
+            urgencyBadge = `<span class="inline-flex items-center gap-1"><i data-lucide="check" class="w-3 h-3 text-slate-400"></i><span>Concluded (${pastDays === 1 ? "1d ago" : pastDays + "d ago"})</span></span>`;
+          } else if (diffDays === 1) {
+            urgencyClass = "bg-rose-100 text-rose-800 border-rose-200 font-bold";
+            urgencyBadge = '<span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>Tomorrow</span></span>';
+          } else if (diffDays < 7) {
+            urgencyClass = "bg-rose-100 text-rose-800 border-rose-200 font-bold";
+            urgencyBadge = `<span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>${diffDays} Days Left</span></span>`;
+          } else if (diffDays <= 14) {
+            urgencyClass = "bg-amber-100 text-amber-900 border-amber-200 font-bold";
+            urgencyBadge = `<span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span>${diffDays} Days Left</span></span>`;
+          } else {
+            urgencyClass = "bg-slate-100 text-slate-700 border-slate-200 font-semibold";
+            urgencyBadge = `<span class="inline-flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3 text-slate-400"></i><span>${diffDays} Days Left</span></span>`;
           }
 
           const item = document.createElement("div");
           item.id = `event-card-${evt.id}`;
-
-          let catBadge = "bg-slate-100 text-slate-700 border-slate-200";
-          let iconName = "calendar";
-          let iconBg =
-            "bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm shadow-indigo-500/30";
-
-          if (evt.category === "EXAM") {
-            catBadge = "bg-rose-100 text-rose-800 border-rose-200";
-            iconName = "file-text";
-            iconBg =
-              "bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-sm shadow-rose-500/30";
-          } else if (evt.category === "PAYMENT") {
-            catBadge = "bg-emerald-100 text-emerald-800 border-emerald-200";
-            iconName = "credit-card";
-            iconBg =
-              "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-sm shadow-emerald-500/30";
-          } else if (evt.category === "HOLIDAY") {
-            catBadge = "bg-amber-100 text-amber-800 border-amber-200";
-            iconName = "sun";
-            iconBg =
-              "bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-sm shadow-amber-500/30";
-          } else if (evt.category === "ACADEMIC") {
-            catBadge = "bg-indigo-100 text-indigo-800 border-indigo-200";
-            iconName = "clock";
-            iconBg =
-              "bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-sm shadow-blue-500/30";
-          }
-
-          item.className = `p-4 rounded-2xl border-2 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer select-none card-hover-pop ${
-            isDone
-              ? "bg-emerald-50/80 border-emerald-500 shadow-sm"
-              : isToday
-                ? "bg-white border-brand-500 ring-2 ring-brand-500 ring-offset-2 shadow-md"
-                : isPast
-                  ? "bg-slate-50/70 border-slate-200 opacity-65 hover:opacity-100"
-                  : "bg-white border-slate-200 hover:border-brand-300"
-          }`;
-
-          item.onclick = () => toggleEvent(evt.id);
+          item.className = `p-4 sm:p-5 rounded-3xl transition-all duration-200 card-hover-pop bg-white ${cardBorder} shadow-2xs space-y-3`;
 
           item.innerHTML = `
-                    <div class="flex items-start gap-3.5">
-                        <div class="p-2.5 rounded-xl ${isDone ? "bg-emerald-600 text-white" : iconBg} shrink-0 mt-0.5 sm:mt-0">
-                            <i data-lucide="${iconName}" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <div class="flex flex-wrap items-center gap-2 mb-1">
-                                <span class="text-xs font-extrabold ${isDone ? "text-emerald-950" : (isPast && !isDone ? "text-slate-500" : "text-slate-900")}">${evt.dateDisplay} (${evt.dayName})</span>
-                                ${eventStatusBadge}
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md border ${catBadge}">${evt.category}</span>
-                            </div>
-                            <h3 class="text-sm font-bold ${isDone ? "text-emerald-900 line-through" : "text-slate-900"}">${evt.title}</h3>
-                            <p class="text-xs ${isDone ? "text-emerald-700" : "text-slate-500"} mt-0.5">${evt.note}</p>
-                        </div>
-                    </div>
+            <!-- Top Row: Date, Category Chip & Pinned Urgency Badge -->
+            <div class="flex items-start justify-between gap-2.5">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-2xl ${isDone ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : iconBoxStyle} border flex items-center justify-center shrink-0 shadow-2xs">
+                  <i data-lucide="${isDone ? "check" : iconName}" class="w-4 h-4 stroke-[2.5]"></i>
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-black ${isDone ? "text-emerald-950" : "text-slate-900"} tracking-tight">
+                      ${evt.dateDisplay} (${evt.dayName})
+                    </span>
+                    <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-md border ${catBadge} shrink-0">
+                      ${evt.category}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-                    <div class="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
-                        <span class="text-xs font-bold ${isDone ? "text-emerald-700" : "text-slate-400"}">
-                            ${isDone ? "Completed" : "Mark Done"}
-                        </span>
-                        <div class="w-6 h-6 rounded-lg border flex items-center justify-center transition-colors ${isDone ? "bg-emerald-600 border-emerald-600 text-white" : "border-slate-300 bg-white"}">
-                            ${isDone ? '<i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>' : ""}
-                        </div>
-                    </div>
-                `;
+              <!-- Pinned Single-Line Urgency Pill (Never Wraps) -->
+              <div class="shrink-0">
+                <span class="px-2.5 py-1 rounded-xl border text-[11px] font-bold ${urgencyClass} whitespace-nowrap shadow-2xs inline-block">
+                  ${urgencyBadge}
+                </span>
+              </div>
+            </div>
+
+            <!-- Middle Section: Main Event Title & Description Note -->
+            <div class="space-y-1 pl-0.5">
+              <h3 class="text-sm sm:text-base font-extrabold ${isDone ? "text-slate-400 line-through" : "text-slate-900"} leading-snug">
+                ${evt.title}
+              </h3>
+              <p class="text-xs text-slate-500 leading-relaxed">
+                ${evt.note}
+              </p>
+            </div>
+
+            <!-- Pinned Bottom Action Footer: Status & Action Button -->
+            <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2" onclick="event.stopPropagation()">
+              <div class="text-xs font-bold">
+                ${isDone ? `
+                  <span class="text-emerald-700 flex items-center gap-1.5 text-[11px]">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Event Acknowledged</span>
+                  </span>
+                ` : isPast ? `
+                  <span class="text-slate-400 flex items-center gap-1.5 text-[11px]">
+                    <span class="w-2 h-2 rounded-full bg-slate-300"></span>
+                    <span>Past Event</span>
+                  </span>
+                ` : `
+                  <span class="text-amber-700 flex items-center gap-1.5 text-[11px]">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span>Scheduled University Event</span>
+                  </span>
+                `}
+              </div>
+
+              <button onclick="toggleEvent('${evt.id}', event)" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer touch-manipulation ${
+                isDone
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs"
+                  : "bg-brand-600 hover:bg-brand-700 text-white shadow-xs"
+              }">
+                <i data-lucide="${isDone ? "check-check" : "circle"}" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                <span>${isDone ? "Acknowledged" : "Mark Done"}</span>
+              </button>
+            </div>
+          `;
 
           container.appendChild(item);
         });
@@ -2733,6 +3025,29 @@ function renderHome() {
         renderEvents();
         updateNavigation();
         closeResetModal();
+      }
+
+      function exportDataJson() {
+        const payload = {
+          app: "UIU Academic Calendar 263",
+          version: "2.0",
+          exportedAt: new Date().toISOString(),
+          term: "UIU Trimester 263",
+          completedClasses: Array.from(completedClasses),
+          unmarkedClasses: Array.from(unmarkedClasses),
+          completedEvents: Array.from(completedEvents),
+          completedExams: Array.from(completedExams),
+          userEvaluations: userEvaluations,
+          makeupMeetingLinks: makeupMeetingLinks,
+          syncCode: syncCode || null,
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
+        const downloadAnchor = document.createElement("a");
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `uiu-calendar-263-backup-${new Date().toISOString().slice(0, 10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
       }
 
       if (typeof window !== "undefined") {

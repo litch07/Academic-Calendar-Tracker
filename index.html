@@ -76,7 +76,7 @@
                 UIU Calendar 263
               </h1>
               <p
-                class="text-[9px] sm:text-[11px] font-semibold text-brand-600 group-hover:text-brand-700 transition-colors duration-150 truncate"
+                class="text-[10px] sm:text-xs font-semibold text-brand-600 group-hover:text-brand-700 transition-colors duration-150 truncate"
               >
                 Academic Term Classes & Evaluations
               </p>
@@ -134,137 +134,125 @@
             </button>
           </nav>
 
-          <!-- Desktop Actions (Visible on md and above) -->
+          <!-- Desktop Actions (Visible on lg and above) -->
           <div class="hidden lg:flex items-center gap-2 shrink-0">
             <button
               onclick="openSyncModal()"
-              class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-xl transition-all shadow-2xs cursor-pointer"
+              class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-xl transition-all shadow-2xs cursor-pointer touch-manipulation"
             >
               <i data-lucide="cloud" class="w-4 h-4 text-brand-600"></i>
               <span>Sync Devices</span>
             </button>
             <button
+              onclick="exportDataJson()"
+              class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-all shadow-2xs cursor-pointer touch-manipulation"
+              title="Backup attendance and task data as JSON"
+            >
+              <i data-lucide="download" class="w-4 h-4 text-indigo-600"></i>
+              <span>Backup</span>
+            </button>
+            <button
               onclick="openResetModal()"
-              class="flex items-center gap-1 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100/70 border border-rose-200 rounded-xl transition-all shadow-2xs cursor-pointer"
+              class="flex items-center gap-1 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100/70 border border-rose-200 rounded-xl transition-all shadow-2xs cursor-pointer touch-manipulation"
             >
               <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
               <span>Reset</span>
             </button>
           </div>
 
-          <!-- Mobile & Reduced Window Controls (Visible below md: Quick Sync + Compact Floating Popover Menu) -->
+          <!-- Mobile & Compact Header Controls (Quick Sync + Sleek Utilities & Settings Popover) -->
           <div class="flex lg:hidden items-center gap-1.5 shrink-0 relative">
             <button
               onclick="openSyncModal()"
-              class="p-2 text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 rounded-xl transition-all shadow-2xs cursor-pointer"
-              title="Cloud Sync"
+              class="p-2 text-brand-700 bg-brand-50 hover:bg-brand-100 active:bg-brand-200 border border-brand-200 rounded-xl transition-all shadow-2xs cursor-pointer touch-manipulation min-h-[38px] min-w-[38px] flex items-center justify-center"
+              title="Cloud Sync Devices"
               aria-label="Cloud Sync Devices"
             >
-              <i data-lucide="cloud" class="w-4 h-4 text-brand-600"></i>
+              <i data-lucide="cloud" class="w-4 h-4 text-brand-600 pointer-events-none"></i>
             </button>
 
-            <!-- Menu Toggle Button -->
+            <!-- Settings / Utilities 3-Dot Overflow Button -->
             <button
               id="mobile-menu-btn"
               type="button"
               onclick="toggleMobileMenu(event)"
-              class="flex items-center gap-1.5 px-3 py-2 text-slate-700 bg-slate-100 hover:bg-slate-200/80 active:bg-slate-300 border border-slate-200/90 rounded-xl transition-all shadow-2xs relative cursor-pointer select-none touch-manipulation min-h-[40px] min-w-[40px] justify-center"
-              aria-label="Toggle navigation menu"
+              class="flex items-center gap-1 p-2 sm:px-2.5 sm:py-2 text-slate-700 bg-slate-100 hover:bg-slate-200/80 active:bg-slate-300 border border-slate-200/90 rounded-xl transition-all shadow-2xs relative cursor-pointer select-none touch-manipulation min-h-[38px] min-w-[38px] justify-center"
+              aria-label="Toggle Utilities & Settings menu"
               aria-expanded="false"
               aria-controls="mobile-nav-panel"
             >
-              <i data-lucide="menu" id="menu-icon-bars" class="w-4 h-4 pointer-events-none"></i>
-              <i data-lucide="x" id="menu-icon-close" class="w-4 h-4 hidden pointer-events-none"></i>
-              <span class="text-xs font-bold text-slate-700 hidden sm:inline pointer-events-none">Menu</span>
-              <span
-                id="menu-notification-dot"
-                class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white hidden animate-pulse pointer-events-none"
-              ></span>
+              <i data-lucide="more-vertical" id="menu-icon-bars" class="w-4 h-4 pointer-events-none text-slate-700"></i>
+              <i data-lucide="x" id="menu-icon-close" class="w-4 h-4 hidden pointer-events-none text-slate-700"></i>
+              <span class="text-xs font-bold text-slate-700 hidden sm:inline pointer-events-none">Options</span>
             </button>
 
-                        <!-- Sleek Floating Popover Dropdown (Anchored directly under button, NEVER pushes page down!) -->
+            <!-- Sleek Floating Utilities & Settings Popover Dropdown -->
             <div
               id="mobile-nav-panel"
               style="background-color: #ffffff !important;"
-              class="hidden absolute right-0 top-[calc(100%+8px)] w-64 bg-white border border-slate-200/90 rounded-2xl shadow-2xl shadow-slate-900/15 p-2 z-50 transform origin-top-right transition-all"
+              class="hidden absolute right-0 top-[calc(100%+8px)] w-72 bg-white border border-slate-200/90 rounded-2xl shadow-2xl shadow-slate-900/15 p-2 z-50 transform origin-top-right transition-all"
             >
-              <div class="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                Navigation
+              <!-- Card Header -->
+              <div class="px-3 py-2 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                  <span class="text-xs font-black text-slate-900 tracking-tight">Utilities & Settings</span>
+                  <p class="text-[10px] text-slate-500 font-medium">Term tools & data management</p>
+                </div>
+                <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-brand-50 text-brand-700 border border-brand-200/80">UIU 263</span>
               </div>
 
-              <!-- Compact, single-row navigation links -->
-              <div class="space-y-0.5">
-                <button
-                  id="mob-nav-home"
-                  onclick="switchPage('home'); toggleMobileMenu(false);"
-                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-all w-full text-left cursor-pointer bg-brand-50 text-brand-700"
-                >
-                  <i data-lucide="home" class="w-4 h-4 text-brand-600 shrink-0"></i>
-                  <span class="flex-1 truncate">Home Dashboard</span>
-                </button>
-
-                <button
-                  id="mob-nav-calendar"
-                  onclick="switchPage('calendar'); toggleMobileMenu(false);"
-                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all w-full text-left cursor-pointer"
-                >
-                  <i data-lucide="calendar" class="w-4 h-4 text-indigo-600 shrink-0"></i>
-                  <span class="flex-1 truncate">Calendar Grid</span>
-                </button>
-
-                <button
-                  id="mob-nav-dashboard"
-                  onclick="switchPage('dashboard'); toggleMobileMenu(false);"
-                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all w-full text-left cursor-pointer"
-                >
-                  <i data-lucide="layout-dashboard" class="w-4 h-4 text-sky-600 shrink-0"></i>
-                  <span class="flex-1 truncate">Trackers</span>
-                </button>
-
-                <button
-                  id="mob-nav-assessments"
-                  onclick="switchPage('assessments'); toggleMobileMenu(false);"
-                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all w-full text-left cursor-pointer relative"
-                >
-                  <i data-lucide="pen-tool" class="w-4 h-4 text-rose-600 shrink-0"></i>
-                  <span class="flex-1 truncate">Assessments</span>
-                  <span
-                    id="mobile-eval-badge"
-                    class="ml-auto px-1.5 py-0.5 text-[10px] font-black rounded-full bg-rose-500 text-white shadow-xs hidden"
-                    >0</span
-                  >
-                </button>
-
-                <button
-                  id="mob-nav-events"
-                  onclick="switchPage('events'); toggleMobileMenu(false);"
-                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-all w-full text-left cursor-pointer"
-                >
-                  <i data-lucide="bell" class="w-4 h-4 text-purple-600 shrink-0"></i>
-                  <span class="flex-1 truncate">Events</span>
-                </button>
-              </div>
-
-              <!-- Compact Divider -->
-              <div class="h-px bg-slate-100 my-1.5"></div>
-
-              <!-- Quick Utility Shortcuts -->
-              <div class="space-y-0.5">
+              <!-- Options List -->
+              <div class="p-1 space-y-1">
+                <!-- 1. Cloud Sync Devices -->
                 <button
                   onclick="openSyncModal(); toggleMobileMenu(false);"
-                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors w-full text-left cursor-pointer"
+                  class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-brand-50 hover:text-brand-700 transition-colors w-full text-left cursor-pointer group"
                 >
-                  <i data-lucide="cloud" class="w-4 h-4 text-brand-600 shrink-0"></i>
-                  <span class="flex-1 truncate">Cloud Sync</span>
+                  <div class="w-8 h-8 rounded-lg bg-brand-50 group-hover:bg-brand-100 text-brand-700 flex items-center justify-center shrink-0 border border-brand-200/80 transition-colors">
+                    <i data-lucide="cloud" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-slate-900 group-hover:text-brand-700">Cloud Sync Devices</div>
+                    <div class="text-[10px] text-slate-500 truncate">Pair mobile & PC in real-time</div>
+                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-brand-600 shrink-0"></i>
                 </button>
 
+                <!-- 2. Backup / Export Data -->
+                <button
+                  onclick="exportDataJson(); toggleMobileMenu(false);"
+                  class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-indigo-50 hover:text-indigo-700 transition-colors w-full text-left cursor-pointer group"
+                >
+                  <div class="w-8 h-8 rounded-lg bg-indigo-50 group-hover:bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 border border-indigo-200/80 transition-colors">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-slate-900 group-hover:text-indigo-700">Backup / Export Data</div>
+                    <div class="text-[10px] text-slate-500 truncate">Download JSON attendance file</div>
+                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 shrink-0"></i>
+                </button>
+
+                <!-- 3. Reset Term Data -->
                 <button
                   onclick="openResetModal(); toggleMobileMenu(false);"
-                  class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors w-full text-left cursor-pointer"
+                  class="flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-semibold text-rose-700 hover:bg-rose-50 transition-colors w-full text-left cursor-pointer group"
                 >
-                  <i data-lucide="rotate-ccw" class="w-4 h-4 text-rose-500 shrink-0"></i>
-                  <span class="flex-1 truncate">Reset Term Data</span>
+                  <div class="w-8 h-8 rounded-lg bg-rose-50 group-hover:bg-rose-100 text-rose-700 flex items-center justify-center shrink-0 border border-rose-200 transition-colors">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-bold text-rose-700">Reset Term Data</div>
+                    <div class="text-[10px] text-rose-500/80 truncate">Clear classes & assessment marks</div>
+                  </div>
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
                 </button>
+              </div>
+
+              <!-- Footer info -->
+              <div class="px-2.5 py-1.5 bg-slate-50 border-t border-slate-100 rounded-b-xl flex items-center justify-between text-[10px] text-slate-500 font-medium">
+                <span>Trimester 263</span>
+                <span class="inline-flex items-center gap-1 text-emerald-600 font-bold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Online</span>
               </div>
             </div>
           </div>
@@ -273,7 +261,7 @@
     </header>
 
     <!-- Main Content Container -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 pt-3.5 sm:pt-6 pb-24 lg:pb-8">
       <!-- PAGE 1: CALENDAR VIEW -->
             <!-- PAGE 0: HOME / LANDING VIEW -->
       <section id="page-home" class="space-y-6">
@@ -286,90 +274,118 @@
       <section id="page-calendar" class="space-y-6 hidden">
         <!-- Filter Bar & Quick Stats -->
         <div
-          class="bg-white/90 p-4 rounded-2xl border border-indigo-100/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+          class="bg-white/95 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-indigo-100/80 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4"
         >
-          <div class="flex flex-wrap items-center gap-2">
-            <span
-              class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1"
-            >
-              <i data-lucide="filter" class="w-3.5 h-3.5"></i> Filter:
-            </span>
-            <button
-              onclick="setFilter('ALL')"
-              id="filter-ALL"
-              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-xs"
-            >
-              All Classes
-            </button>
-            <button
-              onclick="setFilter('SAT')"
-              id="filter-SAT"
-              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
-            >
-              SAT Track
-            </button>
-            <button
-              onclick="setFilter('SUN')"
-              id="filter-SUN"
-              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-sky-700 border-sky-200 hover:bg-sky-50"
-            >
-              SUN Track
-            </button>
-            <button
-              onclick="setFilter('TUE')"
-              id="filter-TUE"
-              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-emerald-700 border-emerald-200 hover:bg-emerald-50"
-            >
-              TUE Track
-            </button>
-            <button
-              onclick="setFilter('WED')"
-              id="filter-WED"
-              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-purple-700 border-purple-200 hover:bg-purple-50"
-            >
-              WED Track
-            </button>
-            <button
-              onclick="setFilter('MAKEUP')"
-              id="filter-MAKEUP"
-              class="filter-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-amber-800 border-amber-200 hover:bg-amber-50"
-            >
-              <i data-lucide="video" class="w-3.5 h-3.5 inline mr-1"></i>Online
-              Makeup
-            </button>
+          <!-- Filter Buttons Group (Responsive 2-Row Grid on Mobile, Flex on Desktop) -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full lg:w-auto">
+            <!-- Row 1: All Classes & Online Makeup Scope Buttons -->
+            <div class="flex items-center gap-2">
+              <span
+                class="text-xs font-bold uppercase tracking-wider text-slate-400 hidden sm:flex items-center gap-1 shrink-0"
+              >
+                <i data-lucide="filter" class="w-3.5 h-3.5"></i> Filter:
+              </span>
+              <div class="grid grid-cols-2 sm:flex sm:items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+                <button
+                  onclick="setFilter('ALL')"
+                  id="filter-ALL"
+                  class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-xs cursor-pointer flex items-center justify-center touch-manipulation"
+                >
+                  <i data-lucide="layers" class="w-3.5 h-3.5 mr-1.5 shrink-0"></i>
+                  <span>All Classes</span>
+                </button>
+                <button
+                  onclick="setFilter('MAKEUP')"
+                  id="filter-MAKEUP"
+                  class="filter-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-amber-800 border-amber-200 hover:bg-amber-50 cursor-pointer flex items-center justify-center touch-manipulation"
+                >
+                  <i data-lucide="video" class="w-3.5 h-3.5 mr-1.5 shrink-0 text-amber-600"></i>
+                  <span>Makeup</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Row 2: 4 Specific Track Buttons in Equal 4-Column Grid on Mobile -->
+            <div class="grid grid-cols-4 sm:flex sm:items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+              <button
+                onclick="setFilter('SAT')"
+                id="filter-SAT"
+                class="filter-btn px-2 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50 cursor-pointer flex items-center justify-center touch-manipulation"
+                title="Filter Saturday Track"
+              >
+                <span>SAT</span><span class="hidden md:inline">&nbsp;Track</span>
+              </button>
+              <button
+                onclick="setFilter('SUN')"
+                id="filter-SUN"
+                class="filter-btn px-2 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-sky-700 border-sky-200 hover:bg-sky-50 cursor-pointer flex items-center justify-center touch-manipulation"
+                title="Filter Sunday Track"
+              >
+                <span>SUN</span><span class="hidden md:inline">&nbsp;Track</span>
+              </button>
+              <button
+                onclick="setFilter('TUE')"
+                id="filter-TUE"
+                class="filter-btn px-2 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-emerald-700 border-emerald-200 hover:bg-emerald-50 cursor-pointer flex items-center justify-center touch-manipulation"
+                title="Filter Tuesday Track"
+              >
+                <span>TUE</span><span class="hidden md:inline">&nbsp;Track</span>
+              </button>
+              <button
+                onclick="setFilter('WED')"
+                id="filter-WED"
+                class="filter-btn px-2 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-purple-700 border-purple-200 hover:bg-purple-50 cursor-pointer flex items-center justify-center touch-manipulation"
+                title="Filter Wednesday Track"
+              >
+                <span>WED</span><span class="hidden md:inline">&nbsp;Track</span>
+              </button>
+            </div>
           </div>
 
+          <!-- Quick Metrics & Jump to Today -->
           <div
-            class="flex items-center gap-4 text-xs font-bold text-slate-600 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100"
+            class="flex items-center justify-between sm:justify-end gap-2 text-xs font-bold text-slate-600 border-t lg:border-t-0 pt-2.5 lg:pt-0 border-slate-100"
           >
-            <div
-              class="flex items-center gap-2 bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-xl border border-emerald-200"
-            >
+            <div class="flex items-center gap-1.5 sm:gap-2">
               <div
-                class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"
-              ></div>
-              <span
-                >Completed:
-                <strong
-                  id="quick-completed-count"
-                  class="text-emerald-950 font-black"
-                  >0</strong
-                ></span
+                class="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-xl border border-emerald-200"
               >
+                <div
+                  class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"
+                ></div>
+                <span
+                  >Done:
+                  <strong
+                    id="quick-completed-count"
+                    class="text-emerald-950 font-black"
+                    >0</strong
+                  ></span
+                >
+              </div>
+              <div
+                class="flex items-center gap-1.5 bg-slate-100 text-slate-700 px-2.5 py-1 rounded-xl border border-slate-200"
+              >
+                <div class="w-2 h-2 rounded-full bg-slate-400 shrink-0"></div>
+                <span
+                  >Left:
+                  <strong
+                    id="quick-remaining-count"
+                    class="text-slate-900 font-black"
+                    >48</strong
+                  ></span
+                >
+              </div>
             </div>
-            <div
-              class="flex items-center gap-2 bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl border border-slate-200"
+
+            <!-- Quick Jump to Today Tile -->
+            <button
+              onclick="scrollToTodayTile()"
+              class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 rounded-xl transition-all cursor-pointer touch-manipulation shrink-0"
+              title="Jump to today's active class card"
             >
-              <div class="w-2.5 h-2.5 rounded-full bg-slate-400"></div>
-              <span
-                >Remaining:
-                <strong
-                  id="quick-remaining-count"
-                  class="text-slate-900 font-black"
-                  >48</strong
-                ></span
-              >
-            </div>
+              <i data-lucide="crosshair" class="w-3.5 h-3.5 text-indigo-600"></i>
+              <span>Today</span>
+            </button>
           </div>
         </div>
 
@@ -444,7 +460,7 @@
                   >0%</span
                 >
                 <span
-                  class="text-[9px] text-indigo-200 font-extrabold tracking-wider"
+                  class="text-[10px] sm:text-xs text-indigo-200 font-extrabold tracking-wider"
                   >DONE</span
                 >
               </div>
@@ -679,10 +695,10 @@
         </div>
       </section>
 
-      <!-- PAGE 3: UPCOMING ASSESSMENTS / EVALUATIONS VIEW -->
+      <!-- PAGE 3: ASSESSMENTS / EVALUATION VIEW -->
       <section id="page-assessments" class="space-y-6 hidden">
         <!-- Unified Executive Assessments Command Card -->
-        <div class="bg-white rounded-3xl border border-slate-200/90 shadow-2xs p-5 sm:p-6 space-y-4">
+        <div class="bg-white rounded-3xl border border-slate-200/90 shadow-2xs p-4 sm:p-6 space-y-4">
           <!-- Top Row: Page Title & Primary Action Button -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
             <div class="flex items-center gap-3">
@@ -690,7 +706,7 @@
                 <i data-lucide="pen-tool" class="w-5 h-5 text-brand-600"></i>
               </div>
               <div>
-                <h2 class="text-base font-extrabold text-slate-900 tracking-tight">
+                <h2 class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">
                   Upcoming Assessments & Examinations
                 </h2>
                 <p class="text-xs font-medium text-slate-500 mt-0.5">
@@ -699,7 +715,7 @@
               </div>
             </div>
 
-            <!-- Primary Action: + Add Assessment Button (Prominent & Clean at Top Right) -->
+            <!-- Primary Action: + Add Assessment Button -->
             <button
               onclick="openHomeEvalModal(event)"
               class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 shadow-sm shadow-brand-500/20 active:scale-95 transition-all cursor-pointer shrink-0"
@@ -712,78 +728,73 @@
 
           <!-- Bottom Row: Filter Controls (Left) & Compact Urgency Legend (Right) -->
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-0.5">
-            <!-- Filter Pills (Now has the entire left side, NEVER cramped, NEVER awkwardly wrapping!) -->
-            <div class="flex flex-wrap items-center gap-1.5">
+            <!-- Filter Pills (Swipeable horizontal carousel on mobile, clean buttons) -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1.5 pt-0.5 scrollbar-none w-full lg:w-auto -mx-1 px-1 touch-manipulation flex-nowrap shrink-0">
               <button
                 onclick="filterEvaluations('ALL')"
                 id="eval-filter-ALL"
-                class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-2xs cursor-pointer"
+                class="eval-f-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-2xs whitespace-nowrap shrink-0 cursor-pointer touch-manipulation"
               >
                 All Types
               </button>
               <button
                 onclick="filterEvaluations('Class Test')"
                 id="eval-filter-Test"
-                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 whitespace-nowrap shrink-0 cursor-pointer touch-manipulation"
               >
                 <span class="inline-block w-2 h-2 rounded-full bg-rose-500 mr-1.5"></span>Class Tests
               </button>
               <button
                 onclick="filterEvaluations('Presentation')"
                 id="eval-filter-Pres"
-                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 whitespace-nowrap shrink-0 cursor-pointer touch-manipulation"
               >
                 <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 mr-1.5"></span>Presentations
               </button>
               <button
                 onclick="filterEvaluations('Assignment Deadline')"
                 id="eval-filter-Assign"
-                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 whitespace-nowrap shrink-0 cursor-pointer touch-manipulation"
               >
-                <span class="inline-block w-2 h-2 rounded-full bg-cyan-500 mr-1.5"></span>Assignment Deadlines
+                <span class="inline-block w-2 h-2 rounded-full bg-cyan-500 mr-1.5"></span>Assignments
               </button>
               <button
                 onclick="filterEvaluations('Update')"
                 id="eval-filter-Upd"
-                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 cursor-pointer"
+                class="eval-f-btn px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-slate-700 border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 whitespace-nowrap shrink-0 cursor-pointer touch-manipulation"
               >
                 <span class="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1.5"></span>Updates
               </button>
             </div>
 
-            <!-- Integrated Compact Urgency Legend (Seamlessly embedded on the right!) -->
-            <div class="flex flex-wrap items-center gap-1.5 text-[11px] font-medium text-slate-500 bg-slate-50/90 px-3 py-1.5 rounded-xl border border-slate-200/80 shrink-0">
-              <span class="font-bold text-slate-700 flex items-center gap-1 mr-1">
+            <!-- Integrated Compact Urgency Legend -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none text-[11px] font-medium text-slate-500 bg-slate-50/90 px-3 py-1.5 rounded-xl border border-slate-200/80 shrink-0">
+              <span class="font-bold text-slate-700 flex items-center gap-1 mr-1 shrink-0">
                 <i data-lucide="clock" class="w-3.5 h-3.5 text-brand-600"></i>
-                <span>Urgency Rules:</span>
+                <span>Urgency:</span>
               </span>
-              <span class="inline-flex items-center gap-1 text-rose-700 font-bold px-1.5 py-0.5 rounded-md bg-rose-50 border border-rose-200/60">
+              <span class="inline-flex items-center gap-1 text-rose-700 font-bold px-1.5 py-0.5 rounded-md bg-rose-50 border border-rose-200/60 shrink-0 whitespace-nowrap">
                 <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>&lt;7d Urgent
               </span>
               <span class="text-slate-300">•</span>
-              <span class="inline-flex items-center gap-1 text-amber-800 font-bold px-1.5 py-0.5 rounded-md bg-amber-50 border border-amber-200/60">
+              <span class="inline-flex items-center gap-1 text-amber-800 font-bold px-1.5 py-0.5 rounded-md bg-amber-50 border border-amber-200/60 shrink-0 whitespace-nowrap">
                 <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>7–14d Prepare
               </span>
               <span class="text-slate-300">•</span>
-              <span class="inline-flex items-center gap-1 text-emerald-800 font-bold px-1.5 py-0.5 rounded-md bg-emerald-50 border border-emerald-200/60">
+              <span class="inline-flex items-center gap-1 text-emerald-800 font-bold px-1.5 py-0.5 rounded-md bg-emerald-50 border border-emerald-200/60 shrink-0 whitespace-nowrap">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>&gt;14d Plan
               </span>
             </div>
           </div>
         </div>
 
-        <!-- 1. USER PLANNED EVALUATIONS SECTION (PLACED ON TOP FOR IMMEDIATE VISIBILITY & FILTERING) -->
+        <!-- 1. USER PLANNED EVALUATIONS SECTION -->
         <div class="space-y-3">
-          <div
-            class="flex items-center justify-between pt-1"
-          >
+          <div class="flex items-center justify-between pt-1">
             <div class="flex items-center gap-2">
               <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                <i
-                  data-lucide="clipboard-list"
-                  class="w-4 h-4 text-brand-600"
-                ></i>
-                <span>User Added Assessments & Lab Tasks</span>
+                <i data-lucide="clipboard-list" class="w-4 h-4 text-brand-600"></i>
+                <span>Custom Course Tasks & Assessments</span>
               </h3>
               <span id="eval-count-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
                 Active Tasks
@@ -794,7 +805,7 @@
               class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 transition-colors cursor-pointer shadow-2xs"
             >
               <i data-lucide="plus" class="w-3.5 h-3.5 stroke-[2.5]"></i>
-              <span>New Assessment</span>
+              <span>New Task</span>
             </button>
           </div>
           <div id="evaluations-list" class="space-y-3">
@@ -802,7 +813,7 @@
           </div>
         </div>
 
-        <!-- 2. OFFICIAL TRIMESTER EXAMINATION WINDOWS SECTION (COLLAPSIBLE WINDOWS) -->
+        <!-- 2. OFFICIAL TRIMESTER EXAMINATION WINDOWS SECTION -->
         <div class="space-y-3 pt-2 border-t border-slate-200/80">
           <div class="flex items-center justify-between px-0.5">
             <div>
@@ -816,98 +827,70 @@
             </div>
           </div>
 
-          <!-- Mid-Term Exam Block (Executive Light Theme, Open by Default) -->
+          <!-- Mid-Term Exam Block (Open by Default) -->
           <div
             class="bg-white rounded-3xl border border-amber-200/80 shadow-2xs overflow-hidden card-hover-pop transition-all hover:border-amber-300"
           >
             <button
               type="button"
               onclick="toggleSection('midterm-section')"
-              class="w-full px-5 py-3.5 bg-gradient-to-r from-amber-50/90 via-amber-50/40 to-white text-slate-900 flex items-center justify-between font-extrabold text-xs sm:text-sm hover:bg-amber-100/40 transition-colors cursor-pointer border-b border-amber-100/80"
+              class="w-full px-4 sm:px-5 py-3.5 bg-gradient-to-r from-amber-50/90 via-amber-50/40 to-white text-slate-900 flex items-center justify-between font-extrabold text-xs sm:text-sm hover:bg-amber-100/40 transition-colors cursor-pointer border-b border-amber-100/80 group"
             >
-              <div class="flex items-center gap-2.5">
-                <div class="p-1.5 rounded-xl bg-amber-500 text-white shadow-2xs">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="p-1.5 rounded-xl bg-amber-500 text-white shadow-2xs shrink-0">
                   <i data-lucide="file-text" class="w-4 h-4"></i>
                 </div>
-                <div class="text-left">
-                  <span class="text-amber-950 font-bold"
-                    >Mid-Term Examination Window Schedule</span
-                  >
-                  <span class="text-xs font-semibold text-amber-800/80 ml-1.5 hidden sm:inline"
-                    >(Dec 5 – Dec 12, 2026)</span
-                  >
+                <div class="text-left min-w-0">
+                  <span class="text-amber-950 font-black truncate block sm:inline">Mid-Term Exam Window</span>
+                  <span class="text-xs font-semibold text-amber-800/80 ml-1.5 hidden sm:inline">(Dec 5 – Dec 12, 2026)</span>
                 </div>
-                <span
-                  class="text-[10px] bg-amber-100 text-amber-900 border border-amber-200 px-2.5 py-0.5 rounded-full font-bold ml-1"
-                  >7 Days</span
-                >
-                <span
-                  class="text-[10px] bg-amber-600 text-white px-2 py-0.5 rounded-full font-bold hidden md:inline"
-                  >Upcoming Window</span
-                >
+                <span class="text-[10px] bg-amber-100 text-amber-900 border border-amber-200 px-2 py-0.5 rounded-full font-bold shrink-0">7 Days</span>
+                <span id="midterm-done-count" class="text-[10px] bg-white text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full font-bold shrink-0 hidden sm:inline">0 / 7 Done</span>
               </div>
-              <div class="flex items-center gap-2 text-slate-400">
-                <span class="text-xs font-semibold text-slate-500 hidden sm:inline">Toggle View</span>
+              <div class="flex items-center gap-1.5 sm:gap-2 text-slate-400 shrink-0">
                 <i
                   id="midterm-section-arrow"
                   data-lucide="chevron-down"
-                  class="w-4 h-4 transform transition-transform rotate-180 text-amber-900"
+                  class="w-4 h-4 transform transition-transform rotate-180 text-amber-900 group-hover:text-amber-950"
                 ></i>
               </div>
             </button>
-            <div
-              id="midterm-section"
-              class="p-4 space-y-2 bg-amber-50/30"
-            >
+            <div id="midterm-section" class="p-3 sm:p-4 space-y-2 bg-amber-50/20">
               <div id="midterm-exam-list" class="space-y-2">
                 <!-- Auto-generated mid exam days -->
               </div>
             </div>
           </div>
 
-          <!-- Final Exam Block (Executive Light Theme, Collapsed by Default) -->
+          <!-- Final Exam Block (Collapsed by Default) -->
           <div
             class="bg-white rounded-3xl border border-indigo-200/80 shadow-2xs overflow-hidden card-hover-pop transition-all hover:border-indigo-300"
           >
             <button
               type="button"
               onclick="toggleSection('final-section')"
-              class="w-full px-5 py-3.5 bg-gradient-to-r from-indigo-50/90 via-indigo-50/40 to-white text-slate-900 flex items-center justify-between font-extrabold text-xs sm:text-sm hover:bg-indigo-100/40 transition-colors cursor-pointer border-b border-indigo-100/80"
+              class="w-full px-4 sm:px-5 py-3.5 bg-gradient-to-r from-indigo-50/90 via-indigo-50/40 to-white text-slate-900 flex items-center justify-between font-extrabold text-xs sm:text-sm hover:bg-indigo-100/40 transition-colors cursor-pointer border-b border-indigo-100/80 group"
             >
-              <div class="flex items-center gap-2.5">
-                <div class="p-1.5 rounded-xl bg-indigo-600 text-white shadow-2xs">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="p-1.5 rounded-xl bg-indigo-600 text-white shadow-2xs shrink-0">
                   <i data-lucide="award" class="w-4 h-4"></i>
                 </div>
-                <div class="text-left">
-                  <span class="text-indigo-950 font-bold"
-                    >Final Examination Window Schedule</span
-                  >
-                  <span class="text-xs font-semibold text-indigo-800/80 ml-1.5 hidden sm:inline"
-                    >(Jan 25 – Feb 1, 2027)</span
-                  >
+                <div class="text-left min-w-0">
+                  <span class="text-indigo-950 font-black truncate block sm:inline">Final Exam Window</span>
+                  <span class="text-xs font-semibold text-indigo-800/80 ml-1.5 hidden sm:inline">(Jan 25 – Feb 1, 2027)</span>
                 </div>
-                <span
-                  class="text-[10px] bg-indigo-100 text-indigo-900 border border-indigo-200 px-2.5 py-0.5 rounded-full font-bold ml-1"
-                  >7 Days</span
-                >
-                <span
-                  class="text-[10px] bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 rounded-full font-semibold hidden md:inline"
-                  >Term Finals</span
-                >
+                <span class="text-[10px] bg-indigo-100 text-indigo-900 border border-indigo-200 px-2 py-0.5 rounded-full font-bold shrink-0">7 Days</span>
+                <span id="final-done-count" class="text-[10px] bg-white text-indigo-900 border border-indigo-300 px-2 py-0.5 rounded-full font-bold shrink-0 hidden sm:inline">0 / 7 Done</span>
               </div>
-              <div class="flex items-center gap-2 text-slate-400">
-                <span class="text-xs font-semibold text-slate-500 hidden sm:inline">Toggle View</span>
+              <div class="flex items-center gap-1.5 sm:gap-2 text-slate-400 shrink-0">
                 <i
                   id="final-section-arrow"
                   data-lucide="chevron-down"
-                  class="w-4 h-4 transform transition-transform text-indigo-900"
+                  class="w-4 h-4 transform transition-transform text-indigo-900 group-hover:text-indigo-950"
                 ></i>
               </div>
             </button>
-            <div
-              id="final-section"
-              class="p-4 space-y-2 bg-indigo-50/20 hidden"
-            >
+            <div id="final-section" class="p-3 sm:p-4 space-y-2 bg-indigo-50/20 hidden">
               <div id="final-exam-list" class="space-y-2">
                 <!-- Auto-generated final exam days -->
               </div>
@@ -920,107 +903,173 @@
       <section id="page-events" class="space-y-6 hidden">
         <!-- Events Header & Filters -->
         <div
-          class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4"
+          class="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/90 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4"
         >
           <div>
             <h2
-              class="text-base font-extrabold text-slate-900 flex items-center gap-2"
+              class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2"
             >
               <div
-                class="p-2 rounded-xl bg-gradient-to-tr from-brand-600 to-purple-600 text-white shadow-sm"
+                class="p-2 rounded-xl bg-gradient-to-tr from-brand-600 to-purple-600 text-white shadow-2xs"
               >
                 <i data-lucide="calendar-days" class="w-5 h-5"></i>
               </div>
               <span>Academic Calendar Important Events</span>
             </h2>
             <p class="text-xs font-medium text-slate-500 mt-0.5">
-              Key deadlines, exam schedules, fee installment dates, and holidays
-              (Oct 27, 2026 – Feb 4, 2027)
+              Key deadlines, exam schedules, fee installment dates, and holidays (Oct 27, 2026 – Feb 4, 2027)
             </p>
           </div>
 
           <div
-            class="flex items-center gap-3 text-xs font-bold text-slate-600 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100"
+            class="flex items-center justify-between md:justify-end gap-2 text-xs font-bold text-slate-600 border-t md:border-t-0 pt-2.5 md:pt-0 border-slate-100"
           >
             <div
-              class="flex items-center gap-2 bg-emerald-50 text-emerald-800 px-3 py-1.5 rounded-xl border border-emerald-200"
+              class="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-xl border border-emerald-200"
             >
-              <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-              <span
-                >Completed:
-                <strong
-                  id="events-completed-count"
-                  class="text-emerald-950 font-black"
-                  >0</strong
-                ></span
-              >
+              <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+              <span>Completed: <strong id="events-completed-count" class="text-emerald-950 font-black">0</strong></span>
             </div>
             <div
-              class="flex items-center gap-2 bg-amber-50 text-amber-800 px-3 py-1.5 rounded-xl border border-amber-200"
+              class="flex items-center gap-1.5 bg-amber-50 text-amber-800 px-2.5 py-1 rounded-xl border border-amber-200"
             >
-              <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
-              <span
-                >Remaining:
-                <strong
-                  id="events-remaining-count"
-                  class="text-amber-950 font-black"
-                  >0</strong
-                ></span
-              >
+              <div class="w-2 h-2 rounded-full bg-amber-500"></div>
+              <span>Remaining: <strong id="events-remaining-count" class="text-amber-950 font-black">0</strong></span>
             </div>
           </div>
         </div>
 
-        <!-- Category Filter Buttons -->
-        <div class="flex flex-wrap items-center gap-2">
-          <span
-            class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1"
-          >
-            <i data-lucide="tag" class="w-3.5 h-3.5"></i> Category:
-          </span>
-          <button
-            onclick="setEventFilter('ALL')"
-            id="event-filter-ALL"
-            class="event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-sm"
-          >
-            All Events
-          </button>
-          <button
-            onclick="setEventFilter('EXAM')"
-            id="event-filter-EXAM"
-            class="event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-rose-700 border-rose-200 hover:bg-rose-50"
-          >
-            Exams
-          </button>
-          <button
-            onclick="setEventFilter('PAYMENT')"
-            id="event-filter-PAYMENT"
-            class="event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-emerald-700 border-emerald-200 hover:bg-emerald-50"
-          >
-            Installments
-          </button>
-          <button
-            onclick="setEventFilter('HOLIDAY')"
-            id="event-filter-HOLIDAY"
-            class="event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-amber-700 border-amber-200 hover:bg-amber-50"
-          >
-            Holidays
-          </button>
-          <button
-            onclick="setEventFilter('ACADEMIC')"
-            id="event-filter-ACADEMIC"
-            class="event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
-          >
-            Academic Deadlines
-          </button>
+        <!-- Category Filter Buttons (No horizontal scrolling on mobile, clean 2-row layout) -->
+        <div class="bg-white/95 backdrop-blur-sm p-3 sm:p-4 rounded-2xl border border-slate-200/90 shadow-2xs space-y-2">
+          <!-- Row 1: All Events Scope Button & Category Label -->
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1 shrink-0">
+              <i data-lucide="tag" class="w-3.5 h-3.5"></i> Category:
+            </span>
+            <button
+              onclick="setEventFilter('ALL')"
+              id="event-filter-ALL"
+              class="event-filter-btn px-3.5 py-1.5 rounded-xl text-xs font-bold border transition-all bg-brand-600 text-white border-brand-600 shadow-xs cursor-pointer flex items-center justify-center touch-manipulation flex-1 sm:flex-none"
+            >
+              <i data-lucide="layers" class="w-3.5 h-3.5 mr-1.5 shrink-0"></i>
+              <span>All Events (17)</span>
+            </button>
+          </div>
+
+          <!-- Row 2: 4 Categories in 4 Equal Columns Grid on Mobile, Flex on Desktop -->
+          <div class="grid grid-cols-4 sm:flex sm:items-center gap-1.5 sm:gap-2 w-full">
+            <button
+              onclick="setEventFilter('EXAM')"
+              id="event-filter-EXAM"
+              class="event-filter-btn px-2 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-rose-700 border-rose-200 hover:bg-rose-50 cursor-pointer flex items-center justify-center touch-manipulation"
+              title="Exams & Midterms"
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1 hidden sm:inline"></span>
+              <span>Exams</span>
+            </button>
+            <button
+              onclick="setEventFilter('PAYMENT')"
+              id="event-filter-PAYMENT"
+              class="event-filter-btn px-2 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-emerald-700 border-emerald-200 hover:bg-emerald-50 cursor-pointer flex items-center justify-center touch-manipulation"
+              title="Fee Installments"
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 hidden sm:inline"></span>
+              <span class="sm:hidden">Fees</span><span class="hidden sm:inline">Installments</span>
+            </button>
+            <button
+              onclick="setEventFilter('HOLIDAY')"
+              id="event-filter-HOLIDAY"
+              class="event-filter-btn px-2 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-amber-700 border-amber-200 hover:bg-amber-50 cursor-pointer flex items-center justify-center touch-manipulation"
+              title="University Holidays"
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1 hidden sm:inline"></span>
+              <span>Holidays</span>
+            </button>
+            <button
+              onclick="setEventFilter('ACADEMIC')"
+              id="event-filter-ACADEMIC"
+              class="event-filter-btn px-2 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold border transition-all bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50 cursor-pointer flex items-center justify-center touch-manipulation"
+              title="Academic Deadlines"
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-1 hidden sm:inline"></span>
+              <span class="sm:hidden">Deadlines</span><span class="hidden sm:inline">Academic Deadlines</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Events List -->
+        <!-- Events List Container -->
         <div id="events-container" class="space-y-3">
-          <!-- Dynamically populated by JS -->
+          <!-- Dynamically populated by renderEvents() -->
         </div>
       </section>
     </main>
+
+    <!-- Mobile Sticky Ergonomic Bottom Navigation Bar (Thumb-Zone Optimization) -->
+    <nav
+      id="mobile-bottom-nav"
+      class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 py-1.5 px-2 flex justify-around items-center shadow-lg select-none"
+      aria-label="Mobile Bottom Navigation"
+    >
+      <!-- Home Tab -->
+      <button
+        id="bottom-nav-home"
+        onclick="switchPage('home')"
+        class="flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl text-[10px] font-bold text-brand-700 bg-brand-50/80 transition-all touch-manipulation cursor-pointer"
+        aria-label="Home Dashboard"
+      >
+        <i data-lucide="home" class="w-4 h-4 pointer-events-none mb-0.5 text-brand-600"></i>
+        <span class="pointer-events-none">Home</span>
+      </button>
+
+      <!-- Calendar Tab -->
+      <button
+        id="bottom-nav-calendar"
+        onclick="switchPage('calendar')"
+        class="flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl text-[10px] font-semibold text-slate-500 hover:text-slate-800 transition-all touch-manipulation cursor-pointer"
+        aria-label="Calendar Grid"
+      >
+        <i data-lucide="calendar" class="w-4 h-4 pointer-events-none mb-0.5 text-slate-400"></i>
+        <span class="pointer-events-none">Calendar</span>
+      </button>
+
+      <!-- Trackers Tab -->
+      <button
+        id="bottom-nav-dashboard"
+        onclick="switchPage('dashboard')"
+        class="flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl text-[10px] font-semibold text-slate-500 hover:text-slate-800 transition-all touch-manipulation cursor-pointer"
+        aria-label="Class Trackers"
+      >
+        <i data-lucide="layout-dashboard" class="w-4 h-4 pointer-events-none mb-0.5 text-slate-400"></i>
+        <span class="pointer-events-none">Trackers</span>
+      </button>
+
+      <!-- Assessments Tab (with live badge) -->
+      <button
+        id="bottom-nav-assessments"
+        onclick="switchPage('assessments')"
+        class="flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl text-[10px] font-semibold text-slate-500 hover:text-slate-800 transition-all touch-manipulation cursor-pointer relative"
+        aria-label="Assessments"
+      >
+        <i data-lucide="pen-tool" class="w-4 h-4 pointer-events-none mb-0.5 text-slate-400"></i>
+        <span class="pointer-events-none">Assessments</span>
+        <span
+          id="bottom-eval-badge"
+          class="absolute top-0.5 right-1 px-1.5 py-0.5 text-[10px] font-black rounded-full bg-rose-500 text-white shadow-xs hidden"
+        >0</span>
+      </button>
+
+      <!-- Events Tab -->
+      <button
+        id="bottom-nav-events"
+        onclick="switchPage('events')"
+        class="flex flex-col items-center justify-center flex-1 py-1.5 px-1 rounded-xl text-[10px] font-semibold text-slate-500 hover:text-slate-800 transition-all touch-manipulation cursor-pointer"
+        aria-label="University Events"
+      >
+        <i data-lucide="bell" class="w-4 h-4 pointer-events-none mb-0.5 text-slate-400"></i>
+        <span class="pointer-events-none">Events</span>
+      </button>
+    </nav>
+
 
     <!-- MODAL 1: ADD ASSESSMENT / EVALUATION MODAL -->
     <div

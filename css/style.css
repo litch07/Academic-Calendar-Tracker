@@ -51,22 +51,27 @@ body {
 }
 
 /* ==========================================================================
-   Executive Interactive Pop Effects on Hover
+   Global Crisp Typography & Subpixel Rendering
+   ========================================================================== */
+
+*, *::before, *::after {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ==========================================================================
+   Executive Interactive Pop Effects (Zero Text Blurring - No scale() transforms)
    ========================================================================== */
 
 /* Main Card Pop: Used for Calendar Tiles, Track Cards, KPI Cards */
 .card-hover-pop {
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.2s ease,
     background-color 0.2s ease;
-  will-change: transform, box-shadow;
-}
-
-.card-hover-pop:hover {
-  transform: translateY(-4px) scale(1.008);
-  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.12), 0 6px 12px -4px rgba(15, 23, 42, 0.06);
-  z-index: 10;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Subtle Card Pop: Used for List Items, Rows, Notice & Deliverable cards */
@@ -74,13 +79,8 @@ body {
   transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.18s ease;
-  will-change: transform, box-shadow;
-}
-
-.card-hover-pop-subtle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px -4px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.04);
-  z-index: 5;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Calendar Tile Pop: Specially tuned for calendar month grid responsiveness */
@@ -88,13 +88,38 @@ body {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.2s ease;
-  will-change: transform, box-shadow;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-.calendar-tile-pop:hover {
-  transform: translateY(-3px) scale(1.015);
-  box-shadow: 0 10px 22px -5px rgba(99, 102, 241, 0.18), 0 4px 8px -2px rgba(15, 23, 42, 0.08);
-  z-index: 10;
+/* Strictly mouse/trackpad desktop hover - NEVER apply scale() which blurs text */
+@media (hover: hover) and (pointer: fine) {
+  .card-hover-pop:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px -4px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+    z-index: 10;
+  }
+
+  .card-hover-pop-subtle:hover {
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 16px -3px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
+    z-index: 5;
+  }
+
+  .calendar-tile-pop:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.14), 0 3px 8px -2px rgba(15, 23, 42, 0.06);
+    z-index: 10;
+  }
+}
+
+/* On mobile & touch devices, disable hover translations completely to prevent sticky jitter or blur */
+@media (hover: none) {
+  .card-hover-pop:hover,
+  .card-hover-pop-subtle:hover,
+  .calendar-tile-pop:hover {
+    transform: none !important;
+  }
 }
 
 /* ==========================================================================
@@ -214,4 +239,20 @@ body {
 
 #mobile-menu-btn * {
   pointer-events: none;
+}
+
+/* Hide scrollbar for clean horizontal swipeable carousels */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Safe area padding for modern notch & bottom gesture bar displays (iPhone / Android) */
+@supports (padding: max(0px)) {
+  #mobile-bottom-nav {
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+  }
 }
