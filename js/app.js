@@ -2895,23 +2895,33 @@ function renderHome() {
         });
       }
 
-      function openSyncModal() {
-        const modal = document.getElementById("sync-modal");
+      function openDataModal() {
+        const modal = document.getElementById("data-sync-modal") || document.getElementById("sync-modal");
         const displayEl = document.getElementById("sync-code-display");
         if (displayEl) displayEl.innerText = syncCode || "GENERATING...";
         if (modal) modal.classList.remove("hidden");
+        if (window.lucide) lucide.createIcons();
       }
 
-      function closeSyncModal() {
-        const modal = document.getElementById("sync-modal");
+      function closeDataModal() {
+        const modal = document.getElementById("data-sync-modal") || document.getElementById("sync-modal");
         const msg = document.getElementById("sync-status-msg");
         if (modal) modal.classList.add("hidden");
         if (msg) msg.classList.add("hidden");
       }
 
+      function openSyncModal() {
+        openDataModal();
+      }
+
+      function closeSyncModal() {
+        closeDataModal();
+      }
+
       function copySyncCode() {
         if (syncCode) {
           navigator.clipboard.writeText(syncCode);
+          showToast("Device pairing code copied to clipboard!", "success");
           const msg = document.getElementById("sync-status-msg");
           if (msg) {
             msg.innerText = "Sync code copied to clipboard!";
@@ -2940,9 +2950,10 @@ function renderHome() {
           msg.innerText = "Connected to session " + syncCode + " successfully!";
           msg.classList.remove("hidden");
         }
+        showToast("Connected to sync session " + syncCode, "success");
 
         setTimeout(() => {
-          closeSyncModal();
+          closeDataModal();
         }, 1200);
       }
 
@@ -2967,6 +2978,7 @@ function renderHome() {
       }
 
       function openResetModal() {
+        closeDataModal();
         const modal = document.getElementById("reset-modal");
         if (modal) modal.classList.remove("hidden");
       }
@@ -2974,6 +2986,7 @@ function renderHome() {
       function closeResetModal() {
         const modal = document.getElementById("reset-modal");
         if (modal) modal.classList.add("hidden");
+        openDataModal();
       }
 
       function confirmReset() {
@@ -2991,7 +3004,33 @@ function renderHome() {
         renderEvaluations();
         renderEvents();
         updateNavigation();
-        closeResetModal();
+        const modal = document.getElementById("reset-modal");
+        if (modal) modal.classList.add("hidden");
+        showToast("All progress has been reset to defaults.", "info");
+      }
+
+      let pendingImportPayload = null;
+
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("app-toast");
+        const msgEl = document.getElementById("app-toast-msg");
+        const iconEl = document.getElementById("app-toast-icon");
+        if (!toast || !msgEl) return;
+
+        msgEl.innerText = message;
+        if (iconEl) {
+          iconEl.setAttribute("data-lucide", type === "success" ? "check-circle" : (type === "error" ? "alert-triangle" : "info"));
+          iconEl.className = `w-5 h-5 shrink-0 ${type === "success" ? "text-emerald-400" : (type === "error" ? "text-rose-400" : "text-sky-400")}`;
+          lucide.createIcons();
+        }
+
+        toast.classList.remove("translate-y-[-100px]", "opacity-0", "pointer-events-none");
+        toast.classList.add("translate-y-0", "opacity-100");
+
+        setTimeout(() => {
+          toast.classList.add("translate-y-[-100px]", "opacity-0", "pointer-events-none");
+          toast.classList.remove("translate-y-0", "opacity-100");
+        }, 3200);
       }
 
       function exportDataJson() {
@@ -3015,6 +3054,116 @@ function renderHome() {
         document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
+
+        showToast("Backup downloaded successfully!", "success");
+      }
+
+      function triggerImportFileInput() {
+        const fileInput = document.getElementById("import-file-input");
+        if (fileInput) {
+          fileInput.value = "";
+          fileInput.click();
+        }
+      }
+
+      function handleFileImport(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          try {
+            const rawJson = event.target.result;
+            const data = JSON.parse(rawJson);
+
+            // Validation: Ensure valid schema
+            const hasClasses = Array.isArray(data.completedClasses);
+            const hasEvals = Array.isArray(data.userEvaluations);
+            const hasAppTag = data.app && data.app.includes("UIU");
+
+            if (!hasClasses && !hasEvals && !hasAppTag) {
+              showToast("Invalid backup format. Please select a valid UIU Calendar JSON file.", "error");
+              return;
+            }
+
+            pendingImportPayload = data;
+
+            // Populate preview modal
+            const dateEl = document.getElementById("import-preview-date");
+            const classesEl = document.getElementById("import-preview-classes");
+            const evalsEl = document.getElementById("import-preview-evals");
+            const linksEl = document.getElementById("import-preview-links");
+
+            if (dateEl) {
+              dateEl.innerText = data.exportedAt ? new Date(data.exportedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "Recent File";
+            }
+            if (classesEl) {
+              const compCount = Array.isArray(data.completedClasses) ? data.completedClasses.length : 0;
+              classesEl.innerText = `${compCount} / 48 Attended`;
+            }
+            if (evalsEl) {
+              const evalCount = Array.isArray(data.userEvaluations) ? data.userEvaluations.length : 0;
+              evalsEl.innerText = `${evalCount} Custom ${evalCount === 1 ? "Task" : "Tasks"}`;
+            }
+            if (linksEl) {
+              const linkCount = data.makeupMeetingLinks ? Object.keys(data.makeupMeetingLinks).length : 0;
+              linksEl.innerText = `${linkCount} Zoom/Meet ${linkCount === 1 ? "Link" : "Links"}`;
+            }
+
+            closeDataModal();
+            const modal = document.getElementById("import-confirm-modal");
+            if (modal) modal.classList.remove("hidden");
+            lucide.createIcons();
+          } catch (err) {
+            console.error("Import parsing error:", err);
+            showToast("Failed to parse JSON file. File may be corrupted.", "error");
+          }
+        };
+
+        reader.readAsText(file);
+      }
+
+      function closeImportModal() {
+        const modal = document.getElementById("import-confirm-modal");
+        if (modal) modal.classList.add("hidden");
+        pendingImportPayload = null;
+        openDataModal();
+      }
+
+      function confirmApplyImport() {
+        if (!pendingImportPayload) return;
+
+        const data = pendingImportPayload;
+        if (Array.isArray(data.completedClasses)) {
+          completedClasses = new Set(data.completedClasses);
+        }
+        if (Array.isArray(data.unmarkedClasses)) {
+          unmarkedClasses = new Set(data.unmarkedClasses);
+        }
+        if (Array.isArray(data.userEvaluations)) {
+          userEvaluations = data.userEvaluations;
+        }
+        if (data.makeupMeetingLinks && typeof data.makeupMeetingLinks === "object") {
+          makeupMeetingLinks = data.makeupMeetingLinks;
+        }
+        if (Array.isArray(data.completedExams)) {
+          completedExams = new Set(data.completedExams);
+        }
+        if (data.syncCode) {
+          syncCode = data.syncCode;
+          localStorage.setItem(SYNC_CODE_KEY, syncCode);
+        }
+
+        saveState();
+        renderHome();
+        renderCalendar();
+        renderDashboard();
+        renderEvaluations();
+        renderEvents();
+        updateNavigation();
+
+        closeImportModal();
+        showToast("Backup restored successfully! All data has been synchronized.", "success");
       }
 
       if (typeof window !== "undefined") {
@@ -3031,6 +3180,11 @@ function renderHome() {
 
         window.addEventListener("keydown", (e) => {
           if (e.key === "Escape") {
+            closeDataModal();
+            const rModal = document.getElementById("reset-modal");
+            if (rModal && !rModal.classList.contains("hidden")) rModal.classList.add("hidden");
+            const iModal = document.getElementById("import-confirm-modal");
+            if (iModal && !iModal.classList.contains("hidden")) iModal.classList.add("hidden");
             toggleMobileMenu(false);
           }
         });
